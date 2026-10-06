@@ -1,16 +1,14 @@
-@keyframes wave {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  30% { transform: rotate(14deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
-  60% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
-}
+import React from 'react';
 
-.animate-waving-hand {
-  animation: wave 2.1s infinite;
-  transform-origin: 70% 70%;
-  display: inline-block;
+export default function Home() {
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold">
+        Halo Semua <span className="animate-waving-hand">👋</span>
+      </h1>
+      <p className="mt-2 text-slate-600 dark:text-slate-400">
+        Selamat datang di halaman utama.
+      </p>
+    </div>
+  );
 }

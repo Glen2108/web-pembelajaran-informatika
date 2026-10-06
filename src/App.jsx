@@ -5,6 +5,7 @@ import Materials from './pages/Materials';
 import Assignments from './pages/Assignments';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
+import RoleModal from './components/RoleModal';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
 
@@ -21,6 +22,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans flex flex-col justify-between">
+      {/* Pop-up Penanya Peran Awal */}
+      <RoleModal onAdminLoginSuccess={() => setActiveTab('admin')} />
+
       <div>
         <Navbar 
           activeTab={activeTab} 

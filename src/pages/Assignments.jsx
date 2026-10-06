@@ -1,16 +1,30 @@
-import React, { useState } from 'react';
-import { Send, CheckCircle, AlertCircle, Loader2, Link2, User, BookOpen } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Send, CheckCircle, AlertCircle, Loader2, Link2, User, BookOpen, Check } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 export default function Assignments() {
   const [studentName, setStudentName] = useState('');
-  const [studentClass, setStudentClass] = useState('Kelas X');
+  const [studentClass, setStudentClass] = useState('');
   const [assignmentTitle, setAssignmentTitle] = useState('');
   const [submissionUrl, setSubmissionUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Pembacaan Otomatis Profil Siswa
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('studentProfile');
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        setStudentName(parsed.name || '');
+        setStudentClass(parsed.className ? `Kelas ${parsed.className}` : '');
+      } catch (err) {
+        console.error('Gagal membaca profil siswa:', err);
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +42,6 @@ export default function Assignments() {
       });
 
       setSuccessMessage('Tugas Anda berhasil dikirim ke guru!');
-      setStudentName('');
       setAssignmentTitle('');
       setSubmissionUrl('');
     } catch (err) {
@@ -46,7 +59,7 @@ export default function Assignments() {
           <Send className="w-5 h-5 text-brand-600" /> Pengumpulan Tugas Siswa
         </h1>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Kirimkan tautan berkas tugas (Google Drive / PDF / GitHub) langsung ke guru mata pelajaran.
+          Kirimkan tautan berkas tugas (Google Drive / Canva / Cloud) langsung ke guru mata pelajaran.
         </p>
       </div>
 
@@ -76,8 +89,9 @@ export default function Assignments() {
                 type="text"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
-                placeholder="Masukkan nama lengkap Anda..."
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white"
+                placeholder="Nama lengkap siswa..."
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none dark:text-white font-semibold"
+                readOnly={!!studentName}
                 required
               />
             </div>
@@ -85,17 +99,17 @@ export default function Assignments() {
 
           <div>
             <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Kelas
+              Kelas Siswa
             </label>
-            <select
+            <input
+              type="text"
               value={studentClass}
               onChange={(e) => setStudentClass(e.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white"
-            >
-              <option value="Kelas X">Kelas X</option>
-              <option value="Kelas XI">Kelas XI</option>
-              <option value="Kelas XII">Kelas XII</option>
-            </select>
+              placeholder="Kelas siswa..."
+              className="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none dark:text-white font-semibold"
+              readOnly={!!studentClass}
+              required
+            />
           </div>
 
           <div>
@@ -117,7 +131,7 @@ export default function Assignments() {
 
           <div>
             <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Tautan Berkas Tugas (Google Drive / Canva / Cloud)
+              Tautan Berkas Tugas (Google Drive / Cloud)
             </label>
             <div className="relative">
               <Link2 className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -131,7 +145,7 @@ export default function Assignments() {
               />
             </div>
             <p className="text-[10px] text-slate-400 mt-1">
-              Pastikan akses tautan Google Drive sudah diatur menjadi "Siapa saja yang memiliki link".
+              Pastikan hak akses Google Drive sudah diatur menjadi "Siapa saja yang memiliki link".
             </p>
           </div>
         </div>

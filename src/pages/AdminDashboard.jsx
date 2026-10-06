@@ -4,6 +4,7 @@ import {
   BookOpen, 
   Megaphone, 
   Inbox, 
+  Users,
   LogOut, 
   Trash2, 
   ExternalLink, 
@@ -25,6 +26,7 @@ import {
 import { signOut } from 'firebase/auth';
 import { db, auth } from '../services/firebase';
 import { exportSubmissionsToCSV } from '../utils/exportCsv';
+import StudentList from '../components/StudentList';
 
 export default function AdminDashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState('materi');
@@ -164,6 +166,14 @@ export default function AdminDashboard({ user, onLogout }) {
           }`}
         >
           <Inbox className="w-4 h-4" /> Tugas Masuk Siswa ({submissions.length})
+        </button>
+        <button
+          onClick={() => { setActiveTab('siswa'); setStatusMsg({ type: '', text: '' }); }}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 ${
+            activeTab === 'siswa' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          <Users className="w-4 h-4" /> Daftar Siswa
         </button>
       </div>
 
@@ -355,6 +365,9 @@ export default function AdminDashboard({ user, onLogout }) {
           )}
         </div>
       )}
+
+      {/* Tab 4: Kelola Daftar Siswa (Realtime, Status Online/Offline, Sorting & Pagination) */}
+      {activeTab === 'siswa' && <StudentList />}
     </div>
   );
 }

@@ -8,6 +8,15 @@ import AdminDashboard from './pages/AdminDashboard';
 import RoleModal from './components/RoleModal';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
+import HeroSection from '../components/HeroSection';
+
+// Di dalam blok return JSX halaman utama:
+<HeroSection 
+  user={currentUser} 
+  onOpenMateri={() => setActiveTab('materi')} 
+  onOpenKumpulTugas={() => setActiveTab('tugas')} 
+  onOpenAdmin={() => setActiveTab('admin')} 
+/>
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');

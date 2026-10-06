@@ -6,17 +6,9 @@ import Assignments from './pages/Assignments';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import RoleModal from './components/RoleModal';
+import HeroSection from './components/HeroSection';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
-import HeroSection from '../components/HeroSection';
-
-// Di dalam blok return JSX halaman utama:
-<HeroSection 
-  user={currentUser} 
-  onOpenMateri={() => setActiveTab('materi')} 
-  onOpenKumpulTugas={() => setActiveTab('tugas')} 
-  onOpenAdmin={() => setActiveTab('admin')} 
-/>
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -41,8 +33,18 @@ export default function App() {
           user={user}
         />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-          {activeTab === 'home' && <Home onNavigate={setActiveTab} />}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+          {activeTab === 'home' && (
+            <>
+              <HeroSection 
+                user={user} 
+                onOpenMateri={() => setActiveTab('materi')} 
+                onOpenKumpulTugas={() => setActiveTab('tugas')} 
+                onOpenAdmin={() => setActiveTab('admin')} 
+              />
+              <Home onNavigate={setActiveTab} />
+            </>
+          )}
           {activeTab === 'materi' && <Materials />}
           {activeTab === 'tugas' && <Assignments />}
           {activeTab === 'login' && <Login onLoginSuccess={() => setActiveTab('admin')} />}

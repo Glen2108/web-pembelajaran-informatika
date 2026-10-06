@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserGraduation, ShieldCheck, ArrowLeft, LogIn, Loader2, AlertCircle } from 'lucide-react';
+import { GraduationCap, ShieldCheck, ArrowLeft, LogIn, Loader2, AlertCircle } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
@@ -85,7 +85,7 @@ export default function RoleModal({ onAdminLoginSuccess }) {
                 className="p-4 rounded-2xl border-2 border-brand-500/20 hover:border-brand-500 bg-brand-500/5 hover:bg-brand-500/10 text-left flex items-center gap-4 transition-all group"
               >
                 <div className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
-                  <UserGraduation className="w-5 h-5" />
+                  <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-slate-900 dark:text-white">Saya Seorang Siswa</h3>

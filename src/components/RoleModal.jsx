@@ -1,16 +1,22 @@
-// Tambahkan listener untuk event unload/visibilitychange
-useEffect(() => {
-  const studentId = localStorage.getItem('studentId');
-  if (!studentId) return;
+import React, { useEffect } from 'react';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../services/firebase';
 
-  const handleBeforeUnload = () => {
-    // Memperbarui status menjadi offline di Firestore saat tab ditutup
-    updateDoc(doc(db, 'students', studentId), {
-      status: 'offline',
-      lastSeen: serverTimestamp()
-    });
-  };
+export default function RoleModal() {
+  useEffect(() => {
+    const studentId = localStorage.getItem('studentId');
+    if (!studentId) return;
 
-  window.addEventListener('beforeunload', handleBeforeUnload);
-  return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-}, []);
+    const handleBeforeUnload = () => {
+      updateDoc(doc(db, 'students', studentId), {
+        status: 'offline',
+        lastSeen: serverTimestamp()
+      });
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  return null;
+}

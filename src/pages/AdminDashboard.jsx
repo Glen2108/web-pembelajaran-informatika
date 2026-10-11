@@ -13,7 +13,8 @@ import {
   CheckCircle2, 
   AlertCircle,
   Download,
-  Database
+  Database,
+  X
 } from 'lucide-react';
 import { 
   collection, 
@@ -57,6 +58,17 @@ export default function AdminDashboard({ user, onLogout }) {
   const [quizScore, setQuizScore] = useState(80);
   const [examScore, setExamScore] = useState(80);
 
+  // States untuk Fitur Kelola Tugas Baru Guru
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [taskTitle, setTaskTitle] = useState('');
+  const [taskClass, setTaskClass] = useState('X-1');
+  const [taskDeadline, setTaskDeadline] = useState('');
+  const [taskInstruction, setTaskInstruction] = useState('');
+  const [assignedTasks, setAssignedTasks] = useState([]);
+  const [taskSort, setTaskSort] = useState('title-asc');
+  const [taskPage, setTaskPage] = useState(1);
+  const tasksPerPage = 5;
+
   // Data states
   const [submissions, setSubmissions] = useState([]);
   const [grades, setGrades] = useState([]);
@@ -91,6 +103,16 @@ export default function AdminDashboard({ user, onLogout }) {
     }, () => setLoadingGrades(false));
 
     return () => unsubGrd();
+  }, []);
+
+  // Load data tugas yang diterbitkan guru
+  useEffect(() => {
+    const qTask = query(collection(db, 'assigned_tasks'), orderBy('createdAt', 'desc'));
+    const unsubTask = onSnapshot(qTask, (snapshot) => {
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      setAssignedTasks(data);
+    });
+    return () => unsubTask();
   }, []);
 
   const handleAddMaterial = async (e) => {
@@ -137,6 +159,37 @@ export default function AdminDashboard({ user, onLogout }) {
       setStatusMsg({ type: 'error', text: 'Gagal menerbitkan pengumuman.' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateTask = async (e) => {
+    e.preventDefault();
+    if (!taskTitle.trim()) return;
+
+    try {
+      await addDoc(collection(db, 'assigned_tasks'), {
+        title: taskTitle.trim(),
+        className: taskClass,
+        deadline: taskDeadline,
+        instruction: taskInstruction,
+        createdAt: serverTimestamp()
+      });
+      setTaskTitle('');
+      setTaskInstruction('');
+      setIsTaskModalOpen(false);
+      setStatusMsg({ type: 'success', text: 'Tugas baru berhasil diterbitkan!' });
+    } catch (err) {
+      setStatusMsg({ type: 'error', text: 'Gagal menerbitkan tugas.' });
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    if (window.confirm('Hapus tugas terdaftar ini?')) {
+      try {
+        await deleteDoc(doc(db, 'assigned_tasks', taskId));
+      } catch (err) {
+        alert('Gagal menghapus tugas.');
+      }
     }
   };
 
@@ -208,6 +261,19 @@ export default function AdminDashboard({ user, onLogout }) {
     onLogout();
   };
 
+  // Sorting & Pagination Logic untuk Tugas Terdaftar
+  const sortedAssignedTasks = [...assignedTasks].sort((a, b) => {
+    if (taskSort === 'title-asc') return (a.title || '').localeCompare(b.title || '');
+    if (taskSort === 'class-asc') return (a.className || '').localeCompare(b.className || '');
+    return 0;
+  });
+
+  const totalTaskPages = Math.ceil(sortedAssignedTasks.length / tasksPerPage) || 1;
+  const currentTasks = sortedAssignedTasks.slice(
+    (taskPage - 1) * tasksPerPage,
+    taskPage * tasksPerPage
+  );
+
   return (
     <div className="space-y-6 pb-12 animate-fade-in">
       {/* Header Panel */}
@@ -260,7 +326,7 @@ export default function AdminDashboard({ user, onLogout }) {
             activeTab === 'tugas' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
           }`}
         >
-          <Inbox className="w-4 h-4" /> Tugas Masuk Siswa ({submissions.length})
+          <Inbox className="w-4 h-4" /> Kelola & Tugas Masuk ({submissions.length})
         </button>
         <button
           onClick={() => { setActiveTab('nilai'); setStatusMsg({ type: '', text: '' }); }}
@@ -398,74 +464,176 @@ export default function AdminDashboard({ user, onLogout }) {
         </form>
       )}
 
-      {/* Tab 3: Rekapitulasi Tugas Masuk Siswa */}
+      {/* Tab 3: Kelola Tugas Terdaftar Guru & Rekapitulasi Tugas Masuk Siswa */}
       {activeTab === 'tugas' && (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-              Daftar Pengumpulan Tugas Siswa
-            </h2>
-            <button
-              onClick={() => exportSubmissionsToCSV(submissions)}
-              disabled={submissions.length === 0}
-              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all disabled:opacity-50"
-            >
-              <Download className="w-4 h-4" /> Unduh Rekap Excel
-            </button>
+        <div className="space-y-8">
+          
+          {/* BAGIAN 1: KELOLA TUGAS TERDAFTAR (GURU) */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+              <div>
+                <h2 className="text-sm font-bold text-white flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-teal-400" /> Daftar Tugas Pembelajaran Diterbitkan
+                </h2>
+                <p className="text-[11px] text-slate-400">
+                  Tugas yang dibuat guru akan langsung menjadi rujukan pengumpulan bagi siswa.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <select
+                  value={taskSort}
+                  onChange={(e) => setTaskSort(e.target.value)}
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                >
+                  <option value="title-asc">Urut Nama Tugas (A - Z)</option>
+                  <option value="class-asc">Urut Kelas (X - XII)</option>
+                </select>
+
+                <button
+                  onClick={() => setIsTaskModalOpen(true)}
+                  className="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"
+                >
+                  <Plus className="w-4 h-4" /> Tambah Tugas Baru
+                </button>
+              </div>
+            </div>
+
+            {/* TABEL PENAMPUNGAN TUGAS TERDAFTAR */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+              {currentTasks.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400 italic">
+                  Belum ada tugas yang diterbitkan guru.
+                </div>
+              ) : (
+                <table className="w-full text-left text-xs text-slate-200">
+                  <thead className="bg-slate-800/80 text-slate-400 uppercase font-bold border-b border-slate-800">
+                    <tr>
+                      <th className="p-3.5">Nama Tugas / Judul</th>
+                      <th className="p-3.5">Target Kelas</th>
+                      <th className="p-3.5">Batas Waktu (Deadline)</th>
+                      <th className="p-3.5 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {currentTasks.map((task) => (
+                      <tr key={task.id} className="hover:bg-slate-800/40">
+                        <td className="p-3.5 font-bold text-white">{task.title}</td>
+                        <td className="p-3.5">
+                          <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-semibold">
+                            Kelas {task.className}
+                          </span>
+                        </td>
+                        <td className="p-3.5 font-mono text-amber-400">{task.deadline || 'Tidak Ada'}</td>
+                        <td className="p-3.5 text-right">
+                          <button
+                            onClick={() => handleDeleteTask(task.id)}
+                            className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                            title="Hapus Tugas"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+
+              {/* Pagination Controls */}
+              {assignedTasks.length > 0 && (
+                <div className="p-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                  <span>Halaman {taskPage} dari {totalTaskPages}</span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setTaskPage(p => Math.max(p - 1, 1))}
+                      disabled={taskPage === 1}
+                      className="px-3 py-1 bg-slate-800 rounded-lg disabled:opacity-40"
+                    >
+                      Prev
+                    </button>
+                    <button
+                      onClick={() => setTaskPage(p => Math.min(p + 1, totalTaskPages))}
+                      disabled={taskPage === totalTaskPages}
+                      className="px-3 py-1 bg-slate-800 rounded-lg disabled:opacity-40"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {loadingSubmissions ? (
-            <div className="py-8 text-center text-xs text-slate-400">
-              Memuat data tugas...
+          {/* BAGIAN 2: REKAP TUGAS MASUK SISWA */}
+          <div className="space-y-4 pt-4 border-t border-slate-800">
+            <div className="flex justify-between items-center">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                Daftar Pengumpulan Tugas Masuk Siswa
+              </h2>
+              <button
+                onClick={() => exportSubmissionsToCSV(submissions)}
+                disabled={submissions.length === 0}
+                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" /> Unduh Rekap Excel
+              </button>
             </div>
-          ) : submissions.length > 0 ? (
-            <div className="overflow-x-auto glass-card rounded-2xl border border-slate-200 dark:border-slate-800">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
-                  <tr>
-                    <th className="p-3.5">Siswa</th>
-                    <th className="p-3.5">Kelas</th>
-                    <th className="p-3.5">Judul Tugas</th>
-                    <th className="p-3.5">Tautan Tugas</th>
-                    <th className="p-3.5 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {submissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                      <td className="p-3.5 font-bold text-slate-900 dark:text-white">{sub.studentName}</td>
-                      <td className="p-3.5">{sub.studentClass}</td>
-                      <td className="p-3.5">{sub.assignmentTitle}</td>
-                      <td className="p-3.5">
-                        <a
-                          href={sub.submissionUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-brand-600 hover:underline flex items-center gap-1 font-semibold"
-                        >
-                          <span>Buka Berkas</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <button
-                          onClick={() => handleDeleteSubmission(sub.id)}
-                          className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                          title="Hapus Tugas"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
+
+            {loadingSubmissions ? (
+              <div className="py-8 text-center text-xs text-slate-400">
+                Memuat data tugas...
+              </div>
+            ) : submissions.length > 0 ? (
+              <div className="overflow-x-auto glass-card rounded-2xl border border-slate-200 dark:border-slate-800">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                    <tr>
+                      <th className="p-3.5">Siswa</th>
+                      <th className="p-3.5">Kelas</th>
+                      <th className="p-3.5">Judul Tugas</th>
+                      <th className="p-3.5">Tautan Tugas</th>
+                      <th className="p-3.5 text-right">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="py-8 text-center text-xs text-slate-400 glass-card rounded-2xl">
-              Belum ada tugas siswa yang masuk.
-            </div>
-          )}
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {submissions.map((sub) => (
+                      <tr key={sub.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                        <td className="p-3.5 font-bold text-slate-900 dark:text-white">{sub.studentName}</td>
+                        <td className="p-3.5">{sub.studentClass}</td>
+                        <td className="p-3.5">{sub.assignmentTitle}</td>
+                        <td className="p-3.5">
+                          <a
+                            href={sub.submissionUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-brand-600 hover:underline flex items-center gap-1 font-semibold"
+                          >
+                            <span>Buka Berkas</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <button
+                            onClick={() => handleDeleteSubmission(sub.id)}
+                            className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                            title="Hapus Tugas"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-8 text-center text-xs text-slate-400 glass-card rounded-2xl">
+                Belum ada tugas siswa yang masuk.
+              </div>
+            )}
+          </div>
+
         </div>
       )}
 
@@ -606,6 +774,85 @@ export default function AdminDashboard({ user, onLogout }) {
 
       {/* Tab 5: Kelola Daftar Siswa */}
       {activeTab === 'siswa' && <StudentList />}
+
+      {/* POPUP MODAL TAMBAH TUGAS BARU */}
+      {isTaskModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Plus className="w-4 h-4 text-teal-400" /> Terbitkan Tugas Baru
+              </h3>
+              <button onClick={() => setIsTaskModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateTask} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">Judul Tugas / Pertemuan</label>
+                <input
+                  type="text"
+                  value={taskTitle}
+                  onChange={(e) => setTaskTitle(e.target.value)}
+                  placeholder="Contoh: Tugas 1 - Algorithmic Thinking"
+                  className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">Target Kelas</label>
+                <select
+                  value={taskClass}
+                  onChange={(e) => setTaskClass(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white"
+                >
+                  {['X-1', 'X-2', 'XI-1', 'XI-2', 'XII-1', 'XII-2'].map((cls) => (
+                    <option key={cls} value={cls}>Kelas {cls}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">Batas Waktu (Deadline)</label>
+                <input
+                  type="date"
+                  value={taskDeadline}
+                  onChange={(e) => setTaskDeadline(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">Instruksi Tugas Ringkas</label>
+                <textarea
+                  value={taskInstruction}
+                  onChange={(e) => setTaskInstruction(e.target.value)}
+                  placeholder="Tuliskan petunjuk pengerjaan..."
+                  className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white h-20"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsTaskModalOpen(false)}
+                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-bold"
+                >
+                  Terbitkan Tugas
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

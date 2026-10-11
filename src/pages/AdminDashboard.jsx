@@ -44,6 +44,7 @@ export default function AdminDashboard({ user, onLogout }) {
   const [matCategory, setMatCategory] = useState('Kelas X');
   const [matDesc, setMatDesc] = useState('');
   const [matUrl, setMatUrl] = useState('');
+  const [matAvailableAt, setMatAvailableAt] = useState('');
 
   // Form states untuk Pengumuman
   const [annTitle, setAnnTitle] = useState('');
@@ -115,6 +116,7 @@ export default function AdminDashboard({ user, onLogout }) {
     return () => unsubTask();
   }, []);
 
+  // Handle Tambah Materi dengan Jadwal Rilis
   const handleAddMaterial = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -127,12 +129,14 @@ export default function AdminDashboard({ user, onLogout }) {
         description: matDesc,
         downloadUrl: matUrl,
         fileType: 'PDF Document',
+        availableAt: matAvailableAt ? new Date(matAvailableAt).toISOString() : null,
         createdAt: serverTimestamp()
       });
-      setStatusMsg({ type: 'success', text: 'Modul materi berhasil ditambahkan!' });
+      setStatusMsg({ type: 'success', text: 'Modul materi dan jadwal rilis berhasil disimpan!' });
       setMatTitle('');
       setMatDesc('');
       setMatUrl('');
+      setMatAvailableAt('');
     } catch (err) {
       setStatusMsg({ type: 'error', text: 'Gagal menambahkan materi.' });
     } finally {
@@ -405,13 +409,25 @@ export default function AdminDashboard({ user, onLogout }) {
               required
             />
           </div>
+          <div>
+            <label className="block font-semibold mb-1">Jadwal Jam & Tanggal Buka (Opsional)</label>
+            <input
+              type="datetime-local"
+              value={matAvailableAt}
+              onChange={(e) => setMatAvailableAt(e.target.value)}
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border rounded-xl dark:border-slate-700 text-slate-900 dark:text-white"
+            />
+            <p className="text-[10px] text-slate-400 mt-1">
+              Kosongkan jika materi ingin langsung dibuka saat ini.
+            </p>
+          </div>
           <button
             type="submit"
             disabled={loading}
             className="w-full py-3 bg-brand-600 text-white font-bold rounded-xl flex items-center justify-center gap-2"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            <span>Simpan Materi</span>
+            <span>Simpan Materi & Jadwal</span>
           </button>
         </form>
       )}

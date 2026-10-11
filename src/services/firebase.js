@@ -3,12 +3,12 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCTD-3NLDHGCucMSWHAosSHu2-e6znnLm8",
-  authDomain: "informatika-sman4-manado.firebaseapp.com",
-  projectId: "informatika-sman4-manado",
-  storageBucket: "informatika-sman4-manado.firebasestorage.app",
-  messagingSenderId: "781063295262",
-  appId: "1:781063295262:web:2678cf21a195ba2497b90f"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);

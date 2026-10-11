@@ -33,6 +33,14 @@ export default function Grades({ student }) {
     return matchesClass && matchesSearch;
   });
 
+  // Pencarian otomatis nilai untuk siswa yang sedang aktif
+  const currentStudentGrade = grades.find(
+    (item) => student && (
+      (item.nisn && item.nisn === student.nisn) || 
+      (item.studentName?.toLowerCase() === student.name?.toLowerCase())
+    )
+  );
+
   return (
     <div className="space-y-8 pb-12 animate-fade-in">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-5">
@@ -45,6 +53,46 @@ export default function Grades({ student }) {
         </p>
       </div>
 
+      {/* Kartu Ringkasan Hasil Belajar Personal Siswa */}
+      {student && (
+        <div className="p-5 rounded-3xl bg-gradient-to-r from-teal-900/40 via-slate-900 to-slate-900 border border-teal-500/30 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
+              <Award className="w-4 h-4" /> Kartu Hasil Belajar Anda
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold border border-teal-500/30">
+              Kelas {student.className}
+            </span>
+          </div>
+
+          {currentStudentGrade ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+              <div className="bg-slate-800/60 p-3 rounded-2xl border border-slate-700/50">
+                <p className="text-[10px] text-slate-400 font-medium">Nama Siswa</p>
+                <p className="text-xs font-bold text-white truncate">{currentStudentGrade.studentName}</p>
+              </div>
+              <div className="bg-slate-800/60 p-3 rounded-2xl border border-slate-700/50">
+                <p className="text-[10px] text-slate-400 font-medium">Nilai Tugas</p>
+                <p className="text-sm font-black text-teal-400">{currentStudentGrade.assignmentScore}</p>
+              </div>
+              <div className="bg-slate-800/60 p-3 rounded-2xl border border-slate-700/50">
+                <p className="text-[10px] text-slate-400 font-medium">Nilai UH / Kuis</p>
+                <p className="text-sm font-black text-amber-400">{currentStudentGrade.examScore}</p>
+              </div>
+              <div className="bg-slate-800/60 p-3 rounded-2xl border border-slate-700/50">
+                <p className="text-[10px] text-slate-400 font-medium">Rata-Rata Akhir</p>
+                <p className="text-sm font-black text-emerald-400">{currentStudentGrade.finalScore}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">
+              Data nilai untuk <strong>{student.name}</strong> belum diinput oleh guru pengampu.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Filter dan Pencarian */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -72,6 +120,7 @@ export default function Grades({ student }) {
         </div>
       </div>
 
+      {/* Tabel Rekapitulasi Nilai Seluruh Siswa */}
       <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md">
         <table className="w-full text-left text-xs">
           <thead className="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">

@@ -5,19 +5,22 @@ import {
   Megaphone, 
   Inbox, 
   Users,
+  Award,
   LogOut, 
   Trash2, 
   ExternalLink, 
   Loader2, 
   CheckCircle2, 
   AlertCircle,
-  Download
+  Download,
+  Database
 } from 'lucide-react';
 import { 
   collection, 
   addDoc, 
   deleteDoc, 
   doc, 
+  setDoc,
   query, 
   orderBy, 
   onSnapshot, 
@@ -26,11 +29,13 @@ import {
 import { signOut } from 'firebase/auth';
 import { db, auth } from '../services/firebase';
 import { exportSubmissionsToCSV } from '../utils/exportCsv';
+import { seedInitialData } from '../utils/seedData';
 import StudentList from '../components/StudentList';
 
 export default function AdminDashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState('materi');
   const [loading, setLoading] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
   const [statusMsg, setStatusMsg] = useState({ type: '', text: '' });
 
   // Form states untuk Materi
@@ -44,23 +49,48 @@ export default function AdminDashboard({ user, onLogout }) {
   const [annCategory, setAnnCategory] = useState('Pengumuman');
   const [annContent, setAnnContent] = useState('');
 
-  // Data siswa
+  // Form states untuk Nilai Siswa
+  const [gradeNisn, setGradeNisn] = useState('');
+  const [gradeName, setGradeName] = useState('');
+  const [gradeClass, setGradeClass] = useState('X-1');
+  const [assignmentScore, setAssignmentScore] = useState(80);
+  const [quizScore, setQuizScore] = useState(80);
+  const [examScore, setExamScore] = useState(80);
+
+  // Data states
   const [submissions, setSubmissions] = useState([]);
+  const [grades, setGrades] = useState([]);
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
+  const [loadingGrades, setLoadingGrades] = useState(true);
 
   // Load daftar pengumpulan tugas siswa
   useEffect(() => {
-    const q = query(collection(db, 'submissions'), orderBy('submittedAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
+    const qSub = query(collection(db, 'submissions'), orderBy('submittedAt', 'desc'));
+    const unsubSub = onSnapshot(qSub, (snapshot) => {
+      const data = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data()
       }));
       setSubmissions(data);
       setLoadingSubmissions(false);
     }, () => setLoadingSubmissions(false));
 
-    return () => unsubscribe();
+    return () => unsubSub();
+  }, []);
+
+  // Load data nilai siswa
+  useEffect(() => {
+    const qGrd = query(collection(db, 'grades'), orderBy('studentName', 'asc'));
+    const unsubGrd = onSnapshot(qGrd, (snapshot) => {
+      const data = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }));
+      setGrades(data);
+      setLoadingGrades(false);
+    }, () => setLoadingGrades(false));
+
+    return () => unsubGrd();
   }, []);
 
   const handleAddMaterial = async (e) => {
@@ -110,6 +140,47 @@ export default function AdminDashboard({ user, onLogout }) {
     }
   };
 
+  const handleSaveGrade = async (e) => {
+    e.preventDefault();
+    if (!gradeNisn.trim() || !gradeName.trim()) return;
+
+    setLoading(true);
+    setStatusMsg({ type: '', text: '' });
+
+    const finalScore = Math.round((Number(assignmentScore) + Number(quizScore) + Number(examScore)) / 3);
+
+    try {
+      await setDoc(doc(db, 'grades', gradeNisn.trim()), {
+        nisn: gradeNisn.trim(),
+        studentName: gradeName.trim(),
+        className: gradeClass,
+        assignmentScore: Number(assignmentScore),
+        quizScore: Number(quizScore),
+        examScore: Number(examScore),
+        finalScore,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      setStatusMsg({ type: 'success', text: `Nilai siswa ${gradeName} berhasil disimpan!` });
+      setGradeNisn('');
+      setGradeName('');
+    } catch (err) {
+      setStatusMsg({ type: 'error', text: 'Gagal menyimpan nilai siswa.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteGrade = async (id, name) => {
+    if (window.confirm(`Hapus data nilai untuk ${name}?`)) {
+      try {
+        await deleteDoc(doc(db, 'grades', id));
+      } catch (err) {
+        alert('Gagal menghapus data nilai.');
+      }
+    }
+  };
+
   const handleDeleteSubmission = async (id) => {
     if (window.confirm('Hapus data pengumpulan tugas ini?')) {
       try {
@@ -117,6 +188,18 @@ export default function AdminDashboard({ user, onLogout }) {
       } catch (err) {
         alert('Gagal menghapus data.');
       }
+    }
+  };
+
+  const handleSeedData = async () => {
+    if (window.confirm('Unggah data materi, pengumuman, dan nilai sampel awal ke Firestore?')) {
+      setIsSeeding(true);
+      const result = await seedInitialData();
+      setIsSeeding(false);
+      setStatusMsg({
+        type: result.success ? 'success' : 'error',
+        text: result.message
+      });
     }
   };
 
@@ -131,14 +214,26 @@ export default function AdminDashboard({ user, onLogout }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
           <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">Panel Utama Kelola Guru</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Pengelola: {user?.email || 'Admin'}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Pengelola: {user?.email || 'Glendy A. Taawoeda, S.Pd.'}</p>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="px-3.5 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold flex items-center gap-2 self-start sm:self-auto transition-all"
-        >
-          <LogOut className="w-4 h-4" /> Keluar Akun
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSeedData}
+            disabled={isSeeding}
+            className="px-3.5 py-2 bg-brand-600/10 hover:bg-brand-600/20 text-brand-600 dark:text-brand-400 rounded-xl text-xs font-bold flex items-center gap-2 transition-all disabled:opacity-50"
+            title="Isi database dengan data sampel awal"
+          >
+            <Database className="w-4 h-4" />
+            <span>{isSeeding ? 'Mengunggah...' : 'Inisialisasi Data Awal'}</span>
+          </button>
+
+          <button
+            onClick={handleSignOut}
+            className="px-3.5 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold flex items-center gap-2 transition-all"
+          >
+            <LogOut className="w-4 h-4" /> Keluar Akun
+          </button>
+        </div>
       </div>
 
       {/* Navigasi Tab Admin */}
@@ -166,6 +261,14 @@ export default function AdminDashboard({ user, onLogout }) {
           }`}
         >
           <Inbox className="w-4 h-4" /> Tugas Masuk Siswa ({submissions.length})
+        </button>
+        <button
+          onClick={() => { setActiveTab('nilai'); setStatusMsg({ type: '', text: '' }); }}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 ${
+            activeTab === 'nilai' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          <Award className="w-4 h-4" /> Input & Kelola Nilai ({grades.length})
         </button>
         <button
           onClick={() => { setActiveTab('siswa'); setStatusMsg({ type: '', text: '' }); }}
@@ -366,7 +469,142 @@ export default function AdminDashboard({ user, onLogout }) {
         </div>
       )}
 
-      {/* Tab 4: Kelola Daftar Siswa (Realtime, Status Online/Offline, Sorting & Pagination) */}
+      {/* Tab 4: Input & Kelola Nilai Siswa */}
+      {activeTab === 'nilai' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <form onSubmit={handleSaveGrade} className="lg:col-span-5 glass-card p-6 rounded-3xl space-y-4 text-xs h-fit">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Input / Update Nilai Siswa</h2>
+            <div>
+              <label className="block font-semibold mb-1">NISN Siswa</label>
+              <input
+                type="text"
+                value={gradeNisn}
+                onChange={(e) => setGradeNisn(e.target.value)}
+                placeholder="Contoh: 0081234001"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border rounded-xl dark:border-slate-700"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Nama Lengkap Siswa</label>
+              <input
+                type="text"
+                value={gradeName}
+                onChange={(e) => setGradeName(e.target.value)}
+                placeholder="Nama lengkap..."
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border rounded-xl dark:border-slate-700"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Kelas</label>
+              <select
+                value={gradeClass}
+                onChange={(e) => setGradeClass(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border rounded-xl dark:border-slate-700 font-semibold"
+              >
+                {['X-1', 'X-2', 'XI-1', 'XI-2', 'XII-1', 'XII-2'].map((c) => (
+                  <option key={c} value={c}>Kelas {c}</option>
+                ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="block font-semibold mb-1">Nilai Tugas</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={assignmentScore}
+                  onChange={(e) => setAssignmentScore(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-xl dark:border-slate-700 text-center font-bold"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Nilai Kuis</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={quizScore}
+                  onChange={(e) => setQuizScore(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-xl dark:border-slate-700 text-center font-bold"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Nilai UH</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={examScore}
+                  onChange={(e) => setExamScore(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-xl dark:border-slate-700 text-center font-bold"
+                  required
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-brand-600 text-white font-bold rounded-xl flex items-center justify-center gap-2"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Award className="w-4 h-4" />}
+              <span>Simpan Nilai Siswa</span>
+            </button>
+          </form>
+
+          <div className="lg:col-span-7 space-y-3">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Daftar Nilai Terrekam</h2>
+            {loadingGrades ? (
+              <div className="py-8 text-center text-xs text-slate-400">Memuat data nilai...</div>
+            ) : grades.length > 0 ? (
+              <div className="overflow-x-auto glass-card rounded-2xl border border-slate-200 dark:border-slate-800">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                    <tr>
+                      <th className="p-3">Siswa</th>
+                      <th className="p-3">Kelas</th>
+                      <th className="p-3 text-center">Tugas</th>
+                      <th className="p-3 text-center">UH</th>
+                      <th className="p-3 text-center">Akhir</th>
+                      <th className="p-3 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {grades.map((grd) => (
+                      <tr key={grd.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                        <td className="p-3 font-bold text-slate-900 dark:text-white">{grd.studentName}</td>
+                        <td className="p-3">{grd.className}</td>
+                        <td className="p-3 text-center">{grd.assignmentScore}</td>
+                        <td className="p-3 text-center">{grd.examScore}</td>
+                        <td className="p-3 text-center font-bold text-brand-600 dark:text-brand-400">{grd.finalScore}</td>
+                        <td className="p-3 text-right">
+                          <button
+                            onClick={() => handleDeleteGrade(grd.id, grd.studentName)}
+                            className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                            title="Hapus Nilai"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-8 text-center text-xs text-slate-400 glass-card rounded-2xl">
+                Belum ada data nilai tersimpan.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tab 5: Kelola Daftar Siswa */}
       {activeTab === 'siswa' && <StudentList />}
     </div>
   );

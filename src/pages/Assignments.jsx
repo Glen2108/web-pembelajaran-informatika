@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle, AlertCircle, Loader2, Link2, User, BookOpen, Check } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle, Loader2, Link2, User, BookOpen } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
+import { isValidDriveUrl } from '../utils/drive';
 
 export default function Assignments() {
   const [studentName, setStudentName] = useState('');
@@ -12,7 +13,6 @@ export default function Assignments() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Pembacaan Otomatis Profil Siswa
   useEffect(() => {
     const savedProfile = localStorage.getItem('studentProfile');
     if (savedProfile) {
@@ -28,9 +28,16 @@ export default function Assignments() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setSuccessMessage('');
     setErrorMessage('');
+
+    // Validasi URL Drive
+    if (!isValidDriveUrl(submissionUrl)) {
+      setErrorMessage('Tautan harus berasal dari Google Drive atau Google Docs!');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       await addDoc(collection(db, 'submissions'), {
@@ -91,7 +98,6 @@ export default function Assignments() {
                 onChange={(e) => setStudentName(e.target.value)}
                 placeholder="Nama lengkap siswa..."
                 className="w-full pl-9 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none dark:text-white font-semibold"
-                readOnly={!!studentName}
                 required
               />
             </div>
@@ -107,7 +113,6 @@ export default function Assignments() {
               onChange={(e) => setStudentClass(e.target.value)}
               placeholder="Kelas siswa..."
               className="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none dark:text-white font-semibold"
-              readOnly={!!studentClass}
               required
             />
           </div>

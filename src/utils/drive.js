@@ -1,12 +1,14 @@
-export function getDriveDirectLink(url) {
-  if (!url) return '';
-  const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (fileIdMatch && fileIdMatch[1]) {
-    return `https://drive.google.com/uc?export=download&id=${fileIdMatch[1]}`;
-  }
-  return url;
-}
+// Tambahkan impor ini di bagian atas Materials.jsx
+import { getDriveDirectLink } from '../utils/drive';
 
-export function isValidDriveUrl(url) {
-  return url.includes('drive.google.com') || url.includes('docs.google.com');
-}
+// Pada bagian render tombol unduh:
+<a
+  href={getDriveDirectLink(item.downloadUrl || item.driveUrl)}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="w-full py-2 px-3 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all"
+>
+  <Download className="w-3.5 h-3.5" />
+  <span>Unduh Modul</span>
+  <ExternalLink className="w-3 h-3 opacity-60 ml-auto" />
+</a>

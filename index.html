@@ -530,7 +530,7 @@
 
     <!-- ==================== JAVASCRIPT SYSTEM ENGINE & FIREBASE INTEGRATION ==================== -->
     <script>
-        // 1. INSIALISASI FIREBASE CONFIG DARI USER
+        // 1. INSIALISASI FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCTD-3NLDHGCucMSWHAosSHu2-e6znnLm8",
             authDomain: "informatika-sman4-manado.firebaseapp.com",
@@ -561,62 +561,78 @@
             "Jangan takut pada eror; eror adalah bukti bahwa Anda sedang berusaha dan belajar!"
         ];
 
-        // LOCAL DATA CACHE
-        let studentLogins = [];
-        let materiData = [];
-        let tugasData = [];
-        let tugasSubmissions = [];
+        // LOCAL DATA CACHE WITH LOCALSTORAGE BACKUP
+        let studentLogins = JSON.parse(localStorage.getItem('sman4_studentLogins')) || [];
+        let materiData = JSON.parse(localStorage.getItem('sman4_materiData')) || [
+            { id: 'm1', title: "Pengenalan Algoritma & Berpikir Komputasional", kelas: "X-1 s/d X-4", desc: "Modul dasar pemrograman dan pola pikir komputasional.", driveUrl: "https://drive.google.com", countdownSeconds: 10 },
+            { id: 'm2', title: "Jaringan Komputer dan Internet", kelas: "XI-1 s/d XI-5", desc: "Materi protokol TCP/IP, Topologi Jaringan, dan Keamanan Siber.", driveUrl: "https://drive.google.com", countdownSeconds: 0 }
+        ];
+        let tugasData = JSON.parse(localStorage.getItem('sman4_tugasData')) || [
+            { id: 't1', title: "Tugas Praktikum 1: Analisis Data Python", deadline: "15/10/2026 23:59 WITA", desc: "Kerjakan file latihan CSV dan upload hasil analisis ke Google Drive masing-masing." }
+        ];
+        let tugasSubmissions = JSON.parse(localStorage.getItem('sman4_tugasSubmissions')) || [];
 
         // INITIALIZATION
         window.addEventListener('DOMContentLoaded', () => {
             startRealtimeClock();
             setDailyQuote();
             checkDeviceMemory();
+            
+            // Initial Local UI Render
+            renderStudentTable();
+            renderMateriCards();
+            renderTugasList();
+            renderTugasSubmissionsTable();
+
+            // Firebase Cloud Synchronization
             listenFirebaseData();
         });
 
         // LISTEN TO FIREBASE REALTIME DATABASE
         function listenFirebaseData() {
-            // Synchronize Attendance Logins
-            db.ref('logins').on('value', (snapshot) => {
-                const data = snapshot.val();
-                studentLogins = data ? Object.values(data) : [];
-                renderStudentTable();
-            });
+            try {
+                // Synchronize Attendance Logins
+                db.ref('logins').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        studentLogins = Object.values(data);
+                        localStorage.setItem('sman4_studentLogins', JSON.stringify(studentLogins));
+                        renderStudentTable();
+                    }
+                }, (err) => console.warn("Firebase logins read warning:", err));
 
-            // Synchronize Materi Pelajaran
-            db.ref('materi').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    materiData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                } else {
-                    materiData = [
-                        { id: 'm1', title: "Pengenalan Algoritma & Berpikir Komputasional", kelas: "X-1 s/d X-4", desc: "Modul dasar pemrograman dan pola pikir komputasional.", driveUrl: "https://drive.google.com", countdownSeconds: 10 },
-                        { id: 'm2', title: "Jaringan Komputer dan Internet", kelas: "XI-1 s/d XI-5", desc: "Materi protokol TCP/IP, Topologi Jaringan, dan Keamanan Siber.", driveUrl: "https://drive.google.com", countdownSeconds: 0 }
-                    ];
-                }
-                renderMateriCards();
-            });
+                // Synchronize Materi Pelajaran
+                db.ref('materi').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        materiData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                        localStorage.setItem('sman4_materiData', JSON.stringify(materiData));
+                        renderMateriCards();
+                    }
+                }, (err) => console.warn("Firebase materi read warning:", err));
 
-            // Synchronize Tugas
-            db.ref('tugas').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    tugasData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                } else {
-                    tugasData = [
-                        { id: 't1', title: "Tugas Praktikum 1: Analisis Data Python", deadline: "15/10/2026 23:59 WITA", desc: "Kerjakan file latihan CSV dan upload hasil analisis ke Google Drive masing-masing." }
-                    ];
-                }
-                renderTugasList();
-            });
+                // Synchronize Tugas
+                db.ref('tugas').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        tugasData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                        localStorage.setItem('sman4_tugasData', JSON.stringify(tugasData));
+                        renderTugasList();
+                    }
+                }, (err) => console.warn("Firebase tugas read warning:", err));
 
-            // Synchronize Tugas Submissions
-            db.ref('submissions').on('value', (snapshot) => {
-                const data = snapshot.val();
-                tugasSubmissions = data ? Object.values(data) : [];
-                renderTugasSubmissionsTable();
-            });
+                // Synchronize Tugas Submissions
+                db.ref('submissions').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        tugasSubmissions = Object.values(data);
+                        localStorage.setItem('sman4_tugasSubmissions', JSON.stringify(tugasSubmissions));
+                        renderTugasSubmissionsTable();
+                    }
+                }, (err) => console.warn("Firebase submissions read warning:", err));
+            } catch (err) {
+                console.warn("Firebase listener exception:", err);
+            }
         }
 
         // REALTIME CLOCK & DATE (WITA)
@@ -667,7 +683,7 @@
             }
         }
 
-        // LOGIN HANDLER SISWA (Upsert Database)
+        // LOGIN HANDLER SISWA (Instant UI & Firebase Sync)
         function handleLoginSiswa(e) {
             e.preventDefault();
             const nama = document.getElementById('siswaNama').value.trim();
@@ -683,15 +699,34 @@
             const todayStr = new Date().toLocaleDateString('id-ID');
             const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
 
-            // Sanitize key for Firebase path
-            const key = (nama + '_' + kelas).replace(/[.#$\[\]]/g, "_");
-
-            db.ref('logins/' + key).set({
+            const newLogin = {
                 name: nama,
                 kelas: kelas,
                 date: todayStr,
                 time: timeStr
-            });
+            };
+
+            // 1. Update Memory Array (Upsert logic to prevent duplicate name)
+            const existingIdx = studentLogins.findIndex(s => s.name.toLowerCase() === nama.toLowerCase() && s.kelas === kelas);
+            if (existingIdx !== -1) {
+                studentLogins[existingIdx] = newLogin;
+            } else {
+                studentLogins.push(newLogin);
+            }
+
+            // 2. Save Local Backup
+            localStorage.setItem('sman4_studentLogins', JSON.stringify(studentLogins));
+
+            // 3. Render Table Immediately
+            renderStudentTable();
+
+            // 4. Sync to Firebase
+            const key = (nama + '_' + kelas).replace(/[.#$\[\]/]/g, "_");
+            try {
+                db.ref('logins/' + key).set(newLogin).catch(err => console.warn("Firebase sync error:", err));
+            } catch (err) {
+                console.warn("Firebase set error:", err);
+            }
 
             document.getElementById('loginModal').classList.add('hidden');
             setupUserUI();
@@ -762,7 +797,8 @@
         // RENDER STUDENT PRESENCE TABLE
         function renderStudentTable() {
             const tbody = document.getElementById('studentTableBody');
-            const search = document.getElementById('searchStudent').value.toLowerCase();
+            const searchInput = document.getElementById('searchStudent');
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
 
             let filtered = studentLogins.filter(s => s.name.toLowerCase().includes(search) || s.kelas.toLowerCase().includes(search));
             filtered.sort((a, b) => sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
@@ -821,10 +857,35 @@
             const driveUrl = document.getElementById('newMateriUrl').value.trim();
             const countdownSeconds = parseInt(document.getElementById('newMateriCountdown').value) || 0;
 
-            db.ref('materi').push({
-                title, kelas, desc, driveUrl, countdownSeconds
-            });
+            if (!title || !driveUrl) return;
 
+            const newMateri = {
+                id: 'm_' + Date.now(),
+                title,
+                kelas,
+                desc,
+                driveUrl,
+                countdownSeconds
+            };
+
+            // 1. Add to local array instantly
+            materiData.unshift(newMateri);
+            localStorage.setItem('sman4_materiData', JSON.stringify(materiData));
+
+            // 2. Render UI immediately
+            renderMateriCards();
+
+            // 3. Sync to Firebase Cloud
+            try {
+                db.ref('materi/' + newMateri.id).set({
+                    title, kelas, desc, driveUrl, countdownSeconds
+                }).catch(err => console.warn("Firebase push error:", err));
+            } catch (err) {
+                console.warn("Firebase set error:", err);
+            }
+
+            // Reset form & close modal
+            e.target.reset();
             closeAddMateriModal();
             alert('Materi Pelajaran Berhasil Ditambahkan!');
         }
@@ -832,6 +893,11 @@
         function renderMateriCards() {
             const grid = document.getElementById('materiGrid');
             grid.innerHTML = '';
+
+            if (materiData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Belum ada materi pelajaran yang diunggah.</div>`;
+                return;
+            }
 
             materiData.forEach(item => {
                 grid.innerHTML += `
@@ -910,10 +976,33 @@
             const deadline = document.getElementById('newTugasDeadline').value.trim();
             const desc = document.getElementById('newTugasDesc').value.trim();
 
-            db.ref('tugas').push({
-                title, deadline, desc
-            });
+            if (!title || !deadline) return;
 
+            const newTugas = {
+                id: 't_' + Date.now(),
+                title,
+                deadline,
+                desc
+            };
+
+            // 1. Add to local array
+            tugasData.unshift(newTugas);
+            localStorage.setItem('sman4_tugasData', JSON.stringify(tugasData));
+
+            // 2. Render UI immediately
+            renderTugasList();
+
+            // 3. Sync to Firebase Cloud
+            try {
+                db.ref('tugas/' + newTugas.id).set({
+                    title, deadline, desc
+                }).catch(err => console.warn("Firebase write error:", err));
+            } catch (err) {
+                console.warn("Firebase set error:", err);
+            }
+
+            // Reset form & close modal
+            e.target.reset();
             closeAddTugasModal();
             alert('Tugas Baru Berhasil Diterbitkan!');
         }
@@ -921,6 +1010,11 @@
         function renderTugasList() {
             const list = document.getElementById('tugasList');
             list.innerHTML = '';
+
+            if (tugasData.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan.</div>`;
+                return;
+            }
 
             tugasData.forEach(t => {
                 list.innerHTML += `
@@ -954,22 +1048,46 @@
         function handlePengumpulanTugas(e) {
             e.preventDefault();
             const title = document.getElementById('modalJudulTugas').innerText;
-            const name = currentUser.name;
-            const kelas = currentUser.kelas;
-            const url = document.getElementById('modalLinkTugas').value;
+            const name = currentUser ? currentUser.name : document.getElementById('modalSiswaNama').value;
+            const kelas = currentUser ? currentUser.kelas : document.getElementById('modalSiswaKelas').value;
+            const url = document.getElementById('modalLinkTugas').value.trim();
             const time = new Date().toLocaleString('id-ID') + ' WITA';
 
-            db.ref('submissions').push({
-                name, kelas, tugasTitle: title, time, url
-            });
+            if (!url) return;
 
+            const newSubmission = {
+                name,
+                kelas,
+                tugasTitle: title,
+                time,
+                url
+            };
+
+            // 1. Save to local array immediately
+            tugasSubmissions.unshift(newSubmission);
+            localStorage.setItem('sman4_tugasSubmissions', JSON.stringify(tugasSubmissions));
+
+            // 2. Render submissions table immediately
+            renderTugasSubmissionsTable();
+
+            // 3. Sync to Firebase Cloud
+            try {
+                const subKey = (name + '_' + title + '_' + Date.now()).replace(/[.#$\[\]/]/g, "_");
+                db.ref('submissions/' + subKey).set(newSubmission).catch(err => console.warn("Firebase write error:", err));
+            } catch (err) {
+                console.warn("Firebase set error:", err);
+            }
+
+            // Reset input and close modal
+            document.getElementById('modalLinkTugas').value = '';
             closeSubmitTugasModal();
             alert('Tugas Anda berhasil dikumpulkan!');
         }
 
         function renderTugasSubmissionsTable() {
             const tbody = document.getElementById('tugasSubmissionsTableBody');
-            const filter = document.getElementById('filterKelasTugas').value;
+            const filterEl = document.getElementById('filterKelasTugas');
+            const filter = filterEl ? filterEl.value : 'ALL';
 
             let filtered = tugasSubmissions;
             if (filter !== 'ALL') {
@@ -1014,14 +1132,26 @@
             document.body.removeChild(link);
         }
 
-        // RESET TAHUN AJARAN (CLEANUP DATABASE)
+        // RESET TAHUN AJARAN (CLEANUP DATABASE & LOCAL STORAGE)
         function confirmAcademicReset() {
             if (confirm("Apakah Anda yakin ingin mereset seluruh data untuk Tahun Ajaran Baru?")) {
-                const choice = prompt("Ketik 'HAPUS' untuk mengosongkan database Firebase:");
+                const choice = prompt("Ketik 'HAPUS' untuk mengosongkan database Firebase & Lokal:");
                 if (choice === 'HAPUS') {
-                    db.ref('logins').remove();
-                    db.ref('submissions').remove();
-                    alert("Database Firebase berhasil dibersihkan untuk Tahun Ajaran Baru!");
+                    studentLogins = [];
+                    tugasSubmissions = [];
+                    localStorage.removeItem('sman4_studentLogins');
+                    localStorage.removeItem('sman4_tugasSubmissions');
+                    
+                    try {
+                        db.ref('logins').remove();
+                        db.ref('submissions').remove();
+                    } catch (err) {
+                        console.warn("Firebase delete error:", err);
+                    }
+
+                    renderStudentTable();
+                    renderTugasSubmissionsTable();
+                    alert("Database berhasil dibersihkan untuk Tahun Ajaran Baru!");
                 }
             }
         }
@@ -1029,7 +1159,6 @@
         // Function untuk Membuka Modal Absensi Sekolah
         function openAbsensiModal() {
             const frame = document.getElementById('absensiFrame');
-            // Set URL Absensi Vercel
             frame.src = "https://absensi-sekolah-v2.vercel.app/";
             document.getElementById('absensiIframeModal').classList.remove('hidden');
         }
@@ -1037,7 +1166,6 @@
         // Function untuk Menutup Modal dan Kembali ke Web Pembelajaran
         function closeAbsensiModal() {
             const frame = document.getElementById('absensiFrame');
-            // Clear URL untuk menghentikan proses background iframe
             frame.src = ""; 
             document.getElementById('absensiIframeModal').classList.add('hidden');
         }

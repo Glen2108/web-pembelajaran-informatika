@@ -300,7 +300,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800">Materi Pelajaran Informatika</h3>
-                        <p class="text-xs text-slate-500">Unduh dan pelajari modul pembelajaran. Link memiliki countdown waktu kedisiplinan.</p>
+                        <p class="text-xs text-slate-500">Unduh dan pelajari modul pembelajaran. Materi terkunci otomatis sesuai tingkat kelas Anda.</p>
                     </div>
                     <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition">
                         <i class="fa-solid fa-plus mr-1"></i> Tambah Materi
@@ -776,7 +776,6 @@
             document.getElementById('loginModal').classList.remove('hidden');
             checkDeviceMemory();
             
-            // Re-render to hide admin elements
             renderStudentTable();
             renderMateriCards();
             renderTugasList();
@@ -812,7 +811,6 @@
                 btnAddTugas.classList.add('hidden');
             }
 
-            // Re-render UI so delete buttons toggle correctly based on role
             renderStudentTable();
             renderMateriCards();
             renderTugasList();
@@ -945,6 +943,28 @@
             alert('Materi Pelajaran Berhasil Ditambahkan!');
         }
 
+        // FUNGSI PENGECEKAN KELAS SISWA DENGAN TARGET MATERI
+        function checkGradeMatch(studentKelas, materiKelas) {
+            if (!studentKelas || !materiKelas || materiKelas === "Semua Kelas") return true;
+
+            let sLevel = "";
+            if (studentKelas.startsWith("XII")) sLevel = "XII";
+            else if (studentKelas.startsWith("XI")) sLevel = "XI";
+            else if (studentKelas.startsWith("X")) sLevel = "X";
+
+            if (!sLevel) return true;
+
+            if (sLevel === "XII" && materiKelas.includes("XII")) return true;
+            if (sLevel === "XI" && materiKelas.includes("XI") && !materiKelas.includes("XII")) return true;
+            if (sLevel === "X") {
+                if ((materiKelas.includes("X-") || materiKelas.includes("Kelas X") || materiKelas.startsWith("X")) && !materiKelas.includes("XI") && !materiKelas.includes("XII")) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         function renderMateriCards() {
             const grid = document.getElementById('materiGrid');
             const isAdmin = currentUser && currentUser.role === 'admin';
@@ -958,14 +978,69 @@
             const now = Date.now();
 
             materiData.forEach(item => {
-                const isLocked = item.unlockTimestamp && item.unlockTimestamp > now;
-                let dateDisplayStr = '';
+                // Cek apakah materi terkunci karena beda tingkat kelas
+                let isGradeLocked = false;
+                if (!isAdmin && currentUser && currentUser.role === 'siswa') {
+                    isGradeLocked = !checkGradeMatch(currentUser.kelas, item.kelas);
+                }
 
+                // Cek apakah materi terkunci karena waktu (countdown)
+                const isTimeLocked = item.unlockTimestamp && item.unlockTimestamp > now;
+
+                let dateDisplayStr = '';
                 if (item.unlockTimestamp && item.unlockTimestamp > 0) {
                     const unlockDate = new Date(item.unlockTimestamp);
                     const dateFormatted = unlockDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
                     const timeFormatted = unlockDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
                     dateDisplayStr = `${dateFormatted}, Jam ${timeFormatted}`;
+                }
+
+                let statusBoxHtml = '';
+                let buttonHtml = '';
+
+                if (isGradeLocked) {
+                    // Tampilan Terkunci Beda Kelas
+                    statusBoxHtml = `
+                        <div class="p-2.5 bg-rose-50 rounded-xl border border-rose-200 mb-3">
+                            <p class="text-[10px] text-rose-700 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-lock"></i> Terkunci (Khusus ${item.kelas})
+                            </p>
+                            <p class="text-[10px] text-rose-500 mt-0.5">Materi ini tidak dapat diakses oleh kelas Anda.</p>
+                        </div>
+                    `;
+                    buttonHtml = `
+                        <button disabled class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-slate-200 text-slate-400 cursor-not-allowed">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Akses Terkunci (Beda Kelas)</span>
+                        </button>
+                    `;
+                } else if (isTimeLocked) {
+                    // Tampilan Terkunci Hitung Mundur Waktu
+                    statusBoxHtml = `
+                        <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 mb-3">
+                            <p class="text-[10px] text-amber-700 font-bold mb-1"><i class="fa-solid fa-calendar-clock mr-1"></i> Terbuka Pada: ${dateDisplayStr}</p>
+                            <div id="timer-${item.id}" class="text-xs font-mono font-extrabold text-amber-800 text-center bg-white/80 py-1.5 rounded-lg border border-amber-300">Menghitung...</div>
+                        </div>
+                    `;
+                    buttonHtml = `
+                        <button id="btnDownload-${item.id}" disabled class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-slate-200 text-slate-400 cursor-not-allowed">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Buka / Unduh Materi</span>
+                        </button>
+                    `;
+                } else {
+                    // Tampilan Materi Siap Diunduh
+                    statusBoxHtml = `
+                        <div class="mb-3">
+                            <p class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Materi Siap Diunduh</p>
+                        </div>
+                    `;
+                    buttonHtml = `
+                        <button id="btnDownload-${item.id}" onclick="openMateriDrive('${item.driveUrl}')" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white shadow-md transition">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Buka / Unduh Materi</span>
+                        </button>
+                    `;
                 }
 
                 grid.innerHTML += `
@@ -986,23 +1061,15 @@
                             <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
                         </div>
                         <div>
-                            <div id="countdown-box-${item.id}" class="mb-3">
-                                ${isLocked 
-                                    ? `<div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
-                                            <p class="text-[10px] text-amber-700 font-bold mb-1"><i class="fa-solid fa-calendar-clock mr-1"></i> Terbuka Pada: ${dateDisplayStr}</p>
-                                            <div id="timer-${item.id}" class="text-xs font-mono font-extrabold text-amber-800 text-center bg-white/80 py-1.5 rounded-lg border border-amber-300">Menghitung...</div>
-                                       </div>`
-                                    : `<p class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Materi Siap Diunduh</p>`}
-                            </div>
-                            <button id="btnDownload-${item.id}" onclick="openMateriDrive('${item.driveUrl}')" ${isLocked ? 'disabled' : ''} class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition ${isLocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white shadow-md'}">
-                                <i class="fa-solid fa-download"></i>
-                                <span>Buka / Unduh Materi</span>
-                            </button>
+                            ${statusBoxHtml}
+                            ${buttonHtml}
                         </div>
                     </div>
                 `;
 
-                if (isLocked) startMateriCountdown(item.id, item.unlockTimestamp);
+                if (!isGradeLocked && isTimeLocked) {
+                    startMateriCountdown(item.id, item.unlockTimestamp);
+                }
             });
         }
 

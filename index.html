@@ -344,7 +344,9 @@
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase">
-                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3 cursor-pointer hover:bg-slate-100" onclick="toggleSortTugasName()">
+                                        Nama Siswa <i class="fa-solid fa-sort text-slate-400 ml-1"></i>
+                                    </th>
                                     <th class="p-3">Kelas</th>
                                     <th class="p-3">Judul Tugas</th>
                                     <th class="p-3">Waktu Kumpul</th>
@@ -355,6 +357,15 @@
                                 <!-- Populated dynamically -->
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination Status Pengumpulan Tugas Siswa -->
+                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
+                        <span id="tugasPaginationInfo">Menampilkan 0-0 data</span>
+                        <div class="flex gap-2">
+                            <button id="btnPrevTugasPage" onclick="changeTugasPage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50">SBLM</button>
+                            <button id="btnNextTugasPage" onclick="changeTugasPage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50">SELANJUTNYA</button>
+                        </div>
                     </div>
                 </div>
 
@@ -519,8 +530,9 @@
                     <input type="text" id="newTugasTitle" required placeholder="Contoh: Tugas 1: Analisis Data Python" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-3">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Batas Waktu (Deadline)</label>
-                    <input type="text" id="newTugasDeadline" required placeholder="Contoh: 20/10/2026 23:59 WITA" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Batas Waktu Pengumpulan (Deadline Target)</label>
+                    <input type="datetime-local" id="newTugasDeadline" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                    <p class="text-[10px] text-slate-400 mt-1">Pilih tanggal dan jam batas akhir pengumpulan tugas.</p>
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Instruksi / Penjelasan Tugas</label>
@@ -587,550 +599,603 @@
     <!-- ==================== JAVASCRIPT SYSTEM ENGINE & FIREBASE INTEGRATION ==================== -->
     <script>
         // 1. INSIALISASI FIREBASE CONFIG
-const firebaseConfig = {
-    apiKey: "AIzaSyCTD-3NLDHGCucMSWHAosSHu2-e6znnLm8",
-    authDomain: "informatika-sman4-manado.firebaseapp.com",
-    databaseURL: "https://informatika-sman4-manado-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "informatika-sman4-manado",
-    storageBucket: "informatika-sman4-manado.firebasestorage.app",
-    messagingSenderId: "781063295262",
-    appId: "1:781063295262:web:2678cf21a195ba2497b90f",
-    measurementId: "G-BLWGZ4RZFK"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTD-3NLDHGCucMSWHAosSHu2-e6znnLm8",
+            authDomain: "informatika-sman4-manado.firebaseapp.com",
+            databaseURL: "https://informatika-sman4-manado-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "informatika-sman4-manado",
+            storageBucket: "informatika-sman4-manado.firebasestorage.app",
+            messagingSenderId: "781063295262",
+            appId: "1:781063295262:web:2678cf21a195ba2497b90f",
+            measurementId: "G-BLWGZ4RZFK"
+        };
 
-// Initialize Firebase SDK
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+        // Initialize Firebase SDK
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-// GLOBAL STATE
-let currentUser = null;
-let currentPage = 1;
-const rowsPerPage = 5;
-let sortAsc = true;
+        // GLOBAL STATE
+        let currentUser = null;
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        let sortAsc = true;
 
-// MOTIVATIONAL QUOTES
-const quotes = [
-    "Teknologi bukan sekadar alat, melainkan jembatan untuk menciptakan masa depan.",
-    "Setiap baris kode adalah langkah kecil menuju inovasi besar.",
-    "Disiplin dan konsistensi adalah kunci menguasai logika pemrograman.",
-    "Di SMAN 4 Manado, kita belajar informatika bukan hanya untuk hari ini, tapi untuk memimpin masa depan digital.",
-    "Jangan takut pada eror; eror adalah bukti bahwa Anda sedang berusaha dan belajar!"
-];
+        // TUGAS SUBMISSIONS STATE (PAGINATION & SORTING)
+        let tugasCurrentPage = 1;
+        const tugasRowsPerPage = 5;
+        let tugasSortAsc = true;
 
-// LOCAL CACHE (diisi dari Firebase saat pertama kali muat)
-let studentLogins = [];
-let materiData = [];
-let tugasData = [];
-let tugasSubmissions = [];
+        // MOTIVATIONAL QUOTES
+        const quotes = [
+            "Teknologi bukan sekadar alat, melainkan jembatan untuk menciptakan masa depan.",
+            "Setiap baris kode adalah langkah kecil menuju inovasi besar.",
+            "Disiplin dan konsistensi adalah kunci menguasai logika pemrograman.",
+            "Di SMAN 4 Manado, kita belajar informatika bukan hanya untuk hari ini, tapi untuk memimpin masa depan digital.",
+            "Jangan takut pada eror; eror adalah bukti bahwa Anda sedang berusaha dan belajar!"
+        ];
 
-// INITIALIZATION
-window.addEventListener('DOMContentLoaded', () => {
-    startRealtimeClock();
-    setDailyQuote();
-    checkDeviceMemory();
-    
-    // Periksa Sesi Login Otomatis (Mencegah Modal Login Muncul Kembali Saat Reload)
-    checkAutoLogin();
+        // LOCAL CACHE
+        let studentLogins = [];
+        let materiData = [];
+        let tugasData = [];
+        let tugasSubmissions = [];
 
-    // Jalankan Sinkronisasi Realtime dari Firebase
-    listenFirebaseData();
-});
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            startRealtimeClock();
+            setDailyQuote();
+            checkDeviceMemory();
+            checkAutoLogin();
+            listenFirebaseData();
+        });
 
-// MEMERIKSA SESI LOGIN SAAT PAGE RELOAD
-function checkAutoLogin() {
-    const savedSession = localStorage.getItem('sman4_session');
-    if (savedSession) {
-        try {
-            currentUser = JSON.parse(savedSession);
+        // MEMERIKSA SESI LOGIN SAAT PAGE RELOAD
+        function checkAutoLogin() {
+            const savedSession = localStorage.getItem('sman4_session');
+            if (savedSession) {
+                try {
+                    currentUser = JSON.parse(savedSession);
+                    document.getElementById('loginModal').classList.add('hidden');
+                    setupUserUI();
+                } catch (e) {
+                    localStorage.removeItem('sman4_session');
+                }
+            }
+        }
+
+        // LISTEN TO FIREBASE REALTIME DATABASE
+        function listenFirebaseData() {
+            db.ref('logins').on('value', (snapshot) => {
+                const data = snapshot.val();
+                studentLogins = data ? Object.values(data) : [];
+                renderStudentTable();
+            });
+
+            db.ref('materi').on('value', (snapshot) => {
+                const data = snapshot.val();
+                materiData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                renderMateriCards();
+            });
+
+            db.ref('tugas').on('value', (snapshot) => {
+                const data = snapshot.val();
+                tugasData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                renderTugasList();
+            });
+
+            db.ref('submissions').on('value', (snapshot) => {
+                const data = snapshot.val();
+                tugasSubmissions = data ? Object.values(data) : [];
+                renderTugasSubmissionsTable();
+            });
+        }
+
+        // REALTIME CLOCK & DATE (WITA)
+        function startRealtimeClock() {
+            setInterval(() => {
+                const now = new Date();
+                const clockStr = now.toLocaleTimeString('id-ID') + ' WITA';
+                const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                
+                document.getElementById('realtimeClock').innerText = clockStr;
+                document.getElementById('realtimeDate').innerText = dateStr;
+            }, 1000);
+        }
+
+        function setDailyQuote() {
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            const selectedQuote = quotes[dayOfYear % quotes.length];
+            document.getElementById('dailyQuote').innerText = `"${selectedQuote}"`;
+        }
+
+        function checkDeviceMemory() {
+            const savedName = localStorage.getItem('sman4_remember_nama');
+            const savedKelas = localStorage.getItem('sman4_remember_kelas');
+            
+            if (savedName) document.getElementById('siswaNama').value = savedName;
+            if (savedKelas) document.getElementById('siswaKelas').value = savedKelas;
+        }
+
+        function switchLoginTab(tab) {
+            const tabSiswa = document.getElementById('tabSiswa');
+            const tabAdmin = document.getElementById('tabAdmin');
+            const formSiswa = document.getElementById('formSiswa');
+            const formAdmin = document.getElementById('formAdmin');
+
+            if (tab === 'siswa') {
+                tabSiswa.className = "flex-1 py-3 text-center font-semibold text-brand-600 border-b-2 border-brand-600 transition-all";
+                tabAdmin.className = "flex-1 py-3 text-center font-semibold text-slate-500 border-b-2 border-transparent transition-all";
+                formSiswa.classList.remove('hidden');
+                formAdmin.classList.add('hidden');
+            } else {
+                tabAdmin.className = "flex-1 py-3 text-center font-semibold text-brand-600 border-b-2 border-brand-600 transition-all";
+                tabSiswa.className = "flex-1 py-3 text-center font-semibold text-slate-500 border-b-2 border-transparent transition-all";
+                formAdmin.classList.remove('hidden');
+                formSiswa.classList.add('hidden');
+            }
+        }
+
+        function handleLoginSiswa(e) {
+            e.preventDefault();
+            const nama = document.getElementById('siswaNama').value.trim();
+            const kelas = document.getElementById('siswaKelas').value;
+
+            if (!nama || !kelas) return;
+
+            localStorage.setItem('sman4_remember_nama', nama);
+            localStorage.setItem('sman4_remember_kelas', kelas);
+
+            currentUser = { role: 'siswa', name: nama, kelas: kelas };
+            localStorage.setItem('sman4_session', JSON.stringify(currentUser));
+
+            const todayStr = new Date().toLocaleDateString('id-ID');
+            const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+
+            const newLogin = { name: nama, kelas: kelas, date: todayStr, time: timeStr, timestamp: Date.now() };
+
+            const key = (nama + '_' + kelas).replace(/[.#$\[\]/]/g, "_");
+            db.ref('logins/' + key).set(newLogin);
+
             document.getElementById('loginModal').classList.add('hidden');
             setupUserUI();
-        } catch (e) {
+        }
+
+        function handleLoginAdmin(e) {
+            e.preventDefault();
+            currentUser = { role: 'admin', name: "Glendy A. Taawoeda, S.Pd", kelas: "Guru Informatika" };
+            localStorage.setItem('sman4_session', JSON.stringify(currentUser));
+
+            document.getElementById('loginModal').classList.add('hidden');
+            setupUserUI();
+        }
+
+        function handleLogout() {
             localStorage.removeItem('sman4_session');
-        }
-    }
-}
-
-// LISTEN TO FIREBASE REALTIME DATABASE (SINKRONISASI LINTAS PERANGKAT)
-function listenFirebaseData() {
-    // 1. Data Presensi / Login Siswa (Lintas Perangkat HP & PC)
-    db.ref('logins').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            studentLogins = Object.values(data);
-        } else {
-            studentLogins = [];
-        }
-        renderStudentTable();
-    }, (error) => {
-        console.error("Gagal mengambil data login dari Firebase:", error);
-    });
-
-    // 2. Synchronize Materi Pelajaran
-    db.ref('materi').on('value', (snapshot) => {
-        const data = snapshot.val();
-        materiData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-        renderMateriCards();
-    });
-
-    // 3. Synchronize Tugas
-    db.ref('tugas').on('value', (snapshot) => {
-        const data = snapshot.val();
-        tugasData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-        renderTugasList();
-    });
-
-    // 4. Synchronize Submissions Tugas
-    db.ref('submissions').on('value', (snapshot) => {
-        const data = snapshot.val();
-        tugasSubmissions = data ? Object.values(data) : [];
-        renderTugasSubmissionsTable();
-    });
-}
-
-// REALTIME CLOCK & DATE (WITA)
-function startRealtimeClock() {
-    setInterval(() => {
-        const now = new Date();
-        const clockStr = now.toLocaleTimeString('id-ID') + ' WITA';
-        const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        
-        document.getElementById('realtimeClock').innerText = clockStr;
-        document.getElementById('realtimeDate').innerText = dateStr;
-    }, 1000);
-}
-
-// DAILY MOTIVATION
-function setDailyQuote() {
-    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-    const selectedQuote = quotes[dayOfYear % quotes.length];
-    document.getElementById('dailyQuote').innerText = `"${selectedQuote}"`;
-}
-
-// DEVICE MEMORY CHECK (INPUT FORM)
-function checkDeviceMemory() {
-    const savedName = localStorage.getItem('sman4_remember_nama');
-    const savedKelas = localStorage.getItem('sman4_remember_kelas');
-    
-    if (savedName) document.getElementById('siswaNama').value = savedName;
-    if (savedKelas) document.getElementById('siswaKelas').value = savedKelas;
-}
-
-// LOGIN TAB SWITCHER
-function switchLoginTab(tab) {
-    const tabSiswa = document.getElementById('tabSiswa');
-    const tabAdmin = document.getElementById('tabAdmin');
-    const formSiswa = document.getElementById('formSiswa');
-    const formAdmin = document.getElementById('formAdmin');
-
-    if (tab === 'siswa') {
-        tabSiswa.className = "flex-1 py-3 text-center font-semibold text-brand-600 border-b-2 border-brand-600 transition-all";
-        tabAdmin.className = "flex-1 py-3 text-center font-semibold text-slate-500 border-b-2 border-transparent transition-all";
-        formSiswa.classList.remove('hidden');
-        formAdmin.classList.add('hidden');
-    } else {
-        tabAdmin.className = "flex-1 py-3 text-center font-semibold text-brand-600 border-b-2 border-brand-600 transition-all";
-        tabSiswa.className = "flex-1 py-3 text-center font-semibold text-slate-500 border-b-2 border-transparent transition-all";
-        formAdmin.classList.remove('hidden');
-        formSiswa.classList.add('hidden');
-    }
-}
-
-// LOGIN HANDLER SISWA
-function handleLoginSiswa(e) {
-    e.preventDefault();
-    const nama = document.getElementById('siswaNama').value.trim();
-    const kelas = document.getElementById('siswaKelas').value;
-
-    if (!nama || !kelas) return;
-
-    // Simpan data formulir lokal
-    localStorage.setItem('sman4_remember_nama', nama);
-    localStorage.setItem('sman4_remember_kelas', kelas);
-
-    currentUser = { role: 'siswa', name: nama, kelas: kelas };
-
-    // SIMPAN SESI LOGIN AGAR TIDAK KELUAR SAAT RELOAD
-    localStorage.setItem('sman4_session', JSON.stringify(currentUser));
-
-    const todayStr = new Date().toLocaleDateString('id-ID');
-    const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
-
-    const newLogin = {
-        name: nama,
-        kelas: kelas,
-        date: todayStr,
-        time: timeStr,
-        timestamp: Date.now()
-    };
-
-    // Kirim langsung ke Firebase Database
-    const key = (nama + '_' + kelas).replace(/[.#$\[\]/]/g, "_");
-    db.ref('logins/' + key).set(newLogin)
-        .then(() => {
-            console.log("Presensi berhasil dikirim ke cloud.");
-        })
-        .catch(err => {
-            alert("Gagal mengirim presensi ke server. Cek aturan Firebase Database Rules Anda.");
-            console.error("Firebase error:", err);
-        });
-
-    document.getElementById('loginModal').classList.add('hidden');
-    setupUserUI();
-}
-
-// LOGIN HANDLER ADMIN
-function handleLoginAdmin(e) {
-    e.preventDefault();
-    currentUser = { role: 'admin', name: "Glendy A. Taawoeda, S.Pd", kelas: "Guru Informatika" };
-
-    // SIMPAN SESI LOGIN GURU/ADMIN
-    localStorage.setItem('sman4_session', JSON.stringify(currentUser));
-
-    document.getElementById('loginModal').classList.add('hidden');
-    setupUserUI();
-}
-
-// LOGOUT (MENGAPUS SESI)
-function handleLogout() {
-    localStorage.removeItem('sman4_session');
-    currentUser = null;
-    document.getElementById('loginModal').classList.remove('hidden');
-    checkDeviceMemory();
-}
-
-// SETUP UI BASED ON ROLE
-function setupUserUI() {
-    const greetingText = document.getElementById('greetingText');
-    const userRoleBadge = document.getElementById('userRoleBadge');
-    const adminMenuSection = document.getElementById('adminMenuSection');
-    const btnAddMateri = document.getElementById('btnAddMateri');
-    const btnAddTugas = document.getElementById('btnAddTugas');
-
-    const now = new Date();
-    const hour = now.getHours();
-    let sapaanWaktu = "Selamat Pagi";
-    if (hour >= 11 && hour < 15) sapaanWaktu = "Selamat Siang";
-    else if (hour >= 15 && hour < 18) sapaanWaktu = "Selamat Sore";
-    else if (hour >= 18) sapaanWaktu = "Selamat Malam";
-
-    greetingText.innerText = `${sapaanWaktu}, ${currentUser.name}!`;
-
-    if (currentUser.role === 'admin') {
-        userRoleBadge.innerHTML = `<i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Mode Admin / Guru`;
-        userRoleBadge.className = "text-xs font-semibold text-amber-700 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200";
-        adminMenuSection.classList.remove('hidden');
-        btnAddMateri.classList.remove('hidden');
-        btnAddTugas.classList.remove('hidden');
-    } else {
-        userRoleBadge.innerHTML = `<i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Kelas ${currentUser.kelas}`;
-        adminMenuSection.classList.add('hidden');
-        btnAddMateri.classList.add('hidden');
-        btnAddTugas.classList.add('hidden');
-    }
-}
-
-// NAVIGATION SPA
-function navigateTo(page) {
-    const pages = ['beranda', 'materi', 'tugas', 'admin'];
-    pages.forEach(p => {
-        const el = document.getElementById(`page-${p}`);
-        const nav = document.getElementById(`nav-${p}`);
-        if (el) el.classList.add('hidden');
-        if (nav) nav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium hover:bg-slate-800 text-slate-400 hover:text-white transition";
-    });
-
-    document.getElementById(`page-${page}`).classList.remove('hidden');
-    const activeNav = document.getElementById(`nav-${page}`);
-    if (activeNav) activeNav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium bg-brand-600 text-white transition";
-}
-
-// RENDER TABEL PRESENSI SISWA
-function renderStudentTable() {
-    const tbody = document.getElementById('studentTableBody');
-    const searchInput = document.getElementById('searchStudent');
-    const search = searchInput ? searchInput.value.toLowerCase() : '';
-
-    let filtered = studentLogins.filter(s => s.name.toLowerCase().includes(search) || s.kelas.toLowerCase().includes(search));
-    filtered.sort((a, b) => sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
-
-    const total = filtered.length;
-    const start = (currentPage - 1) * rowsPerPage;
-    const paginated = filtered.slice(start, start + rowsPerPage);
-
-    tbody.innerHTML = '';
-    if (paginated.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-xs text-slate-400">Belum ada data kehadiran siswa.</td></tr>`;
-    } else {
-        paginated.forEach((item, index) => {
-            tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-3 font-semibold text-slate-400 text-xs">${start + index + 1}</td>
-                    <td class="p-3 font-bold text-slate-800">${item.name}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">${item.kelas}</span></td>
-                    <td class="p-3 text-slate-500 text-xs">${item.date}</td>
-                    <td class="p-3 font-mono text-xs text-brand-600 font-semibold">${item.time}</td>
-                    <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
-                </tr>
-            `;
-        });
-    }
-
-    document.getElementById('paginationInfo').innerText = `Menampilkan ${Math.min(start + 1, total)}-${Math.min(start + rowsPerPage, total)} dari ${total} data`;
-    document.getElementById('btnPrevPage').disabled = currentPage === 1;
-    document.getElementById('btnNextPage').disabled = start + rowsPerPage >= total;
-}
-
-function toggleSortName() {
-    sortAsc = !sortAsc;
-    renderStudentTable();
-}
-
-function changePage(delta) {
-    currentPage += delta;
-    renderStudentTable();
-}
-
-// MATERI & TUGAS FUNCTIONS
-function openAddMateriModal() { document.getElementById('addMateriModal').classList.remove('hidden'); }
-function closeAddMateriModal() { document.getElementById('addMateriModal').classList.add('hidden'); }
-
-function handleTambahMateri(e) {
-    e.preventDefault();
-    const title = document.getElementById('newMateriTitle').value.trim();
-    const kelas = document.getElementById('newMateriKelas').value;
-    const desc = document.getElementById('newMateriDesc').value.trim();
-    const driveUrl = document.getElementById('newMateriUrl').value.trim();
-    const unlockTimeInput = document.getElementById('newMateriUnlockTime').value;
-
-    if (!title || !driveUrl) return;
-
-    const unlockTimestamp = unlockTimeInput ? new Date(unlockTimeInput).getTime() : 0;
-    const newMateri = { title, kelas, desc, driveUrl, unlockTimestamp };
-
-    db.ref('materi').push(newMateri);
-    e.target.reset();
-    closeAddMateriModal();
-    alert('Materi Pelajaran Berhasil Ditambahkan!');
-}
-
-function renderMateriCards() {
-    const grid = document.getElementById('materiGrid');
-    grid.innerHTML = '';
-
-    if (materiData.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Belum ada materi pelajaran yang diunggah.</div>`;
-        return;
-    }
-
-    const now = Date.now();
-
-    materiData.forEach(item => {
-        const isLocked = item.unlockTimestamp && item.unlockTimestamp > now;
-        let dateDisplayStr = '';
-
-        if (item.unlockTimestamp && item.unlockTimestamp > 0) {
-            const unlockDate = new Date(item.unlockTimestamp);
-            const dateFormatted = unlockDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            const timeFormatted = unlockDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
-            dateDisplayStr = `${dateFormatted}, Jam ${timeFormatted}`;
+            currentUser = null;
+            document.getElementById('loginModal').classList.remove('hidden');
+            checkDeviceMemory();
         }
 
-        grid.innerHTML += `
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-start mb-3">
-                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200">${item.kelas}</span>
-                        <i class="fa-solid fa-file-pdf text-rose-500 text-xl"></i>
+        function setupUserUI() {
+            const greetingText = document.getElementById('greetingText');
+            const userRoleBadge = document.getElementById('userRoleBadge');
+            const adminMenuSection = document.getElementById('adminMenuSection');
+            const btnAddMateri = document.getElementById('btnAddMateri');
+            const btnAddTugas = document.getElementById('btnAddTugas');
+
+            const now = new Date();
+            const hour = now.getHours();
+            let sapaanWaktu = "Selamat Pagi";
+            if (hour >= 11 && hour < 15) sapaanWaktu = "Selamat Siang";
+            else if (hour >= 15 && hour < 18) sapaanWaktu = "Selamat Sore";
+            else if (hour >= 18) sapaanWaktu = "Selamat Malam";
+
+            greetingText.innerText = `${sapaanWaktu}, ${currentUser.name}!`;
+
+            if (currentUser.role === 'admin') {
+                userRoleBadge.innerHTML = `<i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Mode Admin / Guru`;
+                userRoleBadge.className = "text-xs font-semibold text-amber-700 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200";
+                adminMenuSection.classList.remove('hidden');
+                btnAddMateri.classList.remove('hidden');
+                btnAddTugas.classList.remove('hidden');
+            } else {
+                userRoleBadge.innerHTML = `<i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Kelas ${currentUser.kelas}`;
+                adminMenuSection.classList.add('hidden');
+                btnAddMateri.classList.add('hidden');
+                btnAddTugas.classList.add('hidden');
+            }
+        }
+
+        function navigateTo(page) {
+            const pages = ['beranda', 'materi', 'tugas', 'admin'];
+            pages.forEach(p => {
+                const el = document.getElementById(`page-${p}`);
+                const nav = document.getElementById(`nav-${p}`);
+                if (el) el.classList.add('hidden');
+                if (nav) nav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium hover:bg-slate-800 text-slate-400 hover:text-white transition";
+            });
+
+            document.getElementById(`page-${page}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${page}`);
+            if (activeNav) activeNav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium bg-brand-600 text-white transition";
+        }
+
+        // RENDER TABEL PRESENSI SISWA
+        function renderStudentTable() {
+            const tbody = document.getElementById('studentTableBody');
+            const searchInput = document.getElementById('searchStudent');
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
+
+            let filtered = studentLogins.filter(s => s.name.toLowerCase().includes(search) || s.kelas.toLowerCase().includes(search));
+            filtered.sort((a, b) => sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+
+            const total = filtered.length;
+            const start = (currentPage - 1) * rowsPerPage;
+            const paginated = filtered.slice(start, start + rowsPerPage);
+
+            tbody.innerHTML = '';
+            if (paginated.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-xs text-slate-400">Belum ada data kehadiran siswa.</td></tr>`;
+            } else {
+                paginated.forEach((item, index) => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="p-3 font-semibold text-slate-400 text-xs">${start + index + 1}</td>
+                            <td class="p-3 font-bold text-slate-800">${item.name}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">${item.kelas}</span></td>
+                            <td class="p-3 text-slate-500 text-xs">${item.date}</td>
+                            <td class="p-3 font-mono text-xs text-brand-600 font-semibold">${item.time}</td>
+                            <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('paginationInfo').innerText = `Menampilkan ${total === 0 ? 0 : Math.min(start + 1, total)}-${Math.min(start + rowsPerPage, total)} dari ${total} data`;
+            document.getElementById('btnPrevPage').disabled = currentPage === 1;
+            document.getElementById('btnNextPage').disabled = start + rowsPerPage >= total;
+        }
+
+        function toggleSortName() {
+            sortAsc = !sortAsc;
+            renderStudentTable();
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderStudentTable();
+        }
+
+        // MATERI PELAJARAN FUNCTIONS
+        function openAddMateriModal() { document.getElementById('addMateriModal').classList.remove('hidden'); }
+        function closeAddMateriModal() { document.getElementById('addMateriModal').classList.add('hidden'); }
+
+        function handleTambahMateri(e) {
+            e.preventDefault();
+            const title = document.getElementById('newMateriTitle').value.trim();
+            const kelas = document.getElementById('newMateriKelas').value;
+            const desc = document.getElementById('newMateriDesc').value.trim();
+            const driveUrl = document.getElementById('newMateriUrl').value.trim();
+            const unlockTimeInput = document.getElementById('newMateriUnlockTime').value;
+
+            if (!title || !driveUrl) return;
+
+            const unlockTimestamp = unlockTimeInput ? new Date(unlockTimeInput).getTime() : 0;
+            const newMateri = { title, kelas, desc, driveUrl, unlockTimestamp };
+
+            db.ref('materi').push(newMateri);
+            e.target.reset();
+            closeAddMateriModal();
+            alert('Materi Pelajaran Berhasil Ditambahkan!');
+        }
+
+        function renderMateriCards() {
+            const grid = document.getElementById('materiGrid');
+            grid.innerHTML = '';
+
+            if (materiData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Belum ada materi pelajaran yang diunggah.</div>`;
+                return;
+            }
+
+            const now = Date.now();
+
+            materiData.forEach(item => {
+                const isLocked = item.unlockTimestamp && item.unlockTimestamp > now;
+                let dateDisplayStr = '';
+
+                if (item.unlockTimestamp && item.unlockTimestamp > 0) {
+                    const unlockDate = new Date(item.unlockTimestamp);
+                    const dateFormatted = unlockDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    const timeFormatted = unlockDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+                    dateDisplayStr = `${dateFormatted}, Jam ${timeFormatted}`;
+                }
+
+                grid.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200">${item.kelas}</span>
+                                <i class="fa-solid fa-file-pdf text-rose-500 text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
+                        </div>
+                        <div>
+                            <div id="countdown-box-${item.id}" class="mb-3">
+                                ${isLocked 
+                                    ? `<div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                                            <p class="text-[10px] text-amber-700 font-bold mb-1"><i class="fa-solid fa-calendar-clock mr-1"></i> Terbuka Pada: ${dateDisplayStr}</p>
+                                            <div id="timer-${item.id}" class="text-xs font-mono font-extrabold text-amber-800 text-center bg-white/80 py-1.5 rounded-lg border border-amber-300">Menghitung...</div>
+                                       </div>`
+                                    : `<p class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Materi Siap Diunduh</p>`}
+                            </div>
+                            <button id="btnDownload-${item.id}" onclick="openMateriDrive('${item.driveUrl}')" ${isLocked ? 'disabled' : ''} class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition ${isLocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white shadow-md'}">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Buka / Unduh Materi</span>
+                            </button>
+                        </div>
                     </div>
-                    <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
-                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
-                </div>
-                <div>
-                    <div id="countdown-box-${item.id}" class="mb-3">
-                        ${isLocked 
-                            ? `<div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
-                                    <p class="text-[10px] text-amber-700 font-bold mb-1"><i class="fa-solid fa-calendar-clock mr-1"></i> Terbuka Pada: ${dateDisplayStr}</p>
-                                    <div id="timer-${item.id}" class="text-xs font-mono font-extrabold text-amber-800 text-center bg-white/80 py-1.5 rounded-lg border border-amber-300">Menghitung...</div>
-                               </div>`
-                            : `<p class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Materi Siap Diunduh</p>`}
+                `;
+
+                if (isLocked) startMateriCountdown(item.id, item.unlockTimestamp);
+            });
+        }
+
+        function startMateriCountdown(materiId, targetTime) {
+            const interval = setInterval(() => {
+                const diff = targetTime - Date.now();
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    renderMateriCards();
+                    return;
+                }
+
+                const timerEl = document.getElementById(`timer-${materiId}`);
+                if (timerEl) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    let timeStringParts = [];
+                    if (days > 0) timeStringParts.push(`${days} Hari`);
+                    if (hours > 0 || days > 0) timeStringParts.push(`${hours} Jam`);
+                    timeStringParts.push(`${minutes} Menit`);
+                    timeStringParts.push(`${seconds} Detik`);
+
+                    timerEl.innerText = timeStringParts.join(' ');
+                }
+            }, 1000);
+        }
+
+        function openMateriDrive(url) { window.open(url, '_blank'); }
+
+        // TUGAS SISWA FUNCTIONS
+        function openAddTugasModal() { document.getElementById('addTugasModal').classList.remove('hidden'); }
+        function closeAddTugasModal() { document.getElementById('addTugasModal').classList.add('hidden'); }
+
+        function handleTambahTugas(e) {
+            e.preventDefault();
+            const title = document.getElementById('newTugasTitle').value.trim();
+            const deadlineInput = document.getElementById('newTugasDeadline').value;
+            const desc = document.getElementById('newTugasDesc').value.trim();
+
+            if (!title || !deadlineInput) return;
+
+            const deadlineTimestamp = new Date(deadlineInput).getTime();
+            const newTugas = { title, deadlineTimestamp, desc };
+
+            db.ref('tugas').push(newTugas);
+            e.target.reset();
+            closeAddTugasModal();
+            alert('Tugas Baru Berhasil Diterbitkan!');
+        }
+
+        function renderTugasList() {
+            const list = document.getElementById('tugasList');
+            list.innerHTML = '';
+
+            if (tugasData.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan.</div>`;
+                return;
+            }
+
+            const now = Date.now();
+
+            tugasData.forEach(t => {
+                const isExpired = t.deadlineTimestamp && t.deadlineTimestamp < now;
+                let deadlineDisplayStr = '';
+
+                if (t.deadlineTimestamp && t.deadlineTimestamp > 0) {
+                    const dDate = new Date(t.deadlineTimestamp);
+                    const dateFormatted = dDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    const timeFormatted = dDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+                    deadlineDisplayStr = `${dateFormatted}, Jam ${timeFormatted}`;
+                } else if (t.deadline) {
+                    deadlineDisplayStr = t.deadline;
+                }
+
+                list.innerHTML += `
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isExpired ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
+                                    <i class="fa-solid fa-clock mr-1"></i> Batas Waktu: ${deadlineDisplayStr}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-base mt-1">${t.title}</h4>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">${t.desc}</p>
+                            ${t.deadlineTimestamp ? `
+                                <div id="countdown-tugas-box-${t.id}" class="mt-3">
+                                    <div class="inline-flex items-center gap-2 p-2 px-3 ${isExpired ? 'bg-slate-100 text-slate-500 border border-slate-200' : 'bg-amber-50 text-amber-800 border border-amber-200'} rounded-xl text-xs font-mono font-bold">
+                                        <i class="fa-solid fa-hourglass-half"></i>
+                                        <span id="timer-tugas-${t.id}">${isExpired ? 'Selesai / Melewati Batas Waktu' : 'Menghitung...'}</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow transition shrink-0">
+                            <i class="fa-solid fa-paper-plane mr-1"></i> Kumpulkan Tugas
+                        </button>
                     </div>
-                    <button id="btnDownload-${item.id}" onclick="openMateriDrive('${item.driveUrl}')" ${isLocked ? 'disabled' : ''} class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition ${isLocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white shadow-md'}">
-                        <i class="fa-solid fa-download"></i>
-                        <span>Buka / Unduh Materi</span>
-                    </button>
-                </div>
-            </div>
-        `;
+                `;
 
-        if (isLocked) startMateriCountdown(item.id, item.unlockTimestamp);
-    });
-}
-
-function startMateriCountdown(materiId, targetTime) {
-    const interval = setInterval(() => {
-        const diff = targetTime - Date.now();
-        if (diff <= 0) {
-            clearInterval(interval);
-            renderMateriCards();
-            return;
+                if (t.deadlineTimestamp && !isExpired) {
+                    startTugasCountdown(t.id, t.deadlineTimestamp);
+                }
+            });
         }
 
-        const timerEl = document.getElementById(`timer-${materiId}`);
-        if (timerEl) {
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        function startTugasCountdown(tugasId, targetTime) {
+            const interval = setInterval(() => {
+                const diff = targetTime - Date.now();
+                const timerEl = document.getElementById(`timer-tugas-${tugasId}`);
 
-            let timeStringParts = [];
-            if (days > 0) timeStringParts.push(`${days} Hari`);
-            if (hours > 0 || days > 0) timeStringParts.push(`${hours} Jam`);
-            timeStringParts.push(`${minutes} Menit`);
-            timeStringParts.push(`${seconds} Detik`);
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    if (timerEl) timerEl.innerText = 'Selesai / Melewati Batas Waktu';
+                    return;
+                }
 
-            timerEl.innerText = timeStringParts.join(' ');
+                if (timerEl) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    let parts = [];
+                    if (days > 0) parts.push(`${days} Hari`);
+                    if (hours > 0 || days > 0) parts.push(`${hours} Jam`);
+                    parts.push(`${minutes} Menit`);
+                    parts.push(`${seconds} Detik`);
+
+                    timerEl.innerText = parts.join(' ');
+                }
+            }, 1000);
         }
-    }, 1000);
-}
 
-function openMateriDrive(url) { window.open(url, '_blank'); }
-
-function openAddTugasModal() { document.getElementById('addTugasModal').classList.remove('hidden'); }
-function closeAddTugasModal() { document.getElementById('addTugasModal').classList.add('hidden'); }
-
-function handleTambahTugas(e) {
-    e.preventDefault();
-    const title = document.getElementById('newTugasTitle').value.trim();
-    const deadline = document.getElementById('newTugasDeadline').value.trim();
-    const desc = document.getElementById('newTugasDesc').value.trim();
-
-    if (!title || !deadline) return;
-
-    db.ref('tugas').push({ title, deadline, desc });
-    e.target.reset();
-    closeAddTugasModal();
-    alert('Tugas Baru Berhasil Diterbitkan!');
-}
-
-function renderTugasList() {
-    const list = document.getElementById('tugasList');
-    list.innerHTML = '';
-
-    if (tugasData.length === 0) {
-        list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan.</div>`;
-        return;
-    }
-
-    tugasData.forEach(t => {
-        list.innerHTML += `
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200">Deadline: ${t.deadline}</span>
-                    <h4 class="font-bold text-slate-800 text-base mt-1">${t.title}</h4>
-                    <p class="text-xs text-slate-500 mt-1">${t.desc}</p>
-                </div>
-                <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow transition shrink-0">
-                    <i class="fa-solid fa-paper-plane mr-1"></i> Kumpulkan Tugas
-                </button>
-            </div>
-        `;
-    });
-}
-
-function openSubmitTugasModal(tugasId, title) {
-    if (!currentUser) return alert('Silakan login terlebih dahulu!');
-    document.getElementById('modalTugasId').value = tugasId;
-    document.getElementById('modalJudulTugas').innerText = title;
-    document.getElementById('modalSiswaNama').value = currentUser.name;
-    document.getElementById('modalSiswaKelas').value = currentUser.kelas;
-    document.getElementById('submitTugasModal').classList.remove('hidden');
-}
-
-function closeSubmitTugasModal() { document.getElementById('submitTugasModal').classList.add('hidden'); }
-
-function handlePengumpulanTugas(e) {
-    e.preventDefault();
-    const title = document.getElementById('modalJudulTugas').innerText;
-    const name = currentUser ? currentUser.name : document.getElementById('modalSiswaNama').value;
-    const kelas = currentUser ? currentUser.kelas : document.getElementById('modalSiswaKelas').value;
-    const url = document.getElementById('modalLinkTugas').value.trim();
-    const time = new Date().toLocaleString('id-ID') + ' WITA';
-
-    if (!url) return;
-
-    db.ref('submissions').push({ name, kelas, tugasTitle: title, time, url });
-    document.getElementById('modalLinkTugas').value = '';
-    closeSubmitTugasModal();
-    alert('Tugas Anda berhasil dikumpulkan!');
-}
-
-function renderTugasSubmissionsTable() {
-    const tbody = document.getElementById('tugasSubmissionsTableBody');
-    const filterEl = document.getElementById('filterKelasTugas');
-    const filter = filterEl ? filterEl.value : 'ALL';
-
-    let filtered = tugasSubmissions;
-    if (filter !== 'ALL') {
-        filtered = tugasSubmissions.filter(s => s.kelas.startsWith(filter));
-    }
-
-    tbody.innerHTML = '';
-    if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-slate-400">Belum ada pengumpulan tugas.</td></tr>`;
-    } else {
-        filtered.forEach(item => {
-            tbody.innerHTML += `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-3 font-bold text-slate-800">${item.name}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border text-[11px] font-semibold">${item.kelas}</span></td>
-                    <td class="p-3 text-slate-600">${item.tugasTitle}</td>
-                    <td class="p-3 font-mono text-slate-500">${item.time}</td>
-                    <td class="p-3"><a href="${item.url}" target="_blank" class="text-brand-600 font-bold hover:underline"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Link</a></td>
-                </tr>
-            `;
-        });
-    }
-}
-
-function exportDataCSV(type) {
-    let csvContent = "data:text/csv;charset=utf-8,";
-    if (type === 'presensi') {
-        csvContent += "Nama Siswa,Kelas,Tanggal,Jam Login\n";
-        studentLogins.forEach(s => csvContent += `"${s.name}","${s.kelas}","${s.date}","${s.time}"\n`);
-    } else {
-        csvContent += "Nama Siswa,Kelas,Judul Tugas,Waktu Kumpul,Link Tugas\n";
-        tugasSubmissions.forEach(t => csvContent += `"${t.name}","${t.kelas}","${t.tugasTitle}","${t.time}","${t.url}"\n`);
-    }
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Rekap_${type}_SMAN4Manado_${new Date().toLocaleDateString()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function confirmAcademicReset() {
-    if (confirm("Apakah Anda yakin ingin mereset seluruh data untuk Tahun Ajaran Baru?")) {
-        const choice = prompt("Ketik 'HAPUS' untuk mengosongkan database:");
-        if (choice === 'HAPUS') {
-            db.ref('logins').remove();
-            db.ref('submissions').remove();
-            alert("Database berhasil dibersihkan!");
+        function openSubmitTugasModal(tugasId, title) {
+            if (!currentUser) return alert('Silakan login terlebih dahulu!');
+            document.getElementById('modalTugasId').value = tugasId;
+            document.getElementById('modalJudulTugas').innerText = title;
+            document.getElementById('modalSiswaNama').value = currentUser.name;
+            document.getElementById('modalSiswaKelas').value = currentUser.kelas;
+            document.getElementById('submitTugasModal').classList.remove('hidden');
         }
-    }
-}
 
-function openAbsensiModal() {
-    document.getElementById('absensiFrame').src = "https://absensi-sekolah-v2.vercel.app/";
-    document.getElementById('absensiIframeModal').classList.remove('hidden');
-}
+        function closeSubmitTugasModal() { document.getElementById('submitTugasModal').classList.add('hidden'); }
 
-function closeAbsensiModal() {
-    document.getElementById('absensiFrame').src = ""; 
-    document.getElementById('absensiIframeModal').classList.add('hidden');
-}
+        function handlePengumpulanTugas(e) {
+            e.preventDefault();
+            const title = document.getElementById('modalJudulTugas').innerText;
+            const name = currentUser ? currentUser.name : document.getElementById('modalSiswaNama').value;
+            const kelas = currentUser ? currentUser.kelas : document.getElementById('modalSiswaKelas').value;
+            const url = document.getElementById('modalLinkTugas').value.trim();
+            const time = new Date().toLocaleString('id-ID') + ' WITA';
+
+            if (!url) return;
+
+            db.ref('submissions').push({ name, kelas, tugasTitle: title, time, url });
+            document.getElementById('modalLinkTugas').value = '';
+            closeSubmitTugasModal();
+            alert('Tugas Anda berhasil dikumpulkan!');
+        }
+
+        // TUGAS SUBMISSIONS SORTING & PAGINATION
+        function toggleSortTugasName() {
+            tugasSortAsc = !tugasSortAsc;
+            renderTugasSubmissionsTable();
+        }
+
+        function changeTugasPage(delta) {
+            tugasCurrentPage += delta;
+            renderTugasSubmissionsTable();
+        }
+
+        function renderTugasSubmissionsTable() {
+            const tbody = document.getElementById('tugasSubmissionsTableBody');
+            const filterEl = document.getElementById('filterKelasTugas');
+            const filter = filterEl ? filterEl.value : 'ALL';
+
+            let filtered = tugasSubmissions;
+            if (filter !== 'ALL') {
+                filtered = tugasSubmissions.filter(s => s.kelas.startsWith(filter));
+            }
+
+            // Sorting Abjad Nama Siswa
+            filtered.sort((a, b) => tugasSortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+
+            const total = filtered.length;
+            const start = (tugasCurrentPage - 1) * tugasRowsPerPage;
+            const paginated = filtered.slice(start, start + tugasRowsPerPage);
+
+            tbody.innerHTML = '';
+            if (paginated.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-slate-400">Belum ada pengumpulan tugas.</td></tr>`;
+            } else {
+                paginated.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-slate-800">${item.name}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border text-[11px] font-semibold">${item.kelas}</span></td>
+                            <td class="p-3 text-slate-600">${item.tugasTitle}</td>
+                            <td class="p-3 font-mono text-slate-500">${item.time}</td>
+                            <td class="p-3"><a href="${item.url}" target="_blank" class="text-brand-600 font-bold hover:underline"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Link</a></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Update Pagination Controls & Info Text
+            const infoEl = document.getElementById('tugasPaginationInfo');
+            const btnPrev = document.getElementById('btnPrevTugasPage');
+            const btnNext = document.getElementById('btnNextTugasPage');
+
+            if (infoEl) infoEl.innerText = `Menampilkan ${total === 0 ? 0 : Math.min(start + 1, total)}-${Math.min(start + tugasRowsPerPage, total)} dari ${total} data`;
+            if (btnPrev) btnPrev.disabled = tugasCurrentPage === 1;
+            if (btnNext) btnNext.disabled = start + tugasRowsPerPage >= total;
+        }
+
+        function exportDataCSV(type) {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            if (type === 'presensi') {
+                csvContent += "Nama Siswa,Kelas,Tanggal,Jam Login\n";
+                studentLogins.forEach(s => csvContent += `"${s.name}","${s.kelas}","${s.date}","${s.time}"\n`);
+            } else {
+                csvContent += "Nama Siswa,Kelas,Judul Tugas,Waktu Kumpul,Link Tugas\n";
+                tugasSubmissions.forEach(t => csvContent += `"${t.name}","${t.kelas}","${t.tugasTitle}","${t.time}","${t.url}"\n`);
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_${type}_SMAN4Manado_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function confirmAcademicReset() {
+            if (confirm("Apakah Anda yakin ingin mereset seluruh data untuk Tahun Ajaran Baru?")) {
+                const choice = prompt("Ketik 'HAPUS' untuk mengosongkan database:");
+                if (choice === 'HAPUS') {
+                    db.ref('logins').remove();
+                    db.ref('submissions').remove();
+                    alert("Database berhasil dibersihkan!");
+                }
+            }
+        }
+
+        function openAbsensiModal() {
+            document.getElementById('absensiFrame').src = "https://absensi-sekolah-v2.vercel.app/";
+            document.getElementById('absensiIframeModal').classList.remove('hidden');
+        }
+
+        function closeAbsensiModal() {
+            document.getElementById('absensiFrame').src = ""; 
+            document.getElementById('absensiIframeModal').classList.add('hidden');
+        }
     </script>
 </body>
 </html>

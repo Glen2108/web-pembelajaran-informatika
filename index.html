@@ -55,7 +55,7 @@
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
 
-    <!-- ==================== POPUP MODAL LOGIN (MANDATORY) ==================== -->
+    <!-- ==================== POPUP MODAL LOGIN ==================== -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transition-all transform scale-100">
             <!-- Modal Header -->
@@ -275,6 +275,7 @@
                                     <th class="p-3">Tanggal Hari Ini</th>
                                     <th class="p-3">Login Terakhir</th>
                                     <th class="p-3">Status</th>
+                                    <th id="thActionPresensi" class="p-3 text-center hidden">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="studentTableBody" class="divide-y divide-slate-100">
@@ -351,6 +352,7 @@
                                     <th class="p-3">Judul Tugas</th>
                                     <th class="p-3">Waktu Kumpul</th>
                                     <th class="p-3">Link / File</th>
+                                    <th id="thActionTugas" class="p-3 text-center hidden">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tugasSubmissionsTableBody" class="divide-y divide-slate-100 text-xs">
@@ -634,7 +636,7 @@
             "Jangan takut pada eror; eror adalah bukti bahwa Anda sedang berusaha dan belajar!"
         ];
 
-        // LOCAL CACHE
+        // LOCAL CACHE WITH FIREBASE KEYS
         let studentLogins = [];
         let materiData = [];
         let tugasData = [];
@@ -649,7 +651,6 @@
             listenFirebaseData();
         });
 
-        // MEMERIKSA SESI LOGIN SAAT PAGE RELOAD
         function checkAutoLogin() {
             const savedSession = localStorage.getItem('sman4_session');
             if (savedSession) {
@@ -667,7 +668,7 @@
         function listenFirebaseData() {
             db.ref('logins').on('value', (snapshot) => {
                 const data = snapshot.val();
-                studentLogins = data ? Object.values(data) : [];
+                studentLogins = data ? Object.keys(data).map(key => ({ key, ...data[key] })) : [];
                 renderStudentTable();
             });
 
@@ -685,7 +686,7 @@
 
             db.ref('submissions').on('value', (snapshot) => {
                 const data = snapshot.val();
-                tugasSubmissions = data ? Object.values(data) : [];
+                tugasSubmissions = data ? Object.keys(data).map(key => ({ key, ...data[key] })) : [];
                 renderTugasSubmissionsTable();
             });
         }
@@ -774,6 +775,12 @@
             currentUser = null;
             document.getElementById('loginModal').classList.remove('hidden');
             checkDeviceMemory();
+            
+            // Re-render to hide admin elements
+            renderStudentTable();
+            renderMateriCards();
+            renderTugasList();
+            renderTugasSubmissionsTable();
         }
 
         function setupUserUI() {
@@ -804,6 +811,12 @@
                 btnAddMateri.classList.add('hidden');
                 btnAddTugas.classList.add('hidden');
             }
+
+            // Re-render UI so delete buttons toggle correctly based on role
+            renderStudentTable();
+            renderMateriCards();
+            renderTugasList();
+            renderTugasSubmissionsTable();
         }
 
         function navigateTo(page) {
@@ -820,11 +833,47 @@
             if (activeNav) activeNav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium bg-brand-600 text-white transition";
         }
 
+        // ================= DELETE FUNCTIONS (KHUSUS ADMIN) =================
+        function deleteLogin(key) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            if (confirm("Apakah Anda yakin ingin menghapus data presensi kehadiran siswa ini?")) {
+                db.ref('logins/' + key).remove();
+            }
+        }
+
+        function deleteMateri(id) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            if (confirm("Apakah Anda yakin ingin menghapus materi pelajaran ini?")) {
+                db.ref('materi/' + id).remove();
+            }
+        }
+
+        function deleteTugas(id) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            if (confirm("Apakah Anda yakin ingin menghapus tugas ini beserta seluruh batas waktunya?")) {
+                db.ref('tugas/' + id).remove();
+            }
+        }
+
+        function deleteSubmission(key) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            if (confirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan tugas siswa ini?")) {
+                db.ref('submissions/' + key).remove();
+            }
+        }
+
         // RENDER TABEL PRESENSI SISWA
         function renderStudentTable() {
             const tbody = document.getElementById('studentTableBody');
             const searchInput = document.getElementById('searchStudent');
+            const thAction = document.getElementById('thActionPresensi');
             const search = searchInput ? searchInput.value.toLowerCase() : '';
+            const isAdmin = currentUser && currentUser.role === 'admin';
+
+            if (thAction) {
+                if (isAdmin) thAction.classList.remove('hidden');
+                else thAction.classList.add('hidden');
+            }
 
             let filtered = studentLogins.filter(s => s.name.toLowerCase().includes(search) || s.kelas.toLowerCase().includes(search));
             filtered.sort((a, b) => sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
@@ -835,7 +884,7 @@
 
             tbody.innerHTML = '';
             if (paginated.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-xs text-slate-400">Belum ada data kehadiran siswa.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" class="text-center p-4 text-xs text-slate-400">Belum ada data kehadiran siswa.</td></tr>`;
             } else {
                 paginated.forEach((item, index) => {
                     tbody.innerHTML += `
@@ -846,6 +895,13 @@
                             <td class="p-3 text-slate-500 text-xs">${item.date}</td>
                             <td class="p-3 font-mono text-xs text-brand-600 font-semibold">${item.time}</td>
                             <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
+                            ${isAdmin ? `
+                                <td class="p-3 text-center">
+                                    <button onclick="deleteLogin('${item.key}')" title="Hapus Data Presensi" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            ` : ''}
                         </tr>
                     `;
                 });
@@ -891,6 +947,7 @@
 
         function renderMateriCards() {
             const grid = document.getElementById('materiGrid');
+            const isAdmin = currentUser && currentUser.role === 'admin';
             grid.innerHTML = '';
 
             if (materiData.length === 0) {
@@ -912,11 +969,18 @@
                 }
 
                 grid.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between relative">
                         <div>
                             <div class="flex justify-between items-start mb-3">
                                 <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200">${item.kelas}</span>
-                                <i class="fa-solid fa-file-pdf text-rose-500 text-xl"></i>
+                                <div class="flex items-center gap-2">
+                                    ${isAdmin ? `
+                                        <button onclick="deleteMateri('${item.id}')" title="Hapus Materi" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    ` : ''}
+                                    <i class="fa-solid fa-file-pdf text-rose-500 text-xl"></i>
+                                </div>
                             </div>
                             <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
                             <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
@@ -994,6 +1058,7 @@
 
         function renderTugasList() {
             const list = document.getElementById('tugasList');
+            const isAdmin = currentUser && currentUser.role === 'admin';
             list.innerHTML = '';
 
             if (tugasData.length === 0) {
@@ -1035,9 +1100,16 @@
                                 </div>
                             ` : ''}
                         </div>
-                        <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow transition shrink-0">
-                            <i class="fa-solid fa-paper-plane mr-1"></i> Kumpulkan Tugas
-                        </button>
+                        <div class="flex items-center gap-2 self-end md:self-center shrink-0">
+                            ${isAdmin ? `
+                                <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
+                                    <i class="fa-solid fa-trash-can mr-1"></i> Hapus
+                                </button>
+                            ` : ''}
+                            <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow transition">
+                                <i class="fa-solid fa-paper-plane mr-1"></i> Kumpulkan Tugas
+                            </button>
+                        </div>
                     </div>
                 `;
 
@@ -1116,14 +1188,20 @@
         function renderTugasSubmissionsTable() {
             const tbody = document.getElementById('tugasSubmissionsTableBody');
             const filterEl = document.getElementById('filterKelasTugas');
+            const thAction = document.getElementById('thActionTugas');
             const filter = filterEl ? filterEl.value : 'ALL';
+            const isAdmin = currentUser && currentUser.role === 'admin';
+
+            if (thAction) {
+                if (isAdmin) thAction.classList.remove('hidden');
+                else thAction.classList.add('hidden');
+            }
 
             let filtered = tugasSubmissions;
             if (filter !== 'ALL') {
                 filtered = tugasSubmissions.filter(s => s.kelas.startsWith(filter));
             }
 
-            // Sorting Abjad Nama Siswa
             filtered.sort((a, b) => tugasSortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
 
             const total = filtered.length;
@@ -1132,7 +1210,7 @@
 
             tbody.innerHTML = '';
             if (paginated.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-slate-400">Belum ada pengumpulan tugas.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" class="text-center p-4 text-slate-400">Belum ada pengumpulan tugas.</td></tr>`;
             } else {
                 paginated.forEach(item => {
                     tbody.innerHTML += `
@@ -1142,12 +1220,18 @@
                             <td class="p-3 text-slate-600">${item.tugasTitle}</td>
                             <td class="p-3 font-mono text-slate-500">${item.time}</td>
                             <td class="p-3"><a href="${item.url}" target="_blank" class="text-brand-600 font-bold hover:underline"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Link</a></td>
+                            ${isAdmin ? `
+                                <td class="p-3 text-center">
+                                    <button onclick="deleteSubmission('${item.key}')" title="Hapus Pengumpulan" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            ` : ''}
                         </tr>
                     `;
                 });
             }
 
-            // Update Pagination Controls & Info Text
             const infoEl = document.getElementById('tugasPaginationInfo');
             const btnPrev = document.getElementById('btnPrevTugasPage');
             const btnNext = document.getElementById('btnNextTugasPage');

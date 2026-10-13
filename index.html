@@ -299,7 +299,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800">Materi Pelajaran Informatika</h3>
-                        <p class="text-xs text-slate-500">Unduh dan pelajari modul pembelajaran. Link memiliki countdown waktu disiplin.</p>
+                        <p class="text-xs text-slate-500">Unduh dan pelajari modul pembelajaran. Link memiliki countdown waktu kedisiplinan.</p>
                     </div>
                     <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition">
                         <i class="fa-solid fa-plus mr-1"></i> Tambah Materi
@@ -357,6 +357,62 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- PANDUAN CARA MENGIRIM TUGAS GOOGLE DRIVE -->
+                <div class="bg-gradient-to-br from-indigo-50 via-slate-50 to-brand-50 rounded-2xl border border-indigo-100 p-6 mt-6 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-brand-600 text-white rounded-xl flex items-center justify-center text-lg shadow-md shrink-0">
+                            <i class="fa-brands fa-google-drive"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-base">Panduan Mudah Mengirim Tugas via Google Drive</h4>
+                            <p class="text-xs text-slate-500">Ikuti 4 langkah sederhana ini agar link tugas Anda dapat dibuka dan dinilai oleh Guru.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                        <!-- Step 1 -->
+                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">1</span>
+                                <h5 class="font-bold text-xs text-slate-800 mb-1">Upload File ke Drive</h5>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">Buka aplikasi Google Drive di HP/Laptop, lalu unggah file tugas Anda.</p>
+                            </div>
+                            <i class="fa-solid fa-cloud-arrow-up text-indigo-300 text-2xl text-right mt-3"></i>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">2</span>
+                                <h5 class="font-bold text-xs text-slate-800 mb-1">Ubah Akses Link</h5>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">Klik titik tiga pada file $\rightarrow$ Bagikan $\rightarrow$ Ubah Akses Umum menjadi <strong class="text-emerald-600">"Siapa saja yang memiliki link"</strong>.</p>
+                            </div>
+                            <i class="fa-solid fa-lock-open text-emerald-400 text-2xl text-right mt-3"></i>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">3</span>
+                                <h5 class="font-bold text-xs text-slate-800 mb-1">Salin Tautan (Copy Link)</h5>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">Tekan tombol <strong>"Salin Link"</strong> (Copy Link) pada Google Drive Anda.</p>
+                            </div>
+                            <i class="fa-solid fa-link text-amber-400 text-2xl text-right mt-3"></i>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">4</span>
+                                <h5 class="font-bold text-xs text-slate-800 mb-1">Kumpulkan di Web Ini</h5>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">Klik tombol <span class="text-brand-600 font-bold">Kumpulkan Tugas</span> di atas, tempel (*paste*) link, lalu kirim.</p>
+                            </div>
+                            <i class="fa-solid fa-paper-plane text-brand-500 text-2xl text-right mt-3"></i>
+                        </div>
+                    </div>
+                </div>
+
             </section>
 
             <!-- ==================== SEKSI 4: DASHBOARD ADMIN ==================== -->
@@ -441,9 +497,9 @@
                     <input type="url" id="newMateriUrl" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Countdown Waktu Tunggu (Detik)</label>
-                    <input type="number" id="newMateriCountdown" min="0" value="0" placeholder="0 jika langsung bisa diunduh" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                    <p class="text-[10px] text-slate-400 mt-1">Siswa harus menunggu hitungan detik ini selesai untuk membuka materi.</p>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Waktu & Tanggal Terbuka Materi (Countdown Target)</label>
+                    <input type="datetime-local" id="newMateriUnlockTime" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                    <p class="text-[10px] text-slate-400 mt-1">Biarkan kosong jika materi langsung dapat diunduh tanpa hitung mundur.</p>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeAddMateriModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Batal</button>
@@ -564,8 +620,8 @@
         // LOCAL DATA CACHE WITH LOCALSTORAGE BACKUP
         let studentLogins = JSON.parse(localStorage.getItem('sman4_studentLogins')) || [];
         let materiData = JSON.parse(localStorage.getItem('sman4_materiData')) || [
-            { id: 'm1', title: "Pengenalan Algoritma & Berpikir Komputasional", kelas: "X-1 s/d X-4", desc: "Modul dasar pemrograman dan pola pikir komputasional.", driveUrl: "https://drive.google.com", countdownSeconds: 10 },
-            { id: 'm2', title: "Jaringan Komputer dan Internet", kelas: "XI-1 s/d XI-5", desc: "Materi protokol TCP/IP, Topologi Jaringan, dan Keamanan Siber.", driveUrl: "https://drive.google.com", countdownSeconds: 0 }
+            { id: 'm1', title: "Pengenalan Algoritma & Berpikir Komputasional", kelas: "X-1 s/d X-4", desc: "Modul dasar pemrograman dan pola pikir komputasional.", driveUrl: "https://drive.google.com", unlockTimestamp: Date.now() + 3600000 },
+            { id: 'm2', title: "Jaringan Komputer dan Internet", kelas: "XI-1 s/d XI-5", desc: "Materi protokol TCP/IP, Topologi Jaringan, dan Keamanan Siber.", driveUrl: "https://drive.google.com", unlockTimestamp: 0 }
         ];
         let tugasData = JSON.parse(localStorage.getItem('sman4_tugasData')) || [
             { id: 't1', title: "Tugas Praktikum 1: Analisis Data Python", deadline: "15/10/2026 23:59 WITA", desc: "Kerjakan file latihan CSV dan upload hasil analisis ke Google Drive masing-masing." }
@@ -706,7 +762,6 @@
                 time: timeStr
             };
 
-            // 1. Update Memory Array (Upsert logic to prevent duplicate name)
             const existingIdx = studentLogins.findIndex(s => s.name.toLowerCase() === nama.toLowerCase() && s.kelas === kelas);
             if (existingIdx !== -1) {
                 studentLogins[existingIdx] = newLogin;
@@ -714,13 +769,9 @@
                 studentLogins.push(newLogin);
             }
 
-            // 2. Save Local Backup
             localStorage.setItem('sman4_studentLogins', JSON.stringify(studentLogins));
-
-            // 3. Render Table Immediately
             renderStudentTable();
 
-            // 4. Sync to Firebase
             const key = (nama + '_' + kelas).replace(/[.#$\[\]/]/g, "_");
             try {
                 db.ref('logins/' + key).set(newLogin).catch(err => console.warn("Firebase sync error:", err));
@@ -855,9 +906,11 @@
             const kelas = document.getElementById('newMateriKelas').value;
             const desc = document.getElementById('newMateriDesc').value.trim();
             const driveUrl = document.getElementById('newMateriUrl').value.trim();
-            const countdownSeconds = parseInt(document.getElementById('newMateriCountdown').value) || 0;
+            const unlockTimeInput = document.getElementById('newMateriUnlockTime').value;
 
             if (!title || !driveUrl) return;
+
+            const unlockTimestamp = unlockTimeInput ? new Date(unlockTimeInput).getTime() : 0;
 
             const newMateri = {
                 id: 'm_' + Date.now(),
@@ -865,26 +918,19 @@
                 kelas,
                 desc,
                 driveUrl,
-                countdownSeconds
+                unlockTimestamp
             };
 
-            // 1. Add to local array instantly
             materiData.unshift(newMateri);
             localStorage.setItem('sman4_materiData', JSON.stringify(materiData));
-
-            // 2. Render UI immediately
             renderMateriCards();
 
-            // 3. Sync to Firebase Cloud
             try {
-                db.ref('materi/' + newMateri.id).set({
-                    title, kelas, desc, driveUrl, countdownSeconds
-                }).catch(err => console.warn("Firebase push error:", err));
+                db.ref('materi/' + newMateri.id).set(newMateri).catch(err => console.warn("Firebase push error:", err));
             } catch (err) {
                 console.warn("Firebase set error:", err);
             }
 
-            // Reset form & close modal
             e.target.reset();
             closeAddMateriModal();
             alert('Materi Pelajaran Berhasil Ditambahkan!');
@@ -899,7 +945,24 @@
                 return;
             }
 
+            const now = Date.now();
+
             materiData.forEach(item => {
+                const isLocked = item.unlockTimestamp && item.unlockTimestamp > now;
+                let dateDisplayStr = '';
+
+                if (item.unlockTimestamp && item.unlockTimestamp > 0) {
+                    const unlockDate = new Date(item.unlockTimestamp);
+                    const dateFormatted = unlockDate.toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    const timeFormatted = unlockDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+                    dateDisplayStr = `${dateFormatted}, Jam ${timeFormatted}`;
+                }
+
                 grid.innerHTML += `
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div>
@@ -912,12 +975,14 @@
                         </div>
                         <div>
                             <div id="countdown-box-${item.id}" class="mb-3">
-                                ${item.countdownSeconds > 0 
-                                    ? `<p class="text-[11px] text-amber-600 font-semibold mb-1"><i class="fa-solid fa-clock mr-1"></i> Waktu Tunggu Terbuka:</p>
-                                       <div id="timer-${item.id}" class="text-xs font-mono font-bold text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 text-center">Menghitung...</div>`
+                                ${isLocked 
+                                    ? `<div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                                            <p class="text-[10px] text-amber-700 font-bold mb-1"><i class="fa-solid fa-calendar-clock mr-1"></i> Terbuka Pada: ${dateDisplayStr}</p>
+                                            <div id="timer-${item.id}" class="text-xs font-mono font-extrabold text-amber-800 text-center bg-white/80 py-1.5 rounded-lg border border-amber-300">Menghitung...</div>
+                                       </div>`
                                     : `<p class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Materi Siap Diunduh</p>`}
                             </div>
-                            <button id="btnDownload-${item.id}" onclick="openMateriDrive('${item.driveUrl}')" ${item.countdownSeconds > 0 ? 'disabled' : ''} class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition ${item.countdownSeconds > 0 ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white shadow-md'}">
+                            <button id="btnDownload-${item.id}" onclick="openMateriDrive('${item.driveUrl}')" ${isLocked ? 'disabled' : ''} class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition ${isLocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white shadow-md'}">
                                 <i class="fa-solid fa-download"></i>
                                 <span>Buka / Unduh Materi</span>
                             </button>
@@ -925,24 +990,18 @@
                     </div>
                 `;
 
-                if (item.countdownSeconds > 0) {
-                    startMateriCountdown(item.id, item.countdownSeconds);
+                if (isLocked) {
+                    startMateriCountdown(item.id, item.unlockTimestamp);
                 }
             });
         }
 
-        function startMateriCountdown(materiId, seconds) {
-            let left = seconds;
+        function startMateriCountdown(materiId, targetTime) {
             const interval = setInterval(() => {
-                left--;
-                const timerEl = document.getElementById(`timer-${materiId}`);
-                if (timerEl) {
-                    const m = Math.floor(left / 60);
-                    const s = left % 60;
-                    timerEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} Detik`;
-                }
+                const now = Date.now();
+                const diff = targetTime - now;
 
-                if (left <= 0) {
+                if (diff <= 0) {
                     clearInterval(interval);
                     const btn = document.getElementById(`btnDownload-${materiId}`);
                     const box = document.getElementById(`countdown-box-${materiId}`);
@@ -953,6 +1012,23 @@
                     if (box) {
                         box.innerHTML = `<p class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Materi Siap Diunduh</p>`;
                     }
+                    return;
+                }
+
+                const timerEl = document.getElementById(`timer-${materiId}`);
+                if (timerEl) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    let timeStringParts = [];
+                    if (days > 0) timeStringParts.push(`${days} Hari`);
+                    if (hours > 0 || days > 0) timeStringParts.push(`${hours} Jam`);
+                    timeStringParts.push(`${minutes} Menit`);
+                    timeStringParts.push(`${seconds} Detik`);
+
+                    timerEl.innerText = timeStringParts.join(' ');
                 }
             }, 1000);
         }
@@ -985,23 +1061,16 @@
                 desc
             };
 
-            // 1. Add to local array
             tugasData.unshift(newTugas);
             localStorage.setItem('sman4_tugasData', JSON.stringify(tugasData));
-
-            // 2. Render UI immediately
             renderTugasList();
 
-            // 3. Sync to Firebase Cloud
             try {
-                db.ref('tugas/' + newTugas.id).set({
-                    title, deadline, desc
-                }).catch(err => console.warn("Firebase write error:", err));
+                db.ref('tugas/' + newTugas.id).set(newTugas).catch(err => console.warn("Firebase write error:", err));
             } catch (err) {
                 console.warn("Firebase set error:", err);
             }
 
-            // Reset form & close modal
             e.target.reset();
             closeAddTugasModal();
             alert('Tugas Baru Berhasil Diterbitkan!');
@@ -1063,14 +1132,10 @@
                 url
             };
 
-            // 1. Save to local array immediately
             tugasSubmissions.unshift(newSubmission);
             localStorage.setItem('sman4_tugasSubmissions', JSON.stringify(tugasSubmissions));
-
-            // 2. Render submissions table immediately
             renderTugasSubmissionsTable();
 
-            // 3. Sync to Firebase Cloud
             try {
                 const subKey = (name + '_' + title + '_' + Date.now()).replace(/[.#$\[\]/]/g, "_");
                 db.ref('submissions/' + subKey).set(newSubmission).catch(err => console.warn("Firebase write error:", err));
@@ -1078,7 +1143,6 @@
                 console.warn("Firebase set error:", err);
             }
 
-            // Reset input and close modal
             document.getElementById('modalLinkTugas').value = '';
             closeSubmitTugasModal();
             alert('Tugas Anda berhasil dikumpulkan!');

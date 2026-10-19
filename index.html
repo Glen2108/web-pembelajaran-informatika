@@ -320,21 +320,40 @@
                 </div>
             </section>
 
-            <!-- ==================== SEKSI 2: MATERI PELAJARAN ==================== -->
+            <!-- ==================== SEKSI 2: MATERI PELAJARAN (REVISI TAB KELAS GABUNGAN) ==================== -->
             <section id="page-materi" class="space-y-6 hidden">
-                <div class="flex justify-between items-center">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800">Materi Pelajaran Informatika</h3>
-                        <p class="text-xs text-slate-500">Unduh dan pelajari modul pembelajaran. Materi terkunci otomatis sesuai tingkat kelas Anda.</p>
+                        <p class="text-xs text-slate-500">Pilih tab kelas di bawah untuk memfilter modul pembelajaran.</p>
                     </div>
                     <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition">
                         <i class="fa-solid fa-plus mr-1"></i> Tambah Materi
                     </button>
                 </div>
 
-                <!-- Grid Card Materi -->
-                <div id="materiGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Cards populated dynamically -->
+                <!-- WADAH UTAMA: TAB SYSTEM ANTARE KELAS -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-6">
+                    <!-- Tombol Tab Navigasi Kelas -->
+                    <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4 mb-6">
+                        <button onclick="switchMateriTab('ALL')" id="tab-materi-ALL" class="tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm">
+                            <i class="fa-solid fa-layer-group mr-1.5"></i> Semua Kelas
+                        </button>
+                        <button onclick="switchMateriTab('X')" id="tab-materi-X" class="tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> Kelas X
+                        </button>
+                        <button onclick="switchMateriTab('XI')" id="tab-materi-XI" class="tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> Kelas XI
+                        </button>
+                        <button onclick="switchMateriTab('XII')" id="tab-materi-XII" class="tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> Kelas XII
+                        </button>
+                    </div>
+
+                    <!-- Grid Card Materi -->
+                    <div id="materiGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Cards populated dynamically -->
+                    </div>
                 </div>
             </section>
 
@@ -694,6 +713,9 @@
         const rowsPerPage = 5;
         let sortAsc = true;
 
+        // MATERI TAB STATE
+        let activeMateriTab = 'ALL';
+
         // TUGAS SUBMISSIONS STATE (PAGINATION & SORTING)
         let tugasCurrentPage = 1;
         const tugasRowsPerPage = 5;
@@ -765,28 +787,28 @@
                 const data = snapshot.val();
                 studentLogins = data ? Object.keys(data).map(key => ({ key, ...data[key] })) : [];
                 renderStudentTable();
-                updateAdminStats(); // C2. Update statistik admin
+                updateAdminStats();
             });
 
             db.ref('materi').on('value', (snapshot) => {
                 const data = snapshot.val();
                 materiData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
                 renderMateriCards();
-                updateAdminStats(); // C2. Update statistik admin
+                updateAdminStats();
             });
 
             db.ref('tugas').on('value', (snapshot) => {
                 const data = snapshot.val();
                 tugasData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
                 renderTugasList();
-                updateAdminStats(); // C2. Update statistik admin
+                updateAdminStats();
             });
 
             db.ref('submissions').on('value', (snapshot) => {
                 const data = snapshot.val();
                 tugasSubmissions = data ? Object.keys(data).map(key => ({ key, ...data[key] })) : [];
                 renderTugasSubmissionsTable();
-                updateAdminStats(); // C2. Update statistik admin
+                updateAdminStats();
             });
         }
 
@@ -872,7 +894,6 @@
             btnSubmit.disabled = true;
 
             setTimeout(() => {
-                // B1. Logika simpan / hapus data lokal
                 if (rememberMe) {
                     localStorage.setItem('sman4_remember_nama', nama);
                     localStorage.setItem('sman4_remember_kelas', kelas);
@@ -892,7 +913,6 @@
                 const key = (nama + '_' + kelas).replace(/[.#$\[\]/]/g, "_");
                 db.ref('logins/' + key).set(newLogin);
 
-                // Reset Loading State
                 btnText.classList.remove('hidden');
                 btnSpinner.classList.add('hidden');
                 btnSubmit.disabled = false;
@@ -1024,7 +1044,7 @@
             }
         }
 
-        // C1. RENDER TABEL PRESENSI SISWA DENGAN FILTER KELAS & SEARCH
+        // RENDER TABEL PRESENSI SISWA
         function renderStudentTable() {
             const tbody = document.getElementById('studentTableBody');
             const searchInput = document.getElementById('searchStudent');
@@ -1095,7 +1115,25 @@
             renderStudentTable();
         }
 
-        // MATERI PELAJARAN FUNCTIONS
+        // MATERI PELAJARAN FUNCTIONS (REV MATERI SYSTEM TAB)
+        function switchMateriTab(kelas) {
+            activeMateriTab = kelas;
+            
+            const tabs = ['ALL', 'X', 'XI', 'XII'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-materi-${t}`);
+                if (btn) {
+                    if (t === kelas) {
+                        btn.className = "tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm";
+                    } else {
+                        btn.className = "tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+                    }
+                }
+            });
+
+            renderMateriCards();
+        }
+
         function openAddMateriModal() { document.getElementById('addMateriModal').classList.remove('hidden'); }
         function closeAddMateriModal() { document.getElementById('addMateriModal').classList.add('hidden'); }
 
@@ -1118,7 +1156,6 @@
             showToast('Materi pelajaran baru berhasil diterbitkan!', 'success');
         }
 
-        // FUNGSI PENGECEKAN KELAS SISWA DENGAN TARGET MATERI
         function checkGradeMatch(studentKelas, materiKelas) {
             if (!studentKelas || !materiKelas || materiKelas === "Semua Kelas") return true;
 
@@ -1145,14 +1182,23 @@
             const isAdmin = currentUser && currentUser.role === 'admin';
             grid.innerHTML = '';
 
-            if (materiData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Belum ada materi pelajaran yang diunggah.</div>`;
+            let filteredMateri = materiData.filter(item => {
+                if (activeMateriTab === 'ALL') return true;
+                if (item.kelas === "Semua Kelas") return true;
+                return item.kelas.includes(activeMateriTab);
+            });
+
+            if (filteredMateri.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-xs font-medium">
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
+                    Tidak ada materi pelajaran untuk ${activeMateriTab === 'ALL' ? 'semua kelas' : 'Kelas ' + activeMateriTab}.
+                </div>`;
                 return;
             }
 
             const now = Date.now();
 
-            materiData.forEach(item => {
+            filteredMateri.forEach(item => {
                 let isGradeLocked = false;
                 if (!isAdmin && currentUser && currentUser.role === 'siswa') {
                     isGradeLocked = !checkGradeMatch(currentUser.kelas, item.kelas);
@@ -1214,7 +1260,7 @@
                 }
 
                 grid.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between relative">
+                    <div class="bg-slate-50 hover:bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition flex flex-col justify-between relative">
                         <div>
                             <div class="flex justify-between items-start mb-3">
                                 <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200">${item.kelas}</span>
@@ -1405,7 +1451,6 @@
 
         function closeSubmitTugasModal() { document.getElementById('submitTugasModal').classList.add('hidden'); }
 
-        // B2. HANDLING PENGUMPULAN TUGAS DENGAN SPINNER LOADING
         function handlePengumpulanTugas(e) {
             e.preventDefault();
             const tugasId = document.getElementById('modalTugasId').value;
@@ -1425,7 +1470,6 @@
 
             if (!url) return;
 
-            // B2. Aktifkan Loading State pada tombol
             const btnText = document.getElementById('btnTugasText');
             const btnSpinner = document.getElementById('btnTugasSpinner');
             const btnSubmit = document.getElementById('btnSubmitTugas');

@@ -55,8 +55,26 @@
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col relative">
 
-    <!-- ELEMEN TOAST NOTIFICATION KUSTOM -->
+    <!-- ELEMEN TOAST NOTIFICATION POJOK -->
     <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ==================== SYSTEM FLOATING DIALOG MODAL TERPUSAT ==================== -->
+    <div id="customDialogModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[200] flex items-center justify-center p-4 hidden transition-all duration-300 opacity-0 pointer-events-none">
+        <div id="customDialogBox" class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-all duration-300 border border-slate-100">
+            <div id="customDialogIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner"></div>
+            <h3 id="customDialogTitle" class="text-lg font-extrabold text-slate-800 mb-2"></h3>
+            <p id="customDialogMessage" class="text-xs text-slate-500 mb-5 leading-relaxed"></p>
+            
+            <div id="customDialogInputWrapper" class="mb-5 hidden">
+                <input type="text" id="customDialogInput" class="w-full px-4 py-2.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none font-medium text-center">
+            </div>
+
+            <div class="flex gap-2 justify-center" id="customDialogButtons">
+                <button id="customDialogBtnCancel" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition hidden">Batal</button>
+                <button id="customDialogBtnConfirm" class="flex-1 py-2.5 px-4 rounded-xl bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 shadow-md transition">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ==================== POPUP MODAL LOGIN ==================== -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
@@ -388,7 +406,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                         <h4 class="font-bold text-slate-800">Status Pengumpulan Tugas Siswa</h4>
-                        <select id="filterKelasTugas" onchange="renderTugasSubmissionsTable()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white">
+                        <select id="filterKelasTugas" onchange="renderTugasSubmissionsTable()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white font-semibold">
                             <option value="ALL">Semua Kelas</option>
                             <option value="X">Seluruh Kelas X</option>
                             <option value="XI">Seluruh Kelas XI</option>
@@ -781,6 +799,95 @@
             initDataListeners();
         });
 
+        // ENGINE FLOATING DIALOG MODAL TERPUSAT
+        function showCustomDialog({ title = 'Pemberitahuan', message = '', type = 'info', isConfirm = false, isPrompt = false, placeholder = '' }) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customDialogModal');
+                const box = document.getElementById('customDialogBox');
+                const icon = document.getElementById('customDialogIcon');
+                const titleEl = document.getElementById('customDialogTitle');
+                const msgEl = document.getElementById('customDialogMessage');
+                const inputWrapper = document.getElementById('customDialogInputWrapper');
+                const inputEl = document.getElementById('customDialogInput');
+                const btnCancel = document.getElementById('customDialogBtnCancel');
+                const btnConfirm = document.getElementById('customDialogBtnConfirm');
+
+                titleEl.innerText = title;
+                msgEl.innerText = message;
+                inputEl.value = '';
+
+                // Style & Icon Config
+                if (type === 'danger' || type === 'error') {
+                    icon.className = "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-rose-100 text-rose-600 border border-rose-200";
+                    icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                    btnConfirm.className = "flex-1 py-2.5 px-4 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 shadow-md transition";
+                } else if (type === 'warning') {
+                    icon.className = "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-amber-100 text-amber-600 border border-amber-200";
+                    icon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+                    btnConfirm.className = "flex-1 py-2.5 px-4 rounded-xl bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 shadow-md transition";
+                } else if (type === 'success') {
+                    icon.className = "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-emerald-100 text-emerald-600 border border-emerald-200";
+                    icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                    btnConfirm.className = "flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 shadow-md transition";
+                } else {
+                    icon.className = "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-brand-100 text-brand-600 border border-brand-200";
+                    icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+                    btnConfirm.className = "flex-1 py-2.5 px-4 rounded-xl bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 shadow-md transition";
+                }
+
+                if (isConfirm || isPrompt) btnCancel.classList.remove('hidden');
+                else btnCancel.classList.add('hidden');
+
+                if (isPrompt) {
+                    inputWrapper.classList.remove('hidden');
+                    inputEl.placeholder = placeholder;
+                } else {
+                    inputWrapper.classList.add('hidden');
+                }
+
+                modal.classList.remove('hidden', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    box.classList.remove('scale-95');
+                    box.classList.add('scale-100');
+                    if (isPrompt) inputEl.focus();
+                }, 10);
+
+                function closeModal() {
+                    modal.classList.add('opacity-0');
+                    box.classList.remove('scale-100');
+                    box.classList.add('scale-95');
+                    setTimeout(() => {
+                        modal.classList.add('hidden', 'pointer-events-none');
+                    }, 300);
+                }
+
+                btnConfirm.onclick = () => {
+                    closeModal();
+                    if (isPrompt) resolve(inputEl.value);
+                    else resolve(true);
+                };
+
+                btnCancel.onclick = () => {
+                    closeModal();
+                    if (isPrompt) resolve(null);
+                    else resolve(false);
+                };
+            });
+        }
+
+        function customAlert(message, title = 'Pemberitahuan', type = 'info') {
+            return showCustomDialog({ title, message, type });
+        }
+
+        function customConfirm(message, title = 'Konfirmasi', type = 'warning') {
+            return showCustomDialog({ title, message, type, isConfirm: true });
+        }
+
+        function customPrompt(message, title = 'Input Diperlukan', placeholder = '') {
+            return showCustomDialog({ title, message, type: 'warning', isPrompt: true, placeholder });
+        }
+
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -958,11 +1065,13 @@
 
             document.getElementById('loginModal').classList.add('hidden');
             setupUserUI();
-            showToast('Berhasil masuk sebagai Mode Admin / Guru', 'info');
+            customAlert('Anda telah berhasil masuk ke sistem sebagai Mode Admin/Guru.', 'Akses Mode Admin', 'success');
         }
 
-        function handleLogout() {
-            if (!confirm("Apakah Anda yakin ingin keluar dari Portal Pembelajaran Informatika SMAN 4 Manado?")) return;
+        async function handleLogout() {
+            const confirmLogout = await customConfirm("Apakah Anda yakin ingin keluar dari Portal Pembelajaran Informatika SMAN 4 Manado?", "Keluar dari Sistem", "danger");
+            if (!confirmLogout) return;
+
             localStorage.removeItem('sman4_session');
             currentUser = null;
             document.getElementById('loginModal').classList.remove('hidden');
@@ -1046,7 +1155,7 @@
         // MATERI PELAJARAN FUNCTIONS
         function openAddMateriModal() { 
             if (!currentUser || currentUser.role !== 'admin') {
-                showToast('Hanya Admin/Guru yang dapat menambah materi!', 'error');
+                customAlert('Hanya Admin/Guru yang dapat menambah materi!', 'Akses Ditolak', 'error');
                 return;
             }
             document.getElementById('addMateriModal').classList.remove('hidden'); 
@@ -1056,7 +1165,7 @@
         function handleTambahMateri(e) {
             e.preventDefault();
             if (!currentUser || currentUser.role !== 'admin') {
-                showToast('Akses ditolak! Hanya Guru yang bisa menambah materi.', 'error');
+                customAlert('Akses ditolak! Hanya Guru yang bisa menambah materi.', 'Gagal Modifikasi', 'error');
                 return;
             }
 
@@ -1082,7 +1191,7 @@
             closeAddMateriModal();
             renderMateriCards();
             updateAdminStats();
-            showToast('Materi pelajaran baru berhasil diterbitkan!', 'success');
+            customAlert('Materi pelajaran baru berhasil diterbitkan!', 'Berhasil Diterbitkan', 'success');
         }
 
         function switchMateriTab(kelas) {
@@ -1181,9 +1290,11 @@
             });
         }
 
-        function deleteMateri(id) {
+        async function deleteMateri(id) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            if (!confirm("Apakah Anda yakin ingin menghapus materi ini?")) return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus modul materi ini?", "Hapus Materi", "danger");
+            if (!confirmDel) return;
+
             materiData = materiData.filter(m => m.id !== id);
             localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
             if (db) db.ref('materi/' + id).remove().catch(e => console.warn(e));
@@ -1195,7 +1306,7 @@
         // TUGAS SISWA FUNCTIONS
         function openAddTugasModal() { 
             if (!currentUser || currentUser.role !== 'admin') {
-                showToast('Hanya Admin/Guru yang dapat membuat tugas!', 'error');
+                customAlert('Hanya Admin/Guru yang dapat membuat tugas!', 'Akses Ditolak', 'error');
                 return;
             }
             document.getElementById('addTugasModal').classList.remove('hidden'); 
@@ -1205,7 +1316,7 @@
         function handleTambahTugas(e) {
             e.preventDefault();
             if (!currentUser || currentUser.role !== 'admin') {
-                showToast('Akses ditolak! Hanya Guru yang bisa membuat tugas.', 'error');
+                customAlert('Akses ditolak! Hanya Guru yang bisa membuat tugas.', 'Gagal Memuat Tugas', 'error');
                 return;
             }
 
@@ -1230,7 +1341,7 @@
             closeAddTugasModal();
             renderTugasList();
             updateAdminStats();
-            showToast('Tugas baru berhasil diterbitkan!', 'success');
+            customAlert('Tugas siswa baru berhasil diterbitkan!', 'Tugas Diterbitkan', 'success');
         }
 
         function switchTugasTab(kelas) {
@@ -1319,9 +1430,11 @@
             });
         }
 
-        function deleteTugas(id) {
+        async function deleteTugas(id) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            if (!confirm("Apakah Anda yakin ingin menghapus tugas ini?")) return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus tugas ini?", "Hapus Tugas", "danger");
+            if (!confirmDel) return;
+
             tugasData = tugasData.filter(t => t.id !== id);
             localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
             if (db) db.ref('tugas/' + id).remove().catch(e => console.warn(e));
@@ -1335,11 +1448,11 @@
             if (targetTugas) {
                 const targetKelas = targetTugas.kelas || "Semua Kelas";
                 if (!checkGradeAccess(targetKelas)) {
-                    showToast('Tugas ini bukan ditujukan untuk kelas Anda!', 'error');
+                    customAlert('Tugas ini bukan ditujukan untuk tingkat kelas Anda!', 'Akses Terkunci', 'warning');
                     return;
                 }
                 if (Date.now() > targetTugas.deadlineTimestamp && currentUser.role !== 'admin') {
-                    showToast('Batas waktu pengumpulan tugas ini telah berakhir!', 'error');
+                    customAlert('Batas waktu pengumpulan tugas ini telah berakhir!', 'Waktu Habis', 'error');
                     return;
                 }
             }
@@ -1377,7 +1490,7 @@
             closeSubmitTugasModal();
             renderTugasSubmissionsTable();
             updateAdminStats();
-            showToast('Tugas Anda berhasil dikumpulkan!', 'success');
+            customAlert('Tugas Anda berhasil dikirim dan tersimpan di database.', 'Pengumpulan Berhasil', 'success');
         }
 
         function renderStudentTable() {
@@ -1441,9 +1554,11 @@
             document.getElementById('btnNextPage').disabled = start + rowsPerPage >= total;
         }
 
-        function deleteLogin(key) {
+        async function deleteLogin(key) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            if (!confirm("Apakah Anda yakin ingin menghapus data presensi ini?")) return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus data presensi ini?", "Hapus Presensi", "danger");
+            if (!confirmDel) return;
+
             studentLogins = studentLogins.filter(s => s.key !== key);
             localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
             if (db) db.ref('logins/' + key).remove().catch(e => console.warn(e));
@@ -1506,9 +1621,11 @@
             document.getElementById('btnNextTugasPage').disabled = start + tugasRowsPerPage >= total;
         }
 
-        function deleteSubmission(key) {
+        async function deleteSubmission(key) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            if (!confirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan ini?")) return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan tugas ini?", "Hapus Pengumpulan", "danger");
+            if (!confirmDel) return;
+
             tugasSubmissions = tugasSubmissions.filter(s => s.key !== key);
             localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
             if (db) db.ref('submissions/' + key).remove().catch(e => console.warn(e));
@@ -1540,24 +1657,28 @@
             showToast(`File Rekap ${type.toUpperCase()} telah diunduh`, 'success');
         }
 
-        function confirmAcademicReset() {
+        async function confirmAcademicReset() {
             if (!currentUser || currentUser.role !== 'admin') return;
-            if (confirm("Apakah Anda yakin ingin mereset seluruh data untuk Tahun Ajaran Baru?")) {
-                const choice = prompt("Ketik 'HAPUS' untuk mengosongkan database:");
-                if (choice === 'HAPUS') {
-                    studentLogins = [];
-                    tugasSubmissions = [];
-                    localStorage.removeItem('sman4_cache_logins');
-                    localStorage.removeItem('sman4_cache_submissions');
-                    if (db) {
-                        db.ref('logins').remove();
-                        db.ref('submissions').remove();
-                    }
-                    renderStudentTable();
-                    renderTugasSubmissionsTable();
-                    updateAdminStats();
-                    showToast("Database berhasil dibersihkan untuk Tahun Ajaran Baru!", "success");
+            
+            const confirmAction = await customConfirm("Proses ini akan mengosongkan seluruh database presensi dan tugas untuk menyambut Tahun Ajaran Baru.", "Reset Tahun Ajaran", "danger");
+            if (!confirmAction) return;
+
+            const inputKey = await customPrompt("Ketik kata 'HAPUS' di bawah ini untuk mengonfirmasi pembersihan total:", "Konfirmasi Teks", "HAPUS");
+            if (inputKey === 'HAPUS') {
+                studentLogins = [];
+                tugasSubmissions = [];
+                localStorage.removeItem('sman4_cache_logins');
+                localStorage.removeItem('sman4_cache_submissions');
+                if (db) {
+                    db.ref('logins').remove();
+                    db.ref('submissions').remove();
                 }
+                renderStudentTable();
+                renderTugasSubmissionsTable();
+                updateAdminStats();
+                customAlert("Database berhasil dibersihkan untuk Tahun Ajaran Baru!", "Reset Selesai", "success");
+            } else if (inputKey !== null) {
+                customAlert("Kata kunci konfirmasi tidak sesuai. Pembersihan dibatalkan.", "Gagal Reset", "error");
             }
         }
 

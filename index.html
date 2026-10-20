@@ -55,7 +55,7 @@
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col relative">
 
-    <!-- B3. ELEMEN TOAST NOTIFICATION KUSTOM -->
+    <!-- ELEMEN TOAST NOTIFICATION KUSTOM -->
     <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- ==================== POPUP MODAL LOGIN ==================== -->
@@ -115,7 +115,7 @@
                         </div>
                     </div>
 
-                    <!-- B1. KOTAK CENTANG INGAT SAYA -->
+                    <!-- KOTAK CENTANG INGAT SAYA -->
                     <div class="mb-6 flex items-center">
                         <input type="checkbox" id="rememberMe" class="w-4 h-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500 cursor-pointer">
                         <label for="rememberMe" class="ml-2 text-xs font-medium text-slate-600 cursor-pointer select-none">
@@ -123,7 +123,6 @@
                         </label>
                     </div>
 
-                    <!-- B2. BUTTON DENGAN SPINNER LOADING -->
                     <button type="submit" id="btnSubmitSiswa" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center">
                         <span id="btnSiswaText"><i class="fa-solid fa-right-to-bracket mr-2"></i> Masuk Pembelajaran</span>
                         <span id="btnSiswaSpinner" class="hidden flex items-center"><i class="fa-solid fa-spinner animate-spin mr-2"></i> Memproses...</span>
@@ -199,7 +198,6 @@
                 </nav>
             </div>
 
-            <!-- Sidebar Footer Info -->
             <div class="p-4 bg-slate-950/60 border-t border-slate-800 text-xs text-slate-400">
                 <p class="font-bold text-slate-200">Pengampu Informatika:</p>
                 <p class="text-indigo-300 mt-0.5">Glendy A. Taawoeda, S.Pd</p>
@@ -303,7 +301,6 @@
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
                         <span id="paginationInfo">Menampilkan 0-0 data</span>
                         <div class="flex gap-2">
@@ -321,8 +318,8 @@
                         <h3 class="text-xl font-bold text-slate-800">Materi Pelajaran Informatika</h3>
                         <p class="text-xs text-slate-500">Pilih tab kelas di bawah untuk memfilter modul pembelajaran.</p>
                     </div>
-                    <!-- Tombol Tambah Materi dapat diakses oleh Admin atau langsung dipakai -->
-                    <button id="btnAddMateri" onclick="openAddMateriModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2">
+                    <!-- TOMBOL HANYA DI TAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN) -->
+                    <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Tambah Materi Pelajaran
                     </button>
                 </div>
@@ -358,7 +355,8 @@
                         <h3 class="text-xl font-bold text-slate-800">Daftar Tugas Informatika</h3>
                         <p class="text-xs text-slate-500">Kumpulkan tugas Anda sebelum batas waktu yang telah ditentukan.</p>
                     </div>
-                    <button id="btnAddTugas" onclick="openAddTugasModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2">
+                    <!-- TOMBOL HANYA DI TAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN) -->
+                    <button id="btnAddTugas" onclick="openAddTugasModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Buat Tugas Baru
                     </button>
                 </div>
@@ -568,9 +566,25 @@
                     <label class="block text-xs font-bold text-slate-600 mb-1">Target Kelas</label>
                     <select id="newMateriKelas" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
                         <option value="Semua Kelas">Semua Kelas</option>
-                        <option value="Kelas X">Kelas X</option>
-                        <option value="Kelas XI">Kelas XI</option>
-                        <option value="Kelas XII">Kelas XII</option>
+                        <optgroup label="Tingkat Umum">
+                            <option value="Kelas X">Seluruh Kelas X</option>
+                            <option value="Kelas XI">Seluruh Kelas XI</option>
+                            <option value="Kelas XII">Seluruh Kelas XII</option>
+                        </optgroup>
+                        <optgroup label="Spesifik Kelas X">
+                            <option value="X-1">X-1</option><option value="X-2">X-2</option>
+                            <option value="X-3">X-3</option><option value="X-4">X-4</option>
+                        </optgroup>
+                        <optgroup label="Spesifik Kelas XI">
+                            <option value="XI-1">XI-1</option><option value="XI-2">XI-2</option>
+                            <option value="XI-3">XI-3</option><option value="XI-4">XI-4</option>
+                            <option value="XI-5">XI-5</option>
+                        </optgroup>
+                        <optgroup label="Spesifik Kelas XII">
+                            <option value="XII-1">XII-1</option><option value="XII-2">XII-2</option>
+                            <option value="XII-3">XII-3</option><option value="XII-4">XII-4</option>
+                            <option value="XII-5">XII-5</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -753,7 +767,6 @@
             }
         }
 
-        // SYNC DATA FROM FIREBASE / LOCALSTORAGE
         function initDataListeners() {
             if (db) {
                 db.ref('logins').on('value', (snapshot) => {
@@ -912,10 +925,13 @@
             showToast('Anda telah berhasil keluar dari sistem.', 'info');
         }
 
+        // FUNGSI UTAMA KONTROL PERAN (ROLE ACCESS)
         function setupUserUI() {
             const greetingText = document.getElementById('greetingText');
             const userRoleBadge = document.getElementById('userRoleBadge');
             const adminMenuSection = document.getElementById('adminMenuSection');
+            const btnAddMateri = document.getElementById('btnAddMateri');
+            const btnAddTugas = document.getElementById('btnAddTugas');
 
             const now = new Date();
             const hour = now.getHours();
@@ -926,16 +942,39 @@
 
             if (currentUser) {
                 greetingText.innerText = `${sapaanWaktu}, ${currentUser.name}!`;
+
                 if (currentUser.role === 'admin') {
                     userRoleBadge.innerHTML = `<i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Mode Admin / Guru`;
                     userRoleBadge.className = "text-xs font-semibold text-amber-700 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200";
-                    adminMenuSection.classList.remove('hidden');
+                    
+                    if (adminMenuSection) adminMenuSection.classList.remove('hidden');
+                    if (btnAddMateri) {
+                        btnAddMateri.classList.remove('hidden');
+                        btnAddMateri.classList.add('flex');
+                    }
+                    if (btnAddTugas) {
+                        btnAddTugas.classList.remove('hidden');
+                        btnAddTugas.classList.add('flex');
+                    }
                 } else {
                     userRoleBadge.innerHTML = `<i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Kelas ${currentUser.kelas}`;
-                    adminMenuSection.classList.add('hidden');
+                    userRoleBadge.className = "text-xs font-semibold text-brand-600 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-brand-50 border border-brand-200";
+                    
+                    if (adminMenuSection) adminMenuSection.classList.add('hidden');
+                    if (btnAddMateri) {
+                        btnAddMateri.classList.add('hidden');
+                        btnAddMateri.classList.remove('flex');
+                    }
+                    if (btnAddTugas) {
+                        btnAddTugas.classList.add('hidden');
+                        btnAddTugas.classList.remove('flex');
+                    }
                 }
             } else {
                 greetingText.innerText = `${sapaanWaktu}!`;
+                if (adminMenuSection) adminMenuSection.classList.add('hidden');
+                if (btnAddMateri) btnAddMateri.classList.add('hidden');
+                if (btnAddTugas) btnAddTugas.classList.add('hidden');
             }
 
             renderStudentTable();
@@ -960,11 +999,22 @@
         }
 
         // MATERI PELAJARAN FUNCTIONS
-        function openAddMateriModal() { document.getElementById('addMateriModal').classList.remove('hidden'); }
+        function openAddMateriModal() { 
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('Hanya Admin/Guru yang dapat menambah materi!', 'error');
+                return;
+            }
+            document.getElementById('addMateriModal').classList.remove('hidden'); 
+        }
         function closeAddMateriModal() { document.getElementById('addMateriModal').classList.add('hidden'); }
 
         function handleTambahMateri(e) {
             e.preventDefault();
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('Akses ditolak! Hanya Guru yang bisa menambah materi.', 'error');
+                return;
+            }
+
             const title = document.getElementById('newMateriTitle').value.trim();
             const kelas = document.getElementById('newMateriKelas').value;
             const desc = document.getElementById('newMateriDesc').value.trim();
@@ -1004,6 +1054,25 @@
             renderMateriCards();
         }
 
+        // HAK AKSES KELAS UNTUK MATERI (SYSTEM LOCK)
+        function checkGradeAccess(materiKelas) {
+            // Admin/Guru bisa akses semua materi
+            if (currentUser && currentUser.role === 'admin') return true;
+            if (!materiKelas || materiKelas === "Semua Kelas") return true;
+            if (!currentUser || !currentUser.kelas) return false;
+
+            const userKelas = currentUser.kelas.trim().toUpperCase();
+            const targetKelas = materiKelas.trim().toUpperCase();
+
+            // Jika materi diset ke tingkat umum (contoh: "Kelas X")
+            if (targetKelas === "KELAS X" && userKelas.startsWith("X-")) return true;
+            if (targetKelas === "KELAS XI" && userKelas.startsWith("XI-")) return true;
+            if (targetKelas === "KELAS XII" && userKelas.startsWith("XII-")) return true;
+
+            // Jika materi diset ke spesifik kelas (contoh: "X-1")
+            return userKelas === targetKelas;
+        }
+
         function renderMateriCards() {
             const grid = document.getElementById('materiGrid');
             const isAdmin = currentUser && currentUser.role === 'admin';
@@ -1021,34 +1090,45 @@
             if (filteredMateri.length === 0) {
                 grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-xs font-medium">
                     <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
-                    Belum ada materi pelajaran untuk ${activeMateriTab === 'ALL' ? 'semua kelas' : 'Kelas ' + activeMateriTab}. Klik "Tambah Materi Pelajaran" untuk menambahkan.
+                    Belum ada materi pelajaran untuk ${activeMateriTab === 'ALL' ? 'semua kelas' : 'Kelas ' + activeMateriTab}.
                 </div>`;
                 return;
             }
 
             filteredMateri.forEach(item => {
+                const isAccessible = checkGradeAccess(item.kelas);
+
                 grid.innerHTML += `
-                    <div class="bg-slate-50 hover:bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition flex flex-col justify-between relative">
+                    <div class="bg-slate-50 hover:bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition flex flex-col justify-between relative ${!isAccessible ? 'opacity-75' : ''}">
                         <div>
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200">${item.kelas}</span>
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-md ${isAccessible ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
+                                    ${!isAccessible ? '<i class="fa-solid fa-lock mr-1"></i> Khusus ' : ''}${item.kelas}
+                                </span>
                                 <div class="flex items-center gap-2">
                                     ${isAdmin ? `
                                         <button onclick="deleteMateri('${item.id}')" title="Hapus Materi" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     ` : ''}
-                                    <i class="fa-solid fa-file-pdf text-rose-500 text-xl"></i>
+                                    <i class="fa-solid ${isAccessible ? 'fa-file-pdf text-rose-500' : 'fa-lock text-slate-400'} text-xl"></i>
                                 </div>
                             </div>
                             <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
                             <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
                         </div>
                         <div>
-                            <button onclick="window.open('${item.driveUrl}', '_blank')" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white shadow-md transition">
-                                <i class="fa-solid fa-download"></i>
-                                <span>Buka / Unduh Materi</span>
-                            </button>
+                            ${isAccessible ? `
+                                <button onclick="window.open('${item.driveUrl}', '_blank')" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white shadow-md transition">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Buka / Unduh Materi</span>
+                                </button>
+                            ` : `
+                                <button disabled class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-slate-200 text-slate-400 cursor-not-allowed">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <span>Terkunci (Beda Kelas)</span>
+                                </button>
+                            `}
                         </div>
                     </div>
                 `;
@@ -1056,6 +1136,7 @@
         }
 
         function deleteMateri(id) {
+            if (!currentUser || currentUser.role !== 'admin') return;
             if (!confirm("Apakah Anda yakin ingin menghapus materi ini?")) return;
             materiData = materiData.filter(m => m.id !== id);
             localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
@@ -1066,11 +1147,22 @@
         }
 
         // TUGAS SISWA FUNCTIONS
-        function openAddTugasModal() { document.getElementById('addTugasModal').classList.remove('hidden'); }
+        function openAddTugasModal() { 
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('Hanya Admin/Guru yang dapat membuat tugas!', 'error');
+                return;
+            }
+            document.getElementById('addTugasModal').classList.remove('hidden'); 
+        }
         function closeAddTugasModal() { document.getElementById('addTugasModal').classList.add('hidden'); }
 
         function handleTambahTugas(e) {
             e.preventDefault();
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('Akses ditolak! Hanya Guru yang bisa membuat tugas.', 'error');
+                return;
+            }
+
             const title = document.getElementById('newTugasTitle').value.trim();
             const deadlineInput = document.getElementById('newTugasDeadline').value;
             const desc = document.getElementById('newTugasDesc').value.trim();
@@ -1100,7 +1192,7 @@
             list.innerHTML = '';
 
             if (tugasData.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan. Klik "Buat Tugas Baru" untuk menambahkan.</div>`;
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan.</div>`;
                 return;
             }
 
@@ -1133,6 +1225,7 @@
         }
 
         function deleteTugas(id) {
+            if (!currentUser || currentUser.role !== 'admin') return;
             if (!confirm("Apakah Anda yakin ingin menghapus tugas ini?")) return;
             tugasData = tugasData.filter(t => t.id !== id);
             localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
@@ -1241,6 +1334,7 @@
         }
 
         function deleteLogin(key) {
+            if (!currentUser || currentUser.role !== 'admin') return;
             if (!confirm("Apakah Anda yakin ingin menghapus data presensi ini?")) return;
             studentLogins = studentLogins.filter(s => s.key !== key);
             localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
@@ -1305,6 +1399,7 @@
         }
 
         function deleteSubmission(key) {
+            if (!currentUser || currentUser.role !== 'admin') return;
             if (!confirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan ini?")) return;
             tugasSubmissions = tugasSubmissions.filter(s => s.key !== key);
             localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
@@ -1338,6 +1433,7 @@
         }
 
         function confirmAcademicReset() {
+            if (!currentUser || currentUser.role !== 'admin') return;
             if (confirm("Apakah Anda yakin ingin mereset seluruh data untuk Tahun Ajaran Baru?")) {
                 const choice = prompt("Ketik 'HAPUS' untuk mengosongkan database:");
                 if (choice === 'HAPUS') {

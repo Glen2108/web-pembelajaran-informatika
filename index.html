@@ -115,7 +115,7 @@
                         </div>
                     </div>
 
-                    <!-- B1. KOTAK CENTANG INGAT SAYA (REMEMBER ME) -->
+                    <!-- B1. KOTAK CENTANG INGAT SAYA -->
                     <div class="mb-6 flex items-center">
                         <input type="checkbox" id="rememberMe" class="w-4 h-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500 cursor-pointer">
                         <label for="rememberMe" class="ml-2 text-xs font-medium text-slate-600 cursor-pointer select-none">
@@ -220,13 +220,11 @@
                 </div>
 
                 <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                    <!-- Realtime Clock -->
                     <div class="text-right">
                         <div id="realtimeClock" class="text-lg font-bold text-slate-800 font-mono">00:00:00 WITA</div>
                         <div id="realtimeDate" class="text-xs text-slate-500">Rabu, 14 Oktober 2026</div>
                     </div>
 
-                    <!-- Floating Logout Button -->
                     <button onclick="handleLogout()" title="Keluar dari Sistem" class="bg-rose-50 hover:bg-rose-100 text-rose-600 p-3 rounded-xl font-semibold flex items-center space-x-2 border border-rose-200 shadow-sm transition transform hover:scale-105 active:scale-95">
                         <i class="fa-solid fa-power-off"></i>
                         <span class="hidden md:inline text-xs">Keluar</span>
@@ -237,7 +235,6 @@
             <!-- ==================== SEKSI 1: BERANDA ==================== -->
             <section id="page-beranda" class="space-y-6">
 
-                <!-- Motivational Banner -->
                 <div class="bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-800 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
                     <div class="relative z-10 max-w-2xl">
                         <span class="bg-white/20 text-xs uppercase font-bold tracking-wider px-3 py-1 rounded-full backdrop-blur-md">Motivasi Hari Ini</span>
@@ -249,7 +246,6 @@
                     <i class="fa-solid fa-quote-right absolute right-6 bottom-4 text-white/10 text-9xl pointer-events-none"></i>
                 </div>
 
-                <!-- Banner & Tombol Absensi Sekolah Terpadu -->
                 <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-5 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 border border-emerald-500/30">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-emerald-200 text-2xl backdrop-blur-sm shrink-0">
@@ -261,7 +257,6 @@
                         </div>
                     </div>
                     
-                    <!-- Tombol Interaktif dengan Tangan Animasi -->
                     <button onclick="openAbsensiModal()" class="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs px-5 py-3 rounded-xl shadow-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 border-2 border-amber-300 shrink-0">
                         <i class="fa-solid fa-hand-point-right text-xl text-rose-600 animate-bounce"></i>
                         <span class="tracking-wide">KLIK ABSENSI MANDIRI DI SINI</span>
@@ -278,7 +273,6 @@
                             <p class="text-xs text-slate-500">Sistem otomatis memperbarui jam login terakhir tanpa menumpuk data</p>
                         </div>
                         
-                        <!-- C1. FILTER KELAS & SEARCH PRESENSI -->
                         <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                             <select id="filterKelasPresensi" onchange="renderStudentTable()" class="px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white font-semibold">
                                 <option value="ALL">Semua Tingkat Kelas</option>
@@ -327,14 +321,14 @@
                         <h3 class="text-xl font-bold text-slate-800">Materi Pelajaran Informatika</h3>
                         <p class="text-xs text-slate-500">Pilih tab kelas di bawah untuk memfilter modul pembelajaran.</p>
                     </div>
-                    <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition">
-                        <i class="fa-solid fa-plus mr-1"></i> Tambah Materi
+                    <!-- Tombol Tambah Materi dapat diakses oleh Admin atau langsung dipakai -->
+                    <button id="btnAddMateri" onclick="openAddMateriModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Tambah Materi Pelajaran
                     </button>
                 </div>
 
                 <!-- WADAH UTAMA: TAB SYSTEM ANTARE KELAS -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-6">
-                    <!-- Tombol Tab Navigasi Kelas -->
                     <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4 mb-6">
                         <button onclick="switchMateriTab('ALL')" id="tab-materi-ALL" class="tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm">
                             <i class="fa-solid fa-layer-group mr-1.5"></i> Semua Kelas
@@ -364,8 +358,8 @@
                         <h3 class="text-xl font-bold text-slate-800">Daftar Tugas Informatika</h3>
                         <p class="text-xs text-slate-500">Kumpulkan tugas Anda sebelum batas waktu yang telah ditentukan.</p>
                     </div>
-                    <button id="btnAddTugas" onclick="openAddTugasModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition">
-                        <i class="fa-solid fa-plus mr-1"></i> Buat Tugas Baru
+                    <button id="btnAddTugas" onclick="openAddTugasModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Buat Tugas Baru
                     </button>
                 </div>
 
@@ -405,7 +399,6 @@
                         </table>
                     </div>
 
-                    <!-- Pagination Status Pengumpulan Tugas Siswa -->
                     <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
                         <span id="tugasPaginationInfo">Menampilkan 0-0 data</span>
                         <div class="flex gap-2">
@@ -428,7 +421,6 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-                        <!-- Step 1 -->
                         <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">1</span>
@@ -438,7 +430,6 @@
                             <i class="fa-solid fa-cloud-arrow-up text-indigo-300 text-2xl text-right mt-3"></i>
                         </div>
 
-                        <!-- Step 2 -->
                         <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">2</span>
@@ -448,7 +439,6 @@
                             <i class="fa-solid fa-lock-open text-emerald-400 text-2xl text-right mt-3"></i>
                         </div>
 
-                        <!-- Step 3 -->
                         <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">3</span>
@@ -458,7 +448,6 @@
                             <i class="fa-solid fa-link text-amber-400 text-2xl text-right mt-3"></i>
                         </div>
 
-                        <!-- Step 4 -->
                         <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">4</span>
@@ -483,7 +472,6 @@
                     </p>
                 </div>
 
-                <!-- C2. WIDGET KARTU STATISTIK REALTIME ADMIN -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
                         <div class="w-12 h-12 bg-indigo-50 text-brand-600 rounded-xl flex items-center justify-center text-xl shrink-0">
@@ -526,9 +514,7 @@
                     </div>
                 </div>
 
-                <!-- Action Controls -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Rekap Data Manual -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                         <h4 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-file-excel text-emerald-600 mr-2"></i> Rekap Manual Data (CSV)</h4>
                         <p class="text-xs text-slate-500 mb-4">Unduh seluruh riwayat login presensi dan pengumpulan tugas siswa dalam format Excel/CSV.</p>
@@ -542,7 +528,6 @@
                         </div>
                     </div>
 
-                    <!-- Reset Tahun Ajaran -->
                     <div class="bg-white p-6 rounded-2xl border border-rose-200 shadow-sm">
                         <h4 class="font-bold text-rose-700 mb-2"><i class="fa-solid fa-broom text-rose-600 mr-2"></i> Pembersihan / Reset Tahun Ajaran Baru</h4>
                         <p class="text-xs text-slate-500 mb-4">Lakukan pembersihan otomatis setiap 12 bulan (Semester Ganjil & Genap selesai) untuk menyambut siswa/kelas baru.</p>
@@ -582,10 +567,10 @@
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Target Kelas</label>
                     <select id="newMateriKelas" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
-                        <option value="X-1 s/d X-4">Kelas X (X-1 s/d X-4)</option>
-                        <option value="XI-1 s/d XI-5">Kelas XI (XI-1 s/d XI-5)</option>
-                        <option value="XII-1 s/d XII-5">Kelas XII (XII-1 s/d XII-5)</option>
                         <option value="Semua Kelas">Semua Kelas</option>
+                        <option value="Kelas X">Kelas X</option>
+                        <option value="Kelas XI">Kelas XI</option>
+                        <option value="Kelas XII">Kelas XII</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -593,13 +578,13 @@
                     <textarea id="newMateriDesc" required rows="2" placeholder="Penjelasan modul atau materi..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Link Google Drive</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Link Google Drive / Materi</label>
                     <input type="url" id="newMateriUrl" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Waktu & Tanggal Terbuka Materi (Countdown Target)</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Terbuka Materi (Opsional)</label>
                     <input type="datetime-local" id="newMateriUnlockTime" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
-                    <p class="text-[10px] text-slate-400 mt-1">Biarkan kosong jika materi langsung dapat diunduh tanpa hitung mundur.</p>
+                    <p class="text-[10px] text-slate-400 mt-1">Biarkan kosong jika materi dapat langsung diakses.</p>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeAddMateriModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Batal</button>
@@ -619,9 +604,8 @@
                     <input type="text" id="newTugasTitle" required placeholder="Contoh: Tugas 1: Analisis Data Python" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-3">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Batas Waktu Pengumpulan (Deadline Target)</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Batas Waktu Pengumpulan (Deadline)</label>
                     <input type="datetime-local" id="newTugasDeadline" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
-                    <p class="text-[10px] text-slate-400 mt-1">Pilih tanggal dan jam batas akhir pengumpulan tugas.</p>
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Instruksi / Penjelasan Tugas</label>
@@ -644,20 +628,19 @@
             <form onsubmit="handlePengumpulanTugas(event)">
                 <input type="hidden" id="modalTugasId">
                 <div class="mb-3">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Siswa (Otomatis)</label>
-                    <input type="text" id="modalSiswaNama" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-xs font-semibold">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Siswa</label>
+                    <input type="text" id="modalSiswaNama" placeholder="Nama Anda" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold">
                 </div>
                 <div class="mb-3">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Kelas (Otomatis)</label>
-                    <input type="text" id="modalSiswaKelas" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-xs font-semibold">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Kelas</label>
+                    <input type="text" id="modalSiswaKelas" placeholder="Contoh: X-1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Tautan / Link Google Drive / File Tugas</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Tautan / Link Google Drive Tugas</label>
                     <input type="url" id="modalLinkTugas" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeSubmitTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Batal</button>
-                    <!-- B2. SPINNER LOADING KUMPULKAN TUGAS -->
                     <button type="submit" id="btnSubmitTugas" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-lg shadow flex items-center">
                         <span id="btnTugasText">Kumpulkan Sekarang</span>
                         <span id="btnTugasSpinner" class="hidden flex items-center"><i class="fa-solid fa-spinner animate-spin mr-1.5"></i> Mengirim...</span>
@@ -669,29 +652,26 @@
 
     <!-- ==================== MODAL FULLSCREEN ABSENSI SEKOLAH ==================== -->
     <div id="absensiIframeModal" class="fixed inset-0 bg-slate-900 z-50 flex flex-col hidden">
-        <!-- Header Topbar Modal -->
         <div class="bg-slate-900 text-white px-6 py-3 flex justify-between items-center border-b border-slate-800 shadow-md">
             <div class="flex items-center gap-3">
                 <div class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
                 <span class="font-bold text-sm tracking-wide">Portal Presensi Terpadu — SMAN 4 Manado</span>
             </div>
             
-            <!-- Tombol Kembali ke Web Pembelajaran -->
             <button type="button" onclick="closeAbsensiModal()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg transform active:scale-95">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Kembali ke Web Pembelajaran</span>
             </button>
         </div>
 
-        <!-- Iframe Container Loading External Attendance Web -->
         <div class="flex-1 w-full h-full bg-white relative">
             <iframe id="absensiFrame" src="" class="w-full h-full border-0"></iframe>
         </div>
     </div>
 
-    <!-- ==================== JAVASCRIPT SYSTEM ENGINE & FIREBASE INTEGRATION ==================== -->
+    <!-- ==================== JAVASCRIPT SYSTEM ENGINE ==================== -->
     <script>
-        // 1. INSIALISASI FIREBASE CONFIG
+        // FIREBASE INITIALIZATION
         const firebaseConfig = {
             apiKey: "AIzaSyCTD-3NLDHGCucMSWHAosSHu2-e6znnLm8",
             authDomain: "informatika-sman4-manado.firebaseapp.com",
@@ -703,25 +683,24 @@
             measurementId: "G-BLWGZ4RZFK"
         };
 
-        // Initialize Firebase SDK
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch (e) {
+            console.warn("Firebase Init fallback enabled.");
+        }
 
         // GLOBAL STATE
         let currentUser = null;
         let currentPage = 1;
         const rowsPerPage = 5;
         let sortAsc = true;
-
-        // MATERI TAB STATE
         let activeMateriTab = 'ALL';
-
-        // TUGAS SUBMISSIONS STATE (PAGINATION & SORTING)
         let tugasCurrentPage = 1;
         const tugasRowsPerPage = 5;
         let tugasSortAsc = true;
 
-        // MOTIVATIONAL QUOTES
         const quotes = [
             "Teknologi bukan sekadar alat, melainkan jembatan untuk menciptakan masa depan.",
             "Setiap baris kode adalah langkah kecil menuju inovasi besar.",
@@ -730,38 +709,31 @@
             "Jangan takut pada eror; eror adalah bukti bahwa Anda sedang berusaha dan belajar!"
         ];
 
-        // LOCAL CACHE WITH FIREBASE KEYS
-        let studentLogins = [];
-        let materiData = [];
-        let tugasData = [];
-        let tugasSubmissions = [];
+        // LOCAL CACHE DATA
+        let studentLogins = JSON.parse(localStorage.getItem('sman4_cache_logins') || '[]');
+        let materiData = JSON.parse(localStorage.getItem('sman4_cache_materi') || '[]');
+        let tugasData = JSON.parse(localStorage.getItem('sman4_cache_tugas') || '[]');
+        let tugasSubmissions = JSON.parse(localStorage.getItem('sman4_cache_submissions') || '[]');
 
-        // INITIALIZATION
         window.addEventListener('DOMContentLoaded', () => {
             startRealtimeClock();
             setDailyQuote();
             checkDeviceMemory();
             checkAutoLogin();
-            listenFirebaseData();
+            initDataListeners();
         });
 
-        // TOAST NOTIFICATION KUSTOM
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            
             const bgColor = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-brand-600';
             const icon = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info';
 
             toast.className = `${bgColor} text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2 transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
             toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span>${message}</span>`;
-
             container.appendChild(toast);
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => toast.remove(), 300);
@@ -781,38 +753,49 @@
             }
         }
 
-        // LISTEN TO FIREBASE REALTIME DATABASE
-        function listenFirebaseData() {
-            db.ref('logins').on('value', (snapshot) => {
-                const data = snapshot.val();
-                studentLogins = data ? Object.keys(data).map(key => ({ key, ...data[key] })) : [];
+        // SYNC DATA FROM FIREBASE / LOCALSTORAGE
+        function initDataListeners() {
+            if (db) {
+                db.ref('logins').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) studentLogins = Object.keys(data).map(key => ({ key, ...data[key] }));
+                    localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
+                    renderStudentTable();
+                    updateAdminStats();
+                });
+
+                db.ref('materi').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) materiData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                    localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
+                    renderMateriCards();
+                    updateAdminStats();
+                });
+
+                db.ref('tugas').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) tugasData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                    localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
+                    renderTugasList();
+                    updateAdminStats();
+                });
+
+                db.ref('submissions').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) tugasSubmissions = Object.keys(data).map(key => ({ key, ...data[key] }));
+                    localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
+                    renderTugasSubmissionsTable();
+                    updateAdminStats();
+                });
+            } else {
                 renderStudentTable();
-                updateAdminStats();
-            });
-
-            db.ref('materi').on('value', (snapshot) => {
-                const data = snapshot.val();
-                materiData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
                 renderMateriCards();
-                updateAdminStats();
-            });
-
-            db.ref('tugas').on('value', (snapshot) => {
-                const data = snapshot.val();
-                tugasData = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
                 renderTugasList();
-                updateAdminStats();
-            });
-
-            db.ref('submissions').on('value', (snapshot) => {
-                const data = snapshot.val();
-                tugasSubmissions = data ? Object.keys(data).map(key => ({ key, ...data[key] })) : [];
                 renderTugasSubmissionsTable();
                 updateAdminStats();
-            });
+            }
         }
 
-        // PERBARUI STATISTIK DI DASHBOARD ADMIN
         function updateAdminStats() {
             const statHadir = document.getElementById('statTotalHadir');
             const statSubmissions = document.getElementById('statTotalSubmissions');
@@ -825,7 +808,6 @@
             if (statTugas) statTugas.innerText = tugasData.length;
         }
 
-        // REALTIME CLOCK & DATE (WITA)
         function startRealtimeClock() {
             setInterval(() => {
                 const now = new Date();
@@ -882,84 +864,51 @@
 
             if (!nama || !kelas) return;
 
-            const btnText = document.getElementById('btnSiswaText');
-            const btnSpinner = document.getElementById('btnSiswaSpinner');
-            const btnSubmit = document.getElementById('btnSubmitSiswa');
+            if (rememberMe) {
+                localStorage.setItem('sman4_remember_nama', nama);
+                localStorage.setItem('sman4_remember_kelas', kelas);
+            } else {
+                localStorage.removeItem('sman4_remember_nama');
+                localStorage.removeItem('sman4_remember_kelas');
+            }
 
-            btnText.classList.add('hidden');
-            btnSpinner.classList.remove('hidden');
-            btnSubmit.disabled = true;
+            currentUser = { role: 'siswa', name: nama, kelas: kelas };
+            localStorage.setItem('sman4_session', JSON.stringify(currentUser));
 
-            setTimeout(() => {
-                if (rememberMe) {
-                    localStorage.setItem('sman4_remember_nama', nama);
-                    localStorage.setItem('sman4_remember_kelas', kelas);
-                } else {
-                    localStorage.removeItem('sman4_remember_nama');
-                    localStorage.removeItem('sman4_remember_kelas');
-                }
+            const todayStr = new Date().toLocaleDateString('id-ID');
+            const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+            const newLogin = { key: 'login_' + Date.now(), name: nama, kelas: kelas, date: todayStr, time: timeStr, timestamp: Date.now() };
 
-                currentUser = { role: 'siswa', name: nama, kelas: kelas };
-                localStorage.setItem('sman4_session', JSON.stringify(currentUser));
+            studentLogins.unshift(newLogin);
+            localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
 
-                const todayStr = new Date().toLocaleDateString('id-ID');
-                const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
-
-                const newLogin = { name: nama, kelas: kelas, date: todayStr, time: timeStr, timestamp: Date.now() };
-
+            if (db) {
                 const key = (nama + '_' + kelas).replace(/[.#$\[\]/]/g, "_");
-                db.ref('logins/' + key).set(newLogin);
+                db.ref('logins/' + key).set(newLogin).catch(err => console.warn(err));
+            }
 
-                btnText.classList.remove('hidden');
-                btnSpinner.classList.add('hidden');
-                btnSubmit.disabled = false;
-
-                document.getElementById('loginModal').classList.add('hidden');
-                setupUserUI();
-                showToast(`Selamat datang, ${nama}!`, 'success');
-            }, 600);
+            document.getElementById('loginModal').classList.add('hidden');
+            setupUserUI();
+            showToast(`Selamat datang, ${nama}!`, 'success');
         }
 
         function handleLoginAdmin(e) {
             e.preventDefault();
+            currentUser = { role: 'admin', name: "Glendy A. Taawoeda, S.Pd", kelas: "Guru Informatika" };
+            localStorage.setItem('sman4_session', JSON.stringify(currentUser));
 
-            const btnText = document.getElementById('btnAdminText');
-            const btnSpinner = document.getElementById('btnAdminSpinner');
-            const btnSubmit = document.getElementById('btnSubmitAdmin');
-
-            btnText.classList.add('hidden');
-            btnSpinner.classList.remove('hidden');
-            btnSubmit.disabled = true;
-
-            setTimeout(() => {
-                currentUser = { role: 'admin', name: "Glendy A. Taawoeda, S.Pd", kelas: "Guru Informatika" };
-                localStorage.setItem('sman4_session', JSON.stringify(currentUser));
-
-                btnText.classList.remove('hidden');
-                btnSpinner.classList.add('hidden');
-                btnSubmit.disabled = false;
-
-                document.getElementById('loginModal').classList.add('hidden');
-                setupUserUI();
-                showToast('Berhasil masuk sebagai Mode Admin / Guru', 'info');
-            }, 600);
+            document.getElementById('loginModal').classList.add('hidden');
+            setupUserUI();
+            showToast('Berhasil masuk sebagai Mode Admin / Guru', 'info');
         }
 
-        // SESI TANYA KONFIRMASI LOGOUT
         function handleLogout() {
-            const yakinKeluar = confirm("Apakah Anda yakin ingin keluar dari Portal Pembelajaran Informatika SMAN 4 Manado?");
-            if (!yakinKeluar) return;
-
+            if (!confirm("Apakah Anda yakin ingin keluar dari Portal Pembelajaran Informatika SMAN 4 Manado?")) return;
             localStorage.removeItem('sman4_session');
             currentUser = null;
             document.getElementById('loginModal').classList.remove('hidden');
             checkDeviceMemory();
-            
-            renderStudentTable();
-            renderMateriCards();
-            renderTugasList();
-            renderTugasSubmissionsTable();
-            
+            setupUserUI();
             showToast('Anda telah berhasil keluar dari sistem.', 'info');
         }
 
@@ -967,8 +916,6 @@
             const greetingText = document.getElementById('greetingText');
             const userRoleBadge = document.getElementById('userRoleBadge');
             const adminMenuSection = document.getElementById('adminMenuSection');
-            const btnAddMateri = document.getElementById('btnAddMateri');
-            const btnAddTugas = document.getElementById('btnAddTugas');
 
             const now = new Date();
             const hour = now.getHours();
@@ -977,19 +924,18 @@
             else if (hour >= 15 && hour < 18) sapaanWaktu = "Selamat Sore";
             else if (hour >= 18) sapaanWaktu = "Selamat Malam";
 
-            greetingText.innerText = `${sapaanWaktu}, ${currentUser.name}!`;
-
-            if (currentUser.role === 'admin') {
-                userRoleBadge.innerHTML = `<i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Mode Admin / Guru`;
-                userRoleBadge.className = "text-xs font-semibold text-amber-700 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200";
-                adminMenuSection.classList.remove('hidden');
-                btnAddMateri.classList.remove('hidden');
-                btnAddTugas.classList.remove('hidden');
+            if (currentUser) {
+                greetingText.innerText = `${sapaanWaktu}, ${currentUser.name}!`;
+                if (currentUser.role === 'admin') {
+                    userRoleBadge.innerHTML = `<i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Mode Admin / Guru`;
+                    userRoleBadge.className = "text-xs font-semibold text-amber-700 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200";
+                    adminMenuSection.classList.remove('hidden');
+                } else {
+                    userRoleBadge.innerHTML = `<i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Kelas ${currentUser.kelas}`;
+                    adminMenuSection.classList.add('hidden');
+                }
             } else {
-                userRoleBadge.innerHTML = `<i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Kelas ${currentUser.kelas}`;
-                adminMenuSection.classList.add('hidden');
-                btnAddMateri.classList.add('hidden');
-                btnAddTugas.classList.add('hidden');
+                greetingText.innerText = `${sapaanWaktu}!`;
             }
 
             renderStudentTable();
@@ -1013,40 +959,226 @@
             if (activeNav) activeNav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium bg-brand-600 text-white transition";
         }
 
-        // ================= DELETE FUNCTIONS (KHUSUS ADMIN) =================
-        function deleteLogin(key) {
-            if (!currentUser || currentUser.role !== 'admin') return;
-            if (confirm("Apakah Anda yakin ingin menghapus data presensi kehadiran siswa ini?")) {
-                db.ref('logins/' + key).remove();
-                showToast('Data presensi dihapus', 'info');
+        // MATERI PELAJARAN FUNCTIONS
+        function openAddMateriModal() { document.getElementById('addMateriModal').classList.remove('hidden'); }
+        function closeAddMateriModal() { document.getElementById('addMateriModal').classList.add('hidden'); }
+
+        function handleTambahMateri(e) {
+            e.preventDefault();
+            const title = document.getElementById('newMateriTitle').value.trim();
+            const kelas = document.getElementById('newMateriKelas').value;
+            const desc = document.getElementById('newMateriDesc').value.trim();
+            const driveUrl = document.getElementById('newMateriUrl').value.trim();
+            const unlockTimeInput = document.getElementById('newMateriUnlockTime').value;
+
+            if (!title || !driveUrl) return;
+
+            const unlockTimestamp = unlockTimeInput ? new Date(unlockTimeInput).getTime() : 0;
+            const newMateri = { id: 'materi_' + Date.now(), title, kelas, desc, driveUrl, unlockTimestamp };
+
+            materiData.unshift(newMateri);
+            localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
+
+            if (db) {
+                db.ref('materi/' + newMateri.id).set(newMateri).catch(err => console.warn(err));
             }
+
+            e.target.reset();
+            closeAddMateriModal();
+            renderMateriCards();
+            updateAdminStats();
+            showToast('Materi pelajaran baru berhasil diterbitkan!', 'success');
+        }
+
+        function switchMateriTab(kelas) {
+            activeMateriTab = kelas;
+            const tabs = ['ALL', 'X', 'XI', 'XII'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-materi-${t}`);
+                if (btn) {
+                    btn.className = (t === kelas) 
+                        ? "tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm"
+                        : "tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+                }
+            });
+            renderMateriCards();
+        }
+
+        function renderMateriCards() {
+            const grid = document.getElementById('materiGrid');
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            grid.innerHTML = '';
+
+            let filteredMateri = materiData.filter(item => {
+                if (activeMateriTab === 'ALL') return true;
+                if (item.kelas === "Semua Kelas") return true;
+                if (activeMateriTab === 'X') return item.kelas.includes("Kelas X") || item.kelas.includes("X-");
+                if (activeMateriTab === 'XI') return item.kelas.includes("Kelas XI") || item.kelas.includes("XI-");
+                if (activeMateriTab === 'XII') return item.kelas.includes("Kelas XII") || item.kelas.includes("XII-");
+                return true;
+            });
+
+            if (filteredMateri.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-xs font-medium">
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
+                    Belum ada materi pelajaran untuk ${activeMateriTab === 'ALL' ? 'semua kelas' : 'Kelas ' + activeMateriTab}. Klik "Tambah Materi Pelajaran" untuk menambahkan.
+                </div>`;
+                return;
+            }
+
+            filteredMateri.forEach(item => {
+                grid.innerHTML += `
+                    <div class="bg-slate-50 hover:bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition flex flex-col justify-between relative">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200">${item.kelas}</span>
+                                <div class="flex items-center gap-2">
+                                    ${isAdmin ? `
+                                        <button onclick="deleteMateri('${item.id}')" title="Hapus Materi" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    ` : ''}
+                                    <i class="fa-solid fa-file-pdf text-rose-500 text-xl"></i>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
+                        </div>
+                        <div>
+                            <button onclick="window.open('${item.driveUrl}', '_blank')" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white shadow-md transition">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Buka / Unduh Materi</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         function deleteMateri(id) {
-            if (!currentUser || currentUser.role !== 'admin') return;
-            if (confirm("Apakah Anda yakin ingin menghapus materi pelajaran ini?")) {
-                db.ref('materi/' + id).remove();
-                showToast('Materi berhasil dihapus', 'info');
+            if (!confirm("Apakah Anda yakin ingin menghapus materi ini?")) return;
+            materiData = materiData.filter(m => m.id !== id);
+            localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
+            if (db) db.ref('materi/' + id).remove().catch(e => console.warn(e));
+            renderMateriCards();
+            updateAdminStats();
+            showToast('Materi berhasil dihapus', 'info');
+        }
+
+        // TUGAS SISWA FUNCTIONS
+        function openAddTugasModal() { document.getElementById('addTugasModal').classList.remove('hidden'); }
+        function closeAddTugasModal() { document.getElementById('addTugasModal').classList.add('hidden'); }
+
+        function handleTambahTugas(e) {
+            e.preventDefault();
+            const title = document.getElementById('newTugasTitle').value.trim();
+            const deadlineInput = document.getElementById('newTugasDeadline').value;
+            const desc = document.getElementById('newTugasDesc').value.trim();
+
+            if (!title || !deadlineInput) return;
+
+            const deadlineTimestamp = new Date(deadlineInput).getTime();
+            const newTugas = { id: 'tugas_' + Date.now(), title, deadlineTimestamp, desc };
+
+            tugasData.unshift(newTugas);
+            localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
+
+            if (db) {
+                db.ref('tugas/' + newTugas.id).set(newTugas).catch(err => console.warn(err));
             }
+
+            e.target.reset();
+            closeAddTugasModal();
+            renderTugasList();
+            updateAdminStats();
+            showToast('Tugas baru berhasil diterbitkan!', 'success');
+        }
+
+        function renderTugasList() {
+            const list = document.getElementById('tugasList');
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            list.innerHTML = '';
+
+            if (tugasData.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan. Klik "Buat Tugas Baru" untuk menambahkan.</div>`;
+                return;
+            }
+
+            tugasData.forEach(t => {
+                const deadlineDate = new Date(t.deadlineTimestamp);
+                const deadlineStr = deadlineDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ', Jam ' + deadlineDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+
+                list.innerHTML += `
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200">
+                                <i class="fa-solid fa-clock mr-1"></i> Batas Waktu: ${deadlineStr}
+                            </span>
+                            <h4 class="font-bold text-slate-800 text-base mt-2">${t.title}</h4>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">${t.desc}</p>
+                        </div>
+                        <div class="flex items-center gap-2 self-end md:self-center shrink-0">
+                            ${isAdmin ? `
+                                <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
+                                    <i class="fa-solid fa-trash-can mr-1"></i> Hapus
+                                </button>
+                            ` : ''}
+                            <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center shadow">
+                                <i class="fa-solid fa-paper-plane mr-1.5"></i> Kumpulkan Tugas
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         function deleteTugas(id) {
-            if (!currentUser || currentUser.role !== 'admin') return;
-            if (confirm("Apakah Anda yakin ingin menghapus tugas ini beserta seluruh batas waktunya?")) {
-                db.ref('tugas/' + id).remove();
-                showToast('Tugas berhasil dihapus', 'info');
-            }
+            if (!confirm("Apakah Anda yakin ingin menghapus tugas ini?")) return;
+            tugasData = tugasData.filter(t => t.id !== id);
+            localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
+            if (db) db.ref('tugas/' + id).remove().catch(e => console.warn(e));
+            renderTugasList();
+            updateAdminStats();
+            showToast('Tugas berhasil dihapus', 'info');
         }
 
-        function deleteSubmission(key) {
-            if (!currentUser || currentUser.role !== 'admin') return;
-            if (confirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan tugas siswa ini?")) {
-                db.ref('submissions/' + key).remove();
-                showToast('Riwayat pengumpulan dihapus', 'info');
+        function openSubmitTugasModal(tugasId, title) {
+            document.getElementById('modalTugasId').value = tugasId;
+            document.getElementById('modalJudulTugas').innerText = title;
+            if (currentUser) {
+                document.getElementById('modalSiswaNama').value = currentUser.name;
+                document.getElementById('modalSiswaKelas').value = currentUser.kelas;
             }
+            document.getElementById('submitTugasModal').classList.remove('hidden');
         }
 
-        // RENDER TABEL PRESENSI SISWA DENGAN REGEX UNTUK KELAS X, XI, XII
+        function closeSubmitTugasModal() { document.getElementById('submitTugasModal').classList.add('hidden'); }
+
+        function handlePengumpulanTugas(e) {
+            e.preventDefault();
+            const title = document.getElementById('modalJudulTugas').innerText;
+            const name = document.getElementById('modalSiswaNama').value.trim();
+            const kelas = document.getElementById('modalSiswaKelas').value.trim();
+            const url = document.getElementById('modalLinkTugas').value.trim();
+            const time = new Date().toLocaleString('id-ID') + ' WITA';
+
+            if (!url || !name || !kelas) return;
+
+            const newSub = { key: 'sub_' + Date.now(), name, kelas, tugasTitle: title, time, url };
+            tugasSubmissions.unshift(newSub);
+            localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
+
+            if (db) {
+                db.ref('submissions').push(newSub).catch(err => console.warn(err));
+            }
+
+            document.getElementById('modalLinkTugas').value = '';
+            closeSubmitTugasModal();
+            renderTugasSubmissionsTable();
+            updateAdminStats();
+            showToast('Tugas Anda berhasil dikumpulkan!', 'success');
+        }
+
         function renderStudentTable() {
             const tbody = document.getElementById('studentTableBody');
             const searchInput = document.getElementById('searchStudent');
@@ -1064,14 +1196,11 @@
 
             let filtered = studentLogins.filter(s => {
                 const matchSearch = s.name.toLowerCase().includes(search) || s.kelas.toLowerCase().includes(search);
-                
                 let matchKelas = true;
                 if (selectedKelasGroup !== 'ALL') {
-                    // Regex Kata Utuh agar filter X tidak ikut mengambil XI atau XII
                     const regex = new RegExp(`^${selectedKelasGroup}(-[0-9]+)?$`, 'i');
                     matchKelas = regex.test(s.kelas.trim());
                 }
-                
                 return matchSearch && matchKelas;
             });
 
@@ -1083,7 +1212,7 @@
 
             tbody.innerHTML = '';
             if (paginated.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" class="text-center p-4 text-xs text-slate-400">Belum ada data kehadiran siswa untuk kriteria ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" class="text-center p-4 text-xs text-slate-400">Belum ada data kehadiran siswa.</td></tr>`;
             } else {
                 paginated.forEach((item, index) => {
                     tbody.innerHTML += `
@@ -1111,402 +1240,18 @@
             document.getElementById('btnNextPage').disabled = start + rowsPerPage >= total;
         }
 
-        function toggleSortName() {
-            sortAsc = !sortAsc;
+        function deleteLogin(key) {
+            if (!confirm("Apakah Anda yakin ingin menghapus data presensi ini?")) return;
+            studentLogins = studentLogins.filter(s => s.key !== key);
+            localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
+            if (db) db.ref('logins/' + key).remove().catch(e => console.warn(e));
             renderStudentTable();
+            updateAdminStats();
+            showToast('Data presensi dihapus', 'info');
         }
 
-        function changePage(delta) {
-            currentPage += delta;
-            renderStudentTable();
-        }
-
-        // MATERI PELAJARAN TAB & RENDER FUNCTIONS
-        function switchMateriTab(kelas) {
-            activeMateriTab = kelas;
-            
-            const tabs = ['ALL', 'X', 'XI', 'XII'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`tab-materi-${t}`);
-                if (btn) {
-                    if (t === kelas) {
-                        btn.className = "tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm";
-                    } else {
-                        btn.className = "tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-                    }
-                }
-            });
-
-            renderMateriCards();
-        }
-
-        function openAddMateriModal() { document.getElementById('addMateriModal').classList.remove('hidden'); }
-        function closeAddMateriModal() { document.getElementById('addMateriModal').classList.add('hidden'); }
-
-        function handleTambahMateri(e) {
-            e.preventDefault();
-            const title = document.getElementById('newMateriTitle').value.trim();
-            const kelas = document.getElementById('newMateriKelas').value;
-            const desc = document.getElementById('newMateriDesc').value.trim();
-            const driveUrl = document.getElementById('newMateriUrl').value.trim();
-            const unlockTimeInput = document.getElementById('newMateriUnlockTime').value;
-
-            if (!title || !driveUrl) return;
-
-            const unlockTimestamp = unlockTimeInput ? new Date(unlockTimeInput).getTime() : 0;
-            const newMateri = { title, kelas, desc, driveUrl, unlockTimestamp };
-
-            db.ref('materi').push(newMateri);
-            e.target.reset();
-            closeAddMateriModal();
-            showToast('Materi pelajaran baru berhasil diterbitkan!', 'success');
-        }
-
-        function checkGradeMatch(studentKelas, materiKelas) {
-            if (!studentKelas || !materiKelas || materiKelas === "Semua Kelas") return true;
-
-            let sLevel = "";
-            if (/^XII-/i.test(studentKelas)) sLevel = "XII";
-            else if (/^XI-/i.test(studentKelas)) sLevel = "XI";
-            else if (/^X-/i.test(studentKelas)) sLevel = "X";
-
-            if (!sLevel) return true;
-
-            if (sLevel === "XII" && materiKelas.includes("XII")) return true;
-            if (sLevel === "XI" && materiKelas.includes("XI") && !materiKelas.includes("XII")) return true;
-            if (sLevel === "X" && (materiKelas.includes("Kelas X") || materiKelas.startsWith("X-1")) && !materiKelas.includes("XI") && !materiKelas.includes("XII")) return true;
-
-            return false;
-        }
-
-        function renderMateriCards() {
-            const grid = document.getElementById('materiGrid');
-            const isAdmin = currentUser && currentUser.role === 'admin';
-            grid.innerHTML = '';
-
-            let filteredMateri = materiData.filter(item => {
-                if (activeMateriTab === 'ALL') return true;
-                if (item.kelas === "Semua Kelas") return true;
-                
-                if (activeMateriTab === 'X') return item.kelas.includes("Kelas X") || (item.kelas.includes("X-") && !item.kelas.includes("XI") && !item.kelas.includes("XII"));
-                if (activeMateriTab === 'XI') return item.kelas.includes("Kelas XI") || (item.kelas.includes("XI-") && !item.kelas.includes("XII"));
-                if (activeMateriTab === 'XII') return item.kelas.includes("Kelas XII") || item.kelas.includes("XII-");
-                
-                return true;
-            });
-
-            if (filteredMateri.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-xs font-medium">
-                    <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
-                    Tidak ada materi pelajaran untuk ${activeMateriTab === 'ALL' ? 'semua kelas' : 'Kelas ' + activeMateriTab}.
-                </div>`;
-                return;
-            }
-
-            const now = Date.now();
-
-            filteredMateri.forEach(item => {
-                let isGradeLocked = false;
-                if (!isAdmin && currentUser && currentUser.role === 'siswa') {
-                    isGradeLocked = !checkGradeMatch(currentUser.kelas, item.kelas);
-                }
-
-                const isTimeLocked = item.unlockTimestamp && item.unlockTimestamp > now;
-
-                let dateDisplayStr = '';
-                if (item.unlockTimestamp && item.unlockTimestamp > 0) {
-                    const unlockDate = new Date(item.unlockTimestamp);
-                    const dateFormatted = unlockDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-                    const timeFormatted = unlockDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
-                    dateDisplayStr = `${dateFormatted}, Jam ${timeFormatted}`;
-                }
-
-                let statusBoxHtml = '';
-                let buttonHtml = '';
-
-                if (isGradeLocked) {
-                    statusBoxHtml = `
-                        <div class="p-2.5 bg-rose-50 rounded-xl border border-rose-200 mb-3">
-                            <p class="text-[10px] text-rose-700 font-bold flex items-center gap-1">
-                                <i class="fa-solid fa-lock"></i> Terkunci (Khusus ${item.kelas})
-                            </p>
-                            <p class="text-[10px] text-rose-500 mt-0.5">Materi ini tidak dapat diakses oleh kelas Anda.</p>
-                        </div>
-                    `;
-                    buttonHtml = `
-                        <button disabled class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-slate-200 text-slate-400 cursor-not-allowed">
-                            <i class="fa-solid fa-lock"></i>
-                            <span>Akses Terkunci (Beda Kelas)</span>
-                        </button>
-                    `;
-                } else if (isTimeLocked) {
-                    statusBoxHtml = `
-                        <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 mb-3">
-                            <p class="text-[10px] text-amber-700 font-bold mb-1"><i class="fa-solid fa-calendar-clock mr-1"></i> Terbuka Pada: ${dateDisplayStr}</p>
-                            <div id="timer-${item.id}" class="text-xs font-mono font-extrabold text-amber-800 text-center bg-white/80 py-1.5 rounded-lg border border-amber-300">Menghitung...</div>
-                        </div>
-                    `;
-                    buttonHtml = `
-                        <button id="btnDownload-${item.id}" disabled class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-slate-200 text-slate-400 cursor-not-allowed">
-                            <i class="fa-solid fa-download"></i>
-                            <span>Buka / Unduh Materi</span>
-                        </button>
-                    `;
-                } else {
-                    statusBoxHtml = `
-                        <div class="mb-3">
-                            <p class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Materi Siap Diunduh</p>
-                        </div>
-                    `;
-                    buttonHtml = `
-                        <button id="btnDownload-${item.id}" onclick="openMateriDrive('${item.driveUrl}')" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white shadow-md transition">
-                            <i class="fa-solid fa-download"></i>
-                            <span>Buka / Unduh Materi</span>
-                        </button>
-                    `;
-                }
-
-                grid.innerHTML += `
-                    <div class="bg-slate-50 hover:bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition flex flex-col justify-between relative">
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200">${item.kelas}</span>
-                                <div class="flex items-center gap-2">
-                                    ${isAdmin ? `
-                                        <button onclick="deleteMateri('${item.id}')" title="Hapus Materi" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    ` : ''}
-                                    <i class="fa-solid fa-file-pdf text-rose-500 text-xl"></i>
-                                </div>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
-                        </div>
-                        <div>
-                            ${statusBoxHtml}
-                            ${buttonHtml}
-                        </div>
-                    </div>
-                `;
-
-                if (!isGradeLocked && isTimeLocked) {
-                    startMateriCountdown(item.id, item.unlockTimestamp);
-                }
-            });
-        }
-
-        function startMateriCountdown(materiId, targetTime) {
-            const interval = setInterval(() => {
-                const diff = targetTime - Date.now();
-                if (diff <= 0) {
-                    clearInterval(interval);
-                    renderMateriCards();
-                    return;
-                }
-
-                const timerEl = document.getElementById(`timer-${materiId}`);
-                if (timerEl) {
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                    let timeStringParts = [];
-                    if (days > 0) timeStringParts.push(`${days} Hari`);
-                    if (hours > 0 || days > 0) timeStringParts.push(`${hours} Jam`);
-                    timeStringParts.push(`${minutes} Menit`);
-                    timeStringParts.push(`${seconds} Detik`);
-
-                    timerEl.innerText = timeStringParts.join(' ');
-                }
-            }, 1000);
-        }
-
-        function openMateriDrive(url) { window.open(url, '_blank'); }
-
-        // TUGAS SISWA FUNCTIONS
-        function openAddTugasModal() { document.getElementById('addTugasModal').classList.remove('hidden'); }
-        function closeAddTugasModal() { document.getElementById('addTugasModal').classList.add('hidden'); }
-
-        function handleTambahTugas(e) {
-            e.preventDefault();
-            const title = document.getElementById('newTugasTitle').value.trim();
-            const deadlineInput = document.getElementById('newTugasDeadline').value;
-            const desc = document.getElementById('newTugasDesc').value.trim();
-
-            if (!title || !deadlineInput) return;
-
-            const deadlineTimestamp = new Date(deadlineInput).getTime();
-            const newTugas = { title, deadlineTimestamp, desc };
-
-            db.ref('tugas').push(newTugas);
-            e.target.reset();
-            closeAddTugasModal();
-            showToast('Tugas baru berhasil diterbitkan!', 'success');
-        }
-
-        function renderTugasList() {
-            const list = document.getElementById('tugasList');
-            const isAdmin = currentUser && currentUser.role === 'admin';
-            list.innerHTML = '';
-
-            if (tugasData.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan.</div>`;
-                return;
-            }
-
-            const now = Date.now();
-
-            tugasData.forEach(t => {
-                const isExpired = t.deadlineTimestamp && t.deadlineTimestamp < now;
-                let deadlineDisplayStr = '';
-
-                if (t.deadlineTimestamp && t.deadlineTimestamp > 0) {
-                    const dDate = new Date(t.deadlineTimestamp);
-                    const dateFormatted = dDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-                    const timeFormatted = dDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
-                    deadlineDisplayStr = `${dateFormatted}, Jam ${timeFormatted}`;
-                } else if (t.deadline) {
-                    deadlineDisplayStr = t.deadline;
-                }
-
-                list.innerHTML += `
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="flex-1">
-                            <div class="flex flex-wrap items-center gap-2 mb-1">
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isExpired ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
-                                    <i class="fa-solid fa-clock mr-1"></i> Batas Waktu: ${deadlineDisplayStr}
-                                </span>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-base mt-1">${t.title}</h4>
-                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">${t.desc}</p>
-                            ${t.deadlineTimestamp ? `
-                                <div id="countdown-tugas-box-${t.id}" class="mt-3">
-                                    <div class="inline-flex items-center gap-2 p-2 px-3 ${isExpired ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-amber-50 text-amber-800 border border-amber-200'} rounded-xl text-xs font-mono font-bold">
-                                        <i class="fa-solid ${isExpired ? 'fa-lock' : 'fa-hourglass-half'}"></i>
-                                        <span id="timer-tugas-${t.id}">${isExpired ? 'Waktu Habis — Tugas Terkunci' : 'Menghitung...'}</span>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="flex items-center gap-2 self-end md:self-center shrink-0">
-                            ${isAdmin ? `
-                                <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
-                                    <i class="fa-solid fa-trash-can mr-1"></i> Hapus
-                                </button>
-                            ` : ''}
-                            <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" ${isExpired ? 'disabled' : ''} class="${isExpired ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white shadow'} font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center">
-                                <i class="fa-solid ${isExpired ? 'fa-lock' : 'fa-paper-plane'} mr-1.5"></i> ${isExpired ? 'Terkunci' : 'Kumpulkan Tugas'}
-                            </button>
-                        </div>
-                    </div>
-                `;
-
-                if (t.deadlineTimestamp && !isExpired) {
-                    startTugasCountdown(t.id, t.deadlineTimestamp);
-                }
-            });
-        }
-
-        function startTugasCountdown(tugasId, targetTime) {
-            const interval = setInterval(() => {
-                const diff = targetTime - Date.now();
-                const timerEl = document.getElementById(`timer-tugas-${tugasId}`);
-
-                if (diff <= 0) {
-                    clearInterval(interval);
-                    renderTugasList();
-                    return;
-                }
-
-                if (timerEl) {
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                    let parts = [];
-                    if (days > 0) parts.push(`${days} Hari`);
-                    if (hours > 0 || days > 0) parts.push(`${hours} Jam`);
-                    parts.push(`${minutes} Menit`);
-                    parts.push(`${seconds} Detik`);
-
-                    timerEl.innerText = parts.join(' ');
-                }
-            }, 1000);
-        }
-
-        function openSubmitTugasModal(tugasId, title) {
-            if (!currentUser) {
-                showToast('Silakan login terlebih dahulu!', 'error');
-                return;
-            }
-
-            const tugas = tugasData.find(t => t.id === tugasId);
-            if (tugas && tugas.deadlineTimestamp && Date.now() > tugas.deadlineTimestamp) {
-                showToast('Batas waktu pengumpulan tugas ini telah habis!', 'error');
-                return;
-            }
-
-            document.getElementById('modalTugasId').value = tugasId;
-            document.getElementById('modalJudulTugas').innerText = title;
-            document.getElementById('modalSiswaNama').value = currentUser.name;
-            document.getElementById('modalSiswaKelas').value = currentUser.kelas;
-            document.getElementById('submitTugasModal').classList.remove('hidden');
-        }
-
-        function closeSubmitTugasModal() { document.getElementById('submitTugasModal').classList.add('hidden'); }
-
-        function handlePengumpulanTugas(e) {
-            e.preventDefault();
-            const tugasId = document.getElementById('modalTugasId').value;
-            const tugas = tugasData.find(t => t.id === tugasId);
-
-            if (tugas && tugas.deadlineTimestamp && Date.now() > tugas.deadlineTimestamp) {
-                showToast('Batas waktu telah berakhir. Tugas tidak dapat dikirim.', 'error');
-                closeSubmitTugasModal();
-                return;
-            }
-
-            const title = document.getElementById('modalJudulTugas').innerText;
-            const name = currentUser ? currentUser.name : document.getElementById('modalSiswaNama').value;
-            const kelas = currentUser ? currentUser.kelas : document.getElementById('modalSiswaKelas').value;
-            const url = document.getElementById('modalLinkTugas').value.trim();
-            const time = new Date().toLocaleString('id-ID') + ' WITA';
-
-            if (!url) return;
-
-            const btnText = document.getElementById('btnTugasText');
-            const btnSpinner = document.getElementById('btnTugasSpinner');
-            const btnSubmit = document.getElementById('btnSubmitTugas');
-
-            btnText.classList.add('hidden');
-            btnSpinner.classList.remove('hidden');
-            btnSubmit.disabled = true;
-
-            setTimeout(() => {
-                db.ref('submissions').push({ name, kelas, tugasTitle: title, time, url });
-                document.getElementById('modalLinkTugas').value = '';
-
-                btnText.classList.remove('hidden');
-                btnSpinner.classList.add('hidden');
-                btnSubmit.disabled = false;
-
-                closeSubmitTugasModal();
-                showToast('Tugas Anda berhasil dikumpulkan!', 'success');
-            }, 600);
-        }
-
-        function toggleSortTugasName() {
-            tugasSortAsc = !tugasSortAsc;
-            renderTugasSubmissionsTable();
-        }
-
-        function changeTugasPage(delta) {
-            tugasCurrentPage += delta;
-            renderTugasSubmissionsTable();
-        }
+        function toggleSortName() { sortAsc = !sortAsc; renderStudentTable(); }
+        function changePage(delta) { currentPage += delta; renderStudentTable(); }
 
         function renderTugasSubmissionsTable() {
             const tbody = document.getElementById('tugasSubmissionsTableBody');
@@ -1521,9 +1266,7 @@
             }
 
             let filtered = tugasSubmissions;
-            if (filter !== 'ALL') {
-                filtered = tugasSubmissions.filter(s => s.kelas.startsWith(filter));
-            }
+            if (filter !== 'ALL') filtered = tugasSubmissions.filter(s => s.kelas.startsWith(filter));
 
             filtered.sort((a, b) => tugasSortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
 
@@ -1556,13 +1299,23 @@
             }
 
             const infoEl = document.getElementById('tugasPaginationInfo');
-            const btnPrev = document.getElementById('btnPrevTugasPage');
-            const btnNext = document.getElementById('btnNextTugasPage');
-
             if (infoEl) infoEl.innerText = `Menampilkan ${total === 0 ? 0 : Math.min(start + 1, total)}-${Math.min(start + tugasRowsPerPage, total)} dari ${total} data`;
-            if (btnPrev) btnPrev.disabled = tugasCurrentPage === 1;
-            if (btnNext) btnNext.disabled = start + tugasRowsPerPage >= total;
+            document.getElementById('btnPrevTugasPage').disabled = tugasCurrentPage === 1;
+            document.getElementById('btnNextTugasPage').disabled = start + tugasRowsPerPage >= total;
         }
+
+        function deleteSubmission(key) {
+            if (!confirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan ini?")) return;
+            tugasSubmissions = tugasSubmissions.filter(s => s.key !== key);
+            localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
+            if (db) db.ref('submissions/' + key).remove().catch(e => console.warn(e));
+            renderTugasSubmissionsTable();
+            updateAdminStats();
+            showToast('Riwayat pengumpulan dihapus', 'info');
+        }
+
+        function toggleSortTugasName() { tugasSortAsc = !tugasSortAsc; renderTugasSubmissionsTable(); }
+        function changeTugasPage(delta) { tugasCurrentPage += delta; renderTugasSubmissionsTable(); }
 
         function exportDataCSV(type) {
             let csvContent = "data:text/csv;charset=utf-8,";
@@ -1588,8 +1341,17 @@
             if (confirm("Apakah Anda yakin ingin mereset seluruh data untuk Tahun Ajaran Baru?")) {
                 const choice = prompt("Ketik 'HAPUS' untuk mengosongkan database:");
                 if (choice === 'HAPUS') {
-                    db.ref('logins').remove();
-                    db.ref('submissions').remove();
+                    studentLogins = [];
+                    tugasSubmissions = [];
+                    localStorage.removeItem('sman4_cache_logins');
+                    localStorage.removeItem('sman4_cache_submissions');
+                    if (db) {
+                        db.ref('logins').remove();
+                        db.ref('submissions').remove();
+                    }
+                    renderStudentTable();
+                    renderTugasSubmissionsTable();
+                    updateAdminStats();
                     showToast("Database berhasil dibersihkan untuk Tahun Ajaran Baru!", "success");
                 }
             }

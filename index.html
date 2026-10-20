@@ -318,7 +318,7 @@
                         <h3 class="text-xl font-bold text-slate-800">Materi Pelajaran Informatika</h3>
                         <p class="text-xs text-slate-500">Pilih tab kelas di bawah untuk memfilter modul pembelajaran.</p>
                     </div>
-                    <!-- TOMBOL HANYA DITAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN DAN UNTUK DENGAN CLASS HIDDEN KETAT) -->
+                    <!-- TOMBOL HANYA DITAMPILKAN UNTUK ADMIN/GURU -->
                     <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden !hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Tambah Materi Pelajaran
                     </button>
@@ -350,20 +350,38 @@
 
             <!-- ==================== SEKSI 3: TUGAS SISWA ==================== -->
             <section id="page-tugas" class="space-y-6 hidden">
-                <div class="flex justify-between items-center">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800">Daftar Tugas Informatika</h3>
                         <p class="text-xs text-slate-500">Kumpulkan tugas Anda sebelum batas waktu yang telah ditentukan.</p>
                     </div>
-                    <!-- TOMBOL HANYA DITAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN) -->
+                    <!-- TOMBOL HANYA DITAMPILKAN UNTUK ADMIN/GURU -->
                     <button id="btnAddTugas" onclick="openAddTugasModal()" class="hidden !hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Buat Tugas Baru
                     </button>
                 </div>
 
-                <!-- List Tugas Card -->
-                <div id="tugasList" class="space-y-4">
-                    <!-- Populated dynamically -->
+                <!-- TAB FILTER KELAS TUGAS -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-6">
+                    <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4 mb-6">
+                        <button onclick="switchTugasTab('ALL')" id="tab-tugas-ALL" class="tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm">
+                            <i class="fa-solid fa-layer-group mr-1.5"></i> Semua Tugas
+                        </button>
+                        <button onclick="switchTugasTab('X')" id="tab-tugas-X" class="tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> Tugas Kelas X
+                        </button>
+                        <button onclick="switchTugasTab('XI')" id="tab-tugas-XI" class="tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> Tugas Kelas XI
+                        </button>
+                        <button onclick="switchTugasTab('XII')" id="tab-tugas-XII" class="tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-graduation-cap mr-1.5"></i> Tugas Kelas XII
+                        </button>
+                    </div>
+
+                    <!-- List Tugas Card -->
+                    <div id="tugasList" class="space-y-4">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
 
                 <!-- Tabel Rekap Pengumpulan Tugas Siswa -->
@@ -615,7 +633,32 @@
             <form onsubmit="handleTambahTugas(event)">
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Judul Tugas</label>
-                    <input type="text" id="newTugasTitle" required placeholder="Contoh: Tugas 1: Analisis Data Python" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <input type="text" id="newTugasTitle" required placeholder="Contoh: Tugas 1: Pemrograman Scratch" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Target Kelas</label>
+                    <select id="newTugasKelas" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                        <option value="Semua Kelas">Semua Kelas</option>
+                        <optgroup label="Tingkat Umum">
+                            <option value="Kelas X">Seluruh Kelas X</option>
+                            <option value="Kelas XI">Seluruh Kelas XI</option>
+                            <option value="Kelas XII">Seluruh Kelas XII</option>
+                        </optgroup>
+                        <optgroup label="Spesifik Kelas X">
+                            <option value="X-1">X-1</option><option value="X-2">X-2</option>
+                            <option value="X-3">X-3</option><option value="X-4">X-4</option>
+                        </optgroup>
+                        <optgroup label="Spesifik Kelas XI">
+                            <option value="XI-1">XI-1</option><option value="XI-2">XI-2</option>
+                            <option value="XI-3">XI-3</option><option value="XI-4">XI-4</option>
+                            <option value="XI-5">XI-5</option>
+                        </optgroup>
+                        <optgroup label="Spesifik Kelas XII">
+                            <option value="XII-1">XII-1</option><option value="XII-2">XII-2</option>
+                            <option value="XII-3">XII-3</option><option value="XII-4">XII-4</option>
+                            <option value="XII-5">XII-5</option>
+                        </optgroup>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Batas Waktu Pengumpulan (Deadline)</label>
@@ -711,6 +754,7 @@
         const rowsPerPage = 5;
         let sortAsc = true;
         let activeMateriTab = 'ALL';
+        let activeTugasTab = 'ALL';
         let tugasCurrentPage = 1;
         const tugasRowsPerPage = 5;
         let tugasSortAsc = true;
@@ -927,7 +971,6 @@
             showToast('Anda telah berhasil keluar dari sistem.', 'info');
         }
 
-        // KONTROL PENAMPILAN DAN AKSES PERAN
         function setupUserUI() {
             const greetingText = document.getElementById('greetingText');
             const userRoleBadge = document.getElementById('userRoleBadge');
@@ -1056,26 +1099,24 @@
             renderMateriCards();
         }
 
-        // KONTROL AKSES KELAS PADA MATERI
-        function checkGradeAccess(materiKelas) {
+        // KONTROL AKSES KELAS (GRADE LOCK)
+        function checkGradeAccess(targetKelas) {
             if (currentUser && currentUser.role === 'admin') return true;
-            if (!materiKelas || materiKelas === "Semua Kelas") return true;
+            if (!targetKelas || targetKelas === "Semua Kelas") return true;
             if (!currentUser || !currentUser.kelas) return false;
 
             const userKelas = currentUser.kelas.trim().toUpperCase();
-            const targetKelas = materiKelas.trim().toUpperCase();
+            const target = targetKelas.trim().toUpperCase();
 
-            // Pengecekan Kategori Umum
-            if (targetKelas === "KELAS X" && userKelas.startsWith("X-")) return true;
-            if (targetKelas === "KELAS XI" && userKelas.startsWith("XI-")) return true;
-            if (targetKelas === "KELAS XII" && userKelas.startsWith("XII-")) return true;
+            if (target === "KELAS X" && userKelas.startsWith("X-")) return true;
+            if (target === "KELAS XI" && userKelas.startsWith("XI-")) return true;
+            if (target === "KELAS XII" && userKelas.startsWith("XII-")) return true;
 
-            // Pengecekan Kategori Spesifik (Contoh: "X-1 s/d X-4")
-            if (targetKelas.includes("X-1") && userKelas.startsWith("X-")) return true;
-            if (targetKelas.includes("XI-1") && userKelas.startsWith("XI-")) return true;
-            if (targetKelas.includes("XII-1") && userKelas.startsWith("XII-")) return true;
+            if (target.includes("X-1") && userKelas.startsWith("X-")) return true;
+            if (target.includes("XI-1") && userKelas.startsWith("XI-")) return true;
+            if (target.includes("XII-1") && userKelas.startsWith("XII-")) return true;
 
-            return userKelas === targetKelas;
+            return userKelas === target;
         }
 
         function renderMateriCards() {
@@ -1169,13 +1210,14 @@
             }
 
             const title = document.getElementById('newTugasTitle').value.trim();
+            const kelas = document.getElementById('newTugasKelas').value;
             const deadlineInput = document.getElementById('newTugasDeadline').value;
             const desc = document.getElementById('newTugasDesc').value.trim();
 
             if (!title || !deadlineInput) return;
 
             const deadlineTimestamp = new Date(deadlineInput).getTime();
-            const newTugas = { id: 'tugas_' + Date.now(), title, deadlineTimestamp, desc };
+            const newTugas = { id: 'tugas_' + Date.now(), title, kelas, deadlineTimestamp, desc };
 
             tugasData.unshift(newTugas);
             localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
@@ -1191,38 +1233,86 @@
             showToast('Tugas baru berhasil diterbitkan!', 'success');
         }
 
+        function switchTugasTab(kelas) {
+            activeTugasTab = kelas;
+            const tabs = ['ALL', 'X', 'XI', 'XII'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-tugas-${t}`);
+                if (btn) {
+                    btn.className = (t === kelas) 
+                        ? "tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm"
+                        : "tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+                }
+            });
+            renderTugasList();
+        }
+
         function renderTugasList() {
             const list = document.getElementById('tugasList');
             const isAdmin = currentUser && currentUser.role === 'admin';
+            const now = Date.now();
             list.innerHTML = '';
 
-            if (tugasData.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada tugas yang diterbitkan.</div>`;
+            let filteredTugas = tugasData.filter(item => {
+                const itemKelas = item.kelas || "Semua Kelas";
+                if (activeTugasTab === 'ALL') return true;
+                if (itemKelas === "Semua Kelas") return true;
+                if (activeTugasTab === 'X') return itemKelas.includes("Kelas X") || itemKelas.includes("X-");
+                if (activeTugasTab === 'XI') return itemKelas.includes("Kelas XI") || itemKelas.includes("XI-");
+                if (activeTugasTab === 'XII') return itemKelas.includes("Kelas XII") || itemKelas.includes("XII-");
+                return true;
+            });
+
+            if (filteredTugas.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-medium">
+                    <i class="fa-solid fa-list-check text-3xl mb-2 block text-slate-300"></i>
+                    Belum ada tugas untuk ${activeTugasTab === 'ALL' ? 'semua kelas' : 'Kelas ' + activeTugasTab}.
+                </div>`;
                 return;
             }
 
-            tugasData.forEach(t => {
+            filteredTugas.forEach(t => {
                 const deadlineDate = new Date(t.deadlineTimestamp);
                 const deadlineStr = deadlineDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ', Jam ' + deadlineDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+                
+                const targetKelas = t.kelas || "Semua Kelas";
+                const isGradeAccessible = checkGradeAccess(targetKelas);
+                const isExpired = now > t.deadlineTimestamp;
 
                 list.innerHTML += `
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${(!isGradeAccessible || isExpired) ? 'bg-slate-50/80' : ''}">
                         <div class="flex-1">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200">
-                                <i class="fa-solid fa-clock mr-1"></i> Batas Waktu: ${deadlineStr}
-                            </span>
-                            <h4 class="font-bold text-slate-800 text-base mt-2">${t.title}</h4>
-                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">${t.desc}</p>
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-md ${isExpired ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+                                    <i class="fa-solid ${isExpired ? 'fa-clock-rotate-left' : 'fa-clock'} mr-1"></i> Batas Waktu: ${deadlineStr}
+                                </span>
+                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-md ${isGradeAccessible ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
+                                    ${!isGradeAccessible ? '<i class="fa-solid fa-lock mr-1"></i> Khusus ' : ''}${targetKelas}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-base mb-1">${t.title}</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">${t.desc}</p>
                         </div>
-                        <div class="flex items-center gap-2 self-end md:self-center shrink-0">
+                        <div class="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0">
                             ${isAdmin ? `
                                 <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
                                     <i class="fa-solid fa-trash-can mr-1"></i> Hapus
                                 </button>
                             ` : ''}
-                            <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center shadow">
-                                <i class="fa-solid fa-paper-plane mr-1.5"></i> Kumpulkan Tugas
-                            </button>
+
+                            ${!isGradeAccessible ? `
+                                <button disabled class="bg-slate-200 text-slate-400 font-bold text-xs px-5 py-2.5 rounded-xl cursor-not-allowed flex items-center">
+                                    <i class="fa-solid fa-lock mr-1.5"></i> Terkunci (Beda Kelas)
+                                </button>
+                            ` : isExpired ? `
+                                <button disabled class="bg-rose-100 text-rose-500 font-bold text-xs px-5 py-2.5 rounded-xl cursor-not-allowed flex items-center border border-rose-200">
+                                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> Batas Waktu Telah Lewat
+                                </button>
+                            ` : `
+                                <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center shadow">
+                                    <i class="fa-solid fa-paper-plane mr-1.5"></i> Kumpulkan Tugas
+                                </button>
+                            `}
                         </div>
                     </div>
                 `;
@@ -1241,6 +1331,19 @@
         }
 
         function openSubmitTugasModal(tugasId, title) {
+            const targetTugas = tugasData.find(t => t.id === tugasId);
+            if (targetTugas) {
+                const targetKelas = targetTugas.kelas || "Semua Kelas";
+                if (!checkGradeAccess(targetKelas)) {
+                    showToast('Tugas ini bukan ditujukan untuk kelas Anda!', 'error');
+                    return;
+                }
+                if (Date.now() > targetTugas.deadlineTimestamp && currentUser.role !== 'admin') {
+                    showToast('Batas waktu pengumpulan tugas ini telah berakhir!', 'error');
+                    return;
+                }
+            }
+
             document.getElementById('modalTugasId').value = tugasId;
             document.getElementById('modalJudulTugas').innerText = title;
             if (currentUser) {

@@ -318,8 +318,8 @@
                         <h3 class="text-xl font-bold text-slate-800">Materi Pelajaran Informatika</h3>
                         <p class="text-xs text-slate-500">Pilih tab kelas di bawah untuk memfilter modul pembelajaran.</p>
                     </div>
-                    <!-- TOMBOL HANYA DI TAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN) -->
-                    <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
+                    <!-- TOMBOL HANYA DITAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN DAN UNTUK DENGAN CLASS HIDDEN KETAT) -->
+                    <button id="btnAddMateri" onclick="openAddMateriModal()" class="hidden !hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Tambah Materi Pelajaran
                     </button>
                 </div>
@@ -355,8 +355,8 @@
                         <h3 class="text-xl font-bold text-slate-800">Daftar Tugas Informatika</h3>
                         <p class="text-xs text-slate-500">Kumpulkan tugas Anda sebelum batas waktu yang telah ditentukan.</p>
                     </div>
-                    <!-- TOMBOL HANYA DI TAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN) -->
-                    <button id="btnAddTugas" onclick="openAddTugasModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
+                    <!-- TOMBOL HANYA DITAMPILKAN UNTUK ADMIN/GURU (DEFAULT: HIDDEN) -->
+                    <button id="btnAddTugas" onclick="openAddTugasModal()" class="hidden !hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Buat Tugas Baru
                     </button>
                 </div>
@@ -764,6 +764,8 @@
                 } catch (e) {
                     localStorage.removeItem('sman4_session');
                 }
+            } else {
+                setupUserUI();
             }
         }
 
@@ -925,7 +927,7 @@
             showToast('Anda telah berhasil keluar dari sistem.', 'info');
         }
 
-        // FUNGSI UTAMA KONTROL PERAN (ROLE ACCESS)
+        // KONTROL PENAMPILAN DAN AKSES PERAN
         function setupUserUI() {
             const greetingText = document.getElementById('greetingText');
             const userRoleBadge = document.getElementById('userRoleBadge');
@@ -949,11 +951,11 @@
                     
                     if (adminMenuSection) adminMenuSection.classList.remove('hidden');
                     if (btnAddMateri) {
-                        btnAddMateri.classList.remove('hidden');
+                        btnAddMateri.classList.remove('hidden', '!hidden');
                         btnAddMateri.classList.add('flex');
                     }
                     if (btnAddTugas) {
-                        btnAddTugas.classList.remove('hidden');
+                        btnAddTugas.classList.remove('hidden', '!hidden');
                         btnAddTugas.classList.add('flex');
                     }
                 } else {
@@ -962,19 +964,19 @@
                     
                     if (adminMenuSection) adminMenuSection.classList.add('hidden');
                     if (btnAddMateri) {
-                        btnAddMateri.classList.add('hidden');
+                        btnAddMateri.classList.add('hidden', '!hidden');
                         btnAddMateri.classList.remove('flex');
                     }
                     if (btnAddTugas) {
-                        btnAddTugas.classList.add('hidden');
+                        btnAddTugas.classList.add('hidden', '!hidden');
                         btnAddTugas.classList.remove('flex');
                     }
                 }
             } else {
                 greetingText.innerText = `${sapaanWaktu}!`;
                 if (adminMenuSection) adminMenuSection.classList.add('hidden');
-                if (btnAddMateri) btnAddMateri.classList.add('hidden');
-                if (btnAddTugas) btnAddTugas.classList.add('hidden');
+                if (btnAddMateri) btnAddMateri.classList.add('hidden', '!hidden');
+                if (btnAddTugas) btnAddTugas.classList.add('hidden', '!hidden');
             }
 
             renderStudentTable();
@@ -1054,9 +1056,8 @@
             renderMateriCards();
         }
 
-        // HAK AKSES KELAS UNTUK MATERI (SYSTEM LOCK)
+        // KONTROL AKSES KELAS PADA MATERI
         function checkGradeAccess(materiKelas) {
-            // Admin/Guru bisa akses semua materi
             if (currentUser && currentUser.role === 'admin') return true;
             if (!materiKelas || materiKelas === "Semua Kelas") return true;
             if (!currentUser || !currentUser.kelas) return false;
@@ -1064,12 +1065,16 @@
             const userKelas = currentUser.kelas.trim().toUpperCase();
             const targetKelas = materiKelas.trim().toUpperCase();
 
-            // Jika materi diset ke tingkat umum (contoh: "Kelas X")
+            // Pengecekan Kategori Umum
             if (targetKelas === "KELAS X" && userKelas.startsWith("X-")) return true;
             if (targetKelas === "KELAS XI" && userKelas.startsWith("XI-")) return true;
             if (targetKelas === "KELAS XII" && userKelas.startsWith("XII-")) return true;
 
-            // Jika materi diset ke spesifik kelas (contoh: "X-1")
+            // Pengecekan Kategori Spesifik (Contoh: "X-1 s/d X-4")
+            if (targetKelas.includes("X-1") && userKelas.startsWith("X-")) return true;
+            if (targetKelas.includes("XI-1") && userKelas.startsWith("XI-")) return true;
+            if (targetKelas.includes("XII-1") && userKelas.startsWith("XII-")) return true;
+
             return userKelas === targetKelas;
         }
 

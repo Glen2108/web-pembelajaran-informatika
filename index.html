@@ -920,11 +920,12 @@
             }
         }
 
+        // REVISI PENANGANAN LISTENER DATABASE agar SINKRON SAAT HAPUS PERMANEN
         function initDataListeners() {
             if (db) {
                 db.ref('logins').on('value', (snapshot) => {
                     const data = snapshot.val();
-                    if (data) studentLogins = Object.keys(data).map(key => ({ key, ...data[key] }));
+                    studentLogins = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
                     localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
                     renderStudentTable();
                     updateAdminStats();
@@ -932,7 +933,7 @@
 
                 db.ref('materi').on('value', (snapshot) => {
                     const data = snapshot.val();
-                    if (data) materiData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                    materiData = data ? Object.keys(data).map(key => ({ ...data[key], id: key })) : [];
                     localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
                     renderMateriCards();
                     updateAdminStats();
@@ -940,7 +941,7 @@
 
                 db.ref('tugas').on('value', (snapshot) => {
                     const data = snapshot.val();
-                    if (data) tugasData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                    tugasData = data ? Object.keys(data).map(key => ({ ...data[key], id: key })) : [];
                     localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
                     renderTugasList();
                     updateAdminStats();
@@ -948,7 +949,7 @@
 
                 db.ref('submissions').on('value', (snapshot) => {
                     const data = snapshot.val();
-                    if (data) tugasSubmissions = Object.keys(data).map(key => ({ key, ...data[key] }));
+                    tugasSubmissions = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
                     localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
                     renderTugasSubmissionsTable();
                     updateAdminStats();
@@ -1043,14 +1044,14 @@
 
             const todayStr = new Date().toLocaleDateString('id-ID');
             const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
-            const newLogin = { key: 'login_' + Date.now(), name: nama, kelas: kelas, date: todayStr, time: timeStr, timestamp: Date.now() };
+            const loginId = 'login_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const newLogin = { key: loginId, name: nama, kelas: kelas, date: todayStr, time: timeStr, timestamp: Date.now() };
 
             studentLogins.unshift(newLogin);
             localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
 
             if (db) {
-                const key = (nama + '_' + kelas).replace(/[.#$\[\]/]/g, "_");
-                db.ref('logins/' + key).set(newLogin).catch(err => console.warn(err));
+                db.ref('logins/' + loginId).set(newLogin).catch(err => console.warn(err));
             }
 
             document.getElementById('loginModal').classList.add('hidden');
@@ -1178,13 +1179,14 @@
             if (!title || !driveUrl) return;
 
             const unlockTimestamp = unlockTimeInput ? new Date(unlockTimeInput).getTime() : 0;
-            const newMateri = { id: 'materi_' + Date.now(), title, kelas, desc, driveUrl, unlockTimestamp };
+            const materiId = 'materi_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const newMateri = { id: materiId, title, kelas, desc, driveUrl, unlockTimestamp };
 
             materiData.unshift(newMateri);
             localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
 
             if (db) {
-                db.ref('materi/' + newMateri.id).set(newMateri).catch(err => console.warn(err));
+                db.ref('materi/' + materiId).set(newMateri).catch(err => console.warn(err));
             }
 
             e.target.reset();
@@ -1262,7 +1264,7 @@
                                 </span>
                                 <div class="flex items-center gap-2">
                                     ${isAdmin ? `
-                                        <button onclick="deleteMateri('${item.id}')" title="Hapus Materi" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                        <button onclick="deleteMateri('${item.id}')" title="Hapus Materi Permanen" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     ` : ''}
@@ -1292,7 +1294,7 @@
 
         async function deleteMateri(id) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus modul materi ini?", "Hapus Materi", "danger");
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus modul materi ini secara permanen?", "Hapus Materi Permanen", "danger");
             if (!confirmDel) return;
 
             materiData = materiData.filter(m => m.id !== id);
@@ -1300,7 +1302,7 @@
             if (db) db.ref('materi/' + id).remove().catch(e => console.warn(e));
             renderMateriCards();
             updateAdminStats();
-            showToast('Materi berhasil dihapus', 'info');
+            showToast('Materi berhasil dihapus permanen', 'info');
         }
 
         // TUGAS SISWA FUNCTIONS
@@ -1328,13 +1330,14 @@
             if (!title || !deadlineInput) return;
 
             const deadlineTimestamp = new Date(deadlineInput).getTime();
-            const newTugas = { id: 'tugas_' + Date.now(), title, kelas, deadlineTimestamp, desc };
+            const tugasId = 'tugas_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const newTugas = { id: tugasId, title, kelas, deadlineTimestamp, desc };
 
             tugasData.unshift(newTugas);
             localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
 
             if (db) {
-                db.ref('tugas/' + newTugas.id).set(newTugas).catch(err => console.warn(err));
+                db.ref('tugas/' + tugasId).set(newTugas).catch(err => console.warn(err));
             }
 
             e.target.reset();
@@ -1406,7 +1409,7 @@
                         </div>
                         <div class="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0">
                             ${isAdmin ? `
-                                <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
+                                <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas Permanen" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
                                     <i class="fa-solid fa-trash-can mr-1"></i> Hapus
                                 </button>
                             ` : ''}
@@ -1432,7 +1435,7 @@
 
         async function deleteTugas(id) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus tugas ini?", "Hapus Tugas", "danger");
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus tugas ini secara permanen?", "Hapus Tugas Permanen", "danger");
             if (!confirmDel) return;
 
             tugasData = tugasData.filter(t => t.id !== id);
@@ -1440,7 +1443,7 @@
             if (db) db.ref('tugas/' + id).remove().catch(e => console.warn(e));
             renderTugasList();
             updateAdminStats();
-            showToast('Tugas berhasil dihapus', 'info');
+            showToast('Tugas berhasil dihapus permanen', 'info');
         }
 
         function openSubmitTugasModal(tugasId, title) {
@@ -1478,12 +1481,13 @@
 
             if (!url || !name || !kelas) return;
 
-            const newSub = { key: 'sub_' + Date.now(), name, kelas, tugasTitle: title, time, url };
+            const subId = 'sub_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const newSub = { key: subId, name, kelas, tugasTitle: title, time, url };
             tugasSubmissions.unshift(newSub);
             localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
 
             if (db) {
-                db.ref('submissions').push(newSub).catch(err => console.warn(err));
+                db.ref('submissions/' + subId).set(newSub).catch(err => console.warn(err));
             }
 
             document.getElementById('modalLinkTugas').value = '';
@@ -1539,7 +1543,7 @@
                             <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
                             ${isAdmin ? `
                                 <td class="p-3 text-center">
-                                    <button onclick="deleteLogin('${item.key}')" title="Hapus Data Presensi" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                    <button onclick="deleteLogin('${item.key}')" title="Hapus Presensi Permanen" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </td>
@@ -1554,17 +1558,22 @@
             document.getElementById('btnNextPage').disabled = start + rowsPerPage >= total;
         }
 
+        // FUNGSI HAPUS PRESENSI SISWA SECARA PERMANEN
         async function deleteLogin(key) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus data presensi ini?", "Hapus Presensi", "danger");
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus data presensi siswa ini secara PERMANEN?", "Hapus Presensi Permanen", "danger");
             if (!confirmDel) return;
 
             studentLogins = studentLogins.filter(s => s.key !== key);
             localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
-            if (db) db.ref('logins/' + key).remove().catch(e => console.warn(e));
+            
+            if (db) {
+                db.ref('logins/' + key).remove().catch(e => console.warn(e));
+            }
+
             renderStudentTable();
             updateAdminStats();
-            showToast('Data presensi dihapus', 'info');
+            showToast('Data presensi siswa berhasil dihapus permanen', 'info');
         }
 
         function toggleSortName() { sortAsc = !sortAsc; renderStudentTable(); }
@@ -1605,7 +1614,7 @@
                             <td class="p-3"><a href="${item.url}" target="_blank" class="text-brand-600 font-bold hover:underline"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Link</a></td>
                             ${isAdmin ? `
                                 <td class="p-3 text-center">
-                                    <button onclick="deleteSubmission('${item.key}')" title="Hapus Pengumpulan" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                    <button onclick="deleteSubmission('${item.key}')" title="Hapus Pengumpulan Permanen" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </td>
@@ -1621,17 +1630,22 @@
             document.getElementById('btnNextTugasPage').disabled = start + tugasRowsPerPage >= total;
         }
 
+        // FUNGSI HAPUS PENGUMPULAN TUGAS SECARA PERMANEN
         async function deleteSubmission(key) {
             if (!currentUser || currentUser.role !== 'admin') return;
-            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan tugas ini?", "Hapus Pengumpulan", "danger");
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan tugas siswa ini secara PERMANEN?", "Hapus Pengumpulan Permanen", "danger");
             if (!confirmDel) return;
 
             tugasSubmissions = tugasSubmissions.filter(s => s.key !== key);
             localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
-            if (db) db.ref('submissions/' + key).remove().catch(e => console.warn(e));
+            
+            if (db) {
+                db.ref('submissions/' + key).remove().catch(e => console.warn(e));
+            }
+
             renderTugasSubmissionsTable();
             updateAdminStats();
-            showToast('Riwayat pengumpulan dihapus', 'info');
+            showToast('Riwayat pengumpulan tugas berhasil dihapus permanen', 'info');
         }
 
         function toggleSortTugasName() { tugasSortAsc = !tugasSortAsc; renderTugasSubmissionsTable(); }

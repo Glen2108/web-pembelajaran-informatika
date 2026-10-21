@@ -317,10 +317,10 @@
                         </div>
                     </div>
                     
-                    <button onclick="openAbsensiModal()" class="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs px-5 py-3 rounded-xl shadow-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 border-2 border-amber-300 shrink-0">
+                    <a href="https://absensi-sekolah-v2.vercel.app/" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs px-5 py-3 rounded-xl shadow-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 border-2 border-amber-300 shrink-0">
                         <i class="fa-solid fa-hand-point-right text-xl text-rose-600 animate-bounce"></i>
                         <span class="tracking-wide">KLIK ABSENSI MANDIRI DI SINI</span>
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Logged In Students Table -->
@@ -1740,8 +1740,8 @@
         }
 
         function openAbsensiModal() {
-            document.getElementById('absensiFrame').src = "https://absensi-sekolah-v2.vercel.app/";
-            document.getElementById('absensiIframeModal').classList.remove('hidden');
+            // Membuka tautan absensi di jendela/tab baru
+            window.open("https://absensi-sekolah-v2.vercel.app/", "_blank", "noopener,noreferrer");
         }
 
         function closeAbsensiModal() {

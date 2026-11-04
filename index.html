@@ -51,12 +51,20 @@
             background-color: #cbd5e1;
             border-radius: 9999px;
         }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col relative">
 
     <!-- ELEMEN TOAST NOTIFICATION POJOK -->
     <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- WIDGET BANTUAN LIVE CHAT (SIMULASI WHATSAPP) -->
+    <a href="https://wa.me/6281234567890" target="_blank" title="Hubungi Bantuan / Guru" class="fixed bottom-6 right-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center text-3xl shadow-[0_10px_25px_rgba(16,185,129,0.4)] hover:bg-emerald-600 hover:-translate-y-1 transition-all z-[90] animate-bounce">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
 
     <!-- ==================== SYSTEM FLOATING DIALOG MODAL TERPUSAT ==================== -->
     <div id="customDialogModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[200] flex items-center justify-center p-4 hidden transition-all duration-300 opacity-0 pointer-events-none">
@@ -206,9 +214,14 @@
                         <i class="fa-solid fa-list-check w-5"></i>
                         <span>Tugas Siswa</span>
                     </button>
+                    <!-- TAMBAHAN MENU PUSAT BANTUAN -->
+                    <button onclick="navigateTo('bantuan')" id="nav-bantuan" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium hover:bg-slate-800 text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-circle-question w-5"></i>
+                        <span>Pusat Bantuan / FAQ</span>
+                    </button>
 
                     <!-- LINK PERPUSTAKAAN DIGITAL DI SIDEBAR -->
-                    <a href="https://web-perpustakaan-eight.vercel.app/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-amber-400 hover:bg-slate-800 hover:text-amber-300 transition group">
+                    <a href="https://web-perpustakaan-eight.vercel.app/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-amber-400 hover:bg-slate-800 hover:text-amber-300 transition group mt-2 border-t border-slate-800 pt-2">
                         <i class="fa-solid fa-book-bookmark w-5 group-hover:scale-110 transition-transform"></i>
                         <span>Perpustakaan Digital</span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-auto opacity-70"></i>
@@ -216,7 +229,7 @@
 
                     <div id="adminMenuSection" class="hidden pt-4 border-t border-slate-800">
                         <p class="text-[10px] font-bold text-slate-500 uppercase px-4 mb-2">Menu Kelola Admin</p>
-                        <button onclick="navigateTo('admin')" id="nav-admin" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium hover:bg-slate-800 text-amber-400 hover:text-amber-300 transition">
+                        <button onclick="navigateTo('admin')" id="nav-admin" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 transition">
                             <i class="fa-solid fa-sliders w-5"></i>
                             <span>Dashboard Rekap</span>
                         </button>
@@ -235,21 +248,30 @@
         <main class="flex-1 p-4 md:p-8 overflow-y-auto custom-scrollbar">
 
             <!-- TOPBAR HEADER -->
-            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                <div>
+            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-slate-50 opacity-50 pointer-events-none">
+                    <i class="fa-solid fa-graduation-cap text-9xl"></i>
+                </div>
+                <div class="relative z-10">
                     <h2 id="greetingText" class="text-2xl font-black text-slate-800">Selamat Datang!</h2>
-                    <p id="userRoleBadge" class="text-xs font-semibold text-brand-600 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-brand-50 border border-brand-200">
-                        <i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Aktif
-                    </p>
+                    <!-- GAMIFIKASI & DASHBOARD LEVEL (SIMULASI) -->
+                    <div class="flex items-center gap-2 mt-1.5">
+                        <p id="userRoleBadge" class="text-xs font-bold text-brand-700 inline-flex items-center px-2.5 py-1 rounded-lg bg-brand-50 border border-brand-200">
+                            <i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Aktif
+                        </p>
+                        <p id="userGamificationBadge" class="text-xs font-bold text-amber-700 inline-flex items-center px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 hidden">
+                            <i class="fa-solid fa-fire text-amber-500 mr-1.5"></i> <span id="xpText">150 XP (Level 2)</span>
+                        </p>
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end relative z-10">
                     <div class="text-right">
-                        <div id="realtimeClock" class="text-lg font-bold text-slate-800 font-mono">00:00:00 WITA</div>
-                        <div id="realtimeDate" class="text-xs text-slate-500">Rabu, 14 Oktober 2026</div>
+                        <div id="realtimeClock" class="text-lg font-bold text-slate-800 font-mono tracking-tight">00:00:00 WITA</div>
+                        <div id="realtimeDate" class="text-xs font-medium text-slate-500">Rabu, 14 Oktober 2026</div>
                     </div>
 
-                    <button onclick="handleLogout()" title="Keluar dari Sistem" class="bg-rose-50 hover:bg-rose-100 text-rose-600 p-3 rounded-xl font-semibold flex items-center space-x-2 border border-rose-200 shadow-sm transition transform hover:scale-105 active:scale-95">
+                    <button onclick="handleLogout()" title="Keluar dari Sistem" class="bg-rose-50 hover:bg-rose-100 text-rose-600 p-3 rounded-xl font-bold flex items-center space-x-2 border border-rose-200 shadow-sm transition transform hover:scale-105 active:scale-95">
                         <i class="fa-solid fa-power-off"></i>
                         <span class="hidden md:inline text-xs">Keluar</span>
                     </button>
@@ -266,7 +288,7 @@
                         <blockquote id="dailyQuote" class="text-xl md:text-2xl font-bold mt-4 leading-relaxed font-serif">
                             "Teknologi bukan sekadar alat, melainkan jembatan untuk menciptakan masa depan."
                         </blockquote>
-                        <p class="text-xs text-indigo-200 mt-3">— Tim Guru Informatika SMAN 4 Manado</p>
+                        <p class="text-xs text-indigo-200 mt-3 font-medium">— Tim Guru Informatika SMAN 4 Manado</p>
                     </div>
                     <i class="fa-solid fa-quote-right absolute right-6 bottom-4 text-white/10 text-9xl pointer-events-none"></i>
                 </div>
@@ -313,7 +335,7 @@
                         </div>
                         <div>
                             <h4 class="font-bold text-base">Presensi Mandiri Siswa SMAN 4 Manado</h4>
-                            <p class="text-xs text-emerald-100 mt-0.5">Lakukan pengisian daftar hadir sekolah harian melalui sistem absensi terpadu.</p>
+                            <p class="text-xs text-emerald-100 mt-0.5 font-medium">Lakukan pengisian daftar hadir sekolah harian melalui sistem absensi terpadu.</p>
                         </div>
                     </div>
                     
@@ -363,11 +385,11 @@
                         </table>
                     </div>
 
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
+                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium">
                         <span id="paginationInfo">Menampilkan 0-0 data</span>
                         <div class="flex gap-2">
-                            <button id="btnPrevPage" onclick="changePage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50">SBLM</button>
-                            <button id="btnNextPage" onclick="changePage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50">SELANJUTNYA</button>
+                            <button id="btnPrevPage" onclick="changePage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SBLM</button>
+                            <button id="btnNextPage" onclick="changePage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SELANJUTNYA</button>
                         </div>
                     </div>
                 </div>
@@ -450,7 +472,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                         <h4 class="font-bold text-slate-800">Status Pengumpulan Tugas Siswa</h4>
-                        <select id="filterKelasTugas" onchange="renderTugasSubmissionsTable()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white font-semibold">
+                        <select id="filterKelasTugas" onchange="renderTugasSubmissionsTable()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none">
                             <option value="ALL">Semua Kelas</option>
                             <option value="X">Seluruh Kelas X</option>
                             <option value="XI">Seluruh Kelas XI</option>
@@ -460,7 +482,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase">
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wider">
                                     <th class="p-3 cursor-pointer hover:bg-slate-100" onclick="toggleSortTugasName()">
                                         Nama Siswa <i class="fa-solid fa-sort text-slate-400 ml-1"></i>
                                     </th>
@@ -477,11 +499,11 @@
                         </table>
                     </div>
 
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
+                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium">
                         <span id="tugasPaginationInfo">Menampilkan 0-0 data</span>
                         <div class="flex gap-2">
-                            <button id="btnPrevTugasPage" onclick="changeTugasPage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50">SBLM</button>
-                            <button id="btnNextTugasPage" onclick="changeTugasPage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50">SELANJUTNYA</button>
+                            <button id="btnPrevTugasPage" onclick="changeTugasPage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SBLM</button>
+                            <button id="btnNextTugasPage" onclick="changeTugasPage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SELANJUTNYA</button>
                         </div>
                     </div>
                 </div>
@@ -503,7 +525,7 @@
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">1</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Upload File ke Drive</h5>
-                                <p class="text-[11px] text-slate-500 leading-relaxed">Buka aplikasi Google Drive di HP/Laptop, lalu unggah file tugas Anda.</p>
+                                <p class="text-[11px] text-slate-500 leading-relaxed font-medium">Buka aplikasi Google Drive di HP/Laptop, lalu unggah file tugas Anda.</p>
                             </div>
                             <i class="fa-solid fa-cloud-arrow-up text-indigo-300 text-2xl text-right mt-3"></i>
                         </div>
@@ -512,7 +534,7 @@
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">2</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Ubah Akses Link</h5>
-                                <p class="text-[11px] text-slate-500 leading-relaxed">Klik titik tiga pada file $\rightarrow$ Bagikan $\rightarrow$ Ubah Akses Umum menjadi <strong class="text-emerald-600">"Siapa saja yang memiliki link"</strong>.</p>
+                                <p class="text-[11px] text-slate-500 leading-relaxed font-medium">Klik titik tiga pada file &rarr; Bagikan &rarr; Ubah Akses Umum menjadi <strong class="text-emerald-600">"Siapa saja yang memiliki link"</strong>.</p>
                             </div>
                             <i class="fa-solid fa-lock-open text-emerald-400 text-2xl text-right mt-3"></i>
                         </div>
@@ -521,7 +543,7 @@
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">3</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Salin Tautan (Copy Link)</h5>
-                                <p class="text-[11px] text-slate-500 leading-relaxed">Tekan tombol <strong>"Salin Link"</strong> (Copy Link) pada Google Drive Anda.</p>
+                                <p class="text-[11px] text-slate-500 leading-relaxed font-medium">Tekan tombol <strong>"Salin Link"</strong> (Copy Link) pada Google Drive Anda.</p>
                             </div>
                             <i class="fa-solid fa-link text-amber-400 text-2xl text-right mt-3"></i>
                         </div>
@@ -530,7 +552,7 @@
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">4</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Kumpulkan di Web Ini</h5>
-                                <p class="text-[11px] text-slate-500 leading-relaxed">Klik tombol <span class="text-brand-600 font-bold">Kumpulkan Tugas</span> di atas, tempel (*paste*) link, lalu kirim.</p>
+                                <p class="text-[11px] text-slate-500 leading-relaxed font-medium">Klik tombol <span class="text-brand-600 font-bold">Kumpulkan Tugas</span> di atas, tempel link, lalu kirim.</p>
                             </div>
                             <i class="fa-solid fa-paper-plane text-brand-500 text-2xl text-right mt-3"></i>
                         </div>
@@ -541,52 +563,52 @@
 
             <!-- ==================== SEKSI 4: DASHBOARD ADMIN ==================== -->
             <section id="page-admin" class="space-y-6 hidden">
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-amber-900">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-emerald-900">
                     <h3 class="text-lg font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-amber-600"></i> Panel Rekapitulasi & Manajemen Jangka Panjang
+                        <i class="fa-solid fa-shield-halved text-emerald-600"></i> Panel Rekapitulasi & Manajemen Jangka Panjang
                     </h3>
-                    <p class="text-xs text-amber-700 mt-1">
+                    <p class="text-xs text-emerald-700 mt-1 font-medium">
                         Khusus untuk Guru Informatika & Kepala Perpustakaan: <strong>Glendy A. Taawoeda, S.Pd</strong>. Anda dapat mengunduh rekapitulasi data atau melakukan reset tahun ajaran baru.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-indigo-50 text-brand-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-users"></i>
                         </div>
                         <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase">Hadir Hari Ini</p>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Hadir Hari Ini</p>
                             <h4 id="statTotalHadir" class="text-xl font-black text-slate-800">0</h4>
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-file-arrow-up"></i>
                         </div>
                         <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase">Tugas Terkumpul</p>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tugas Terkumpul</p>
                             <h4 id="statTotalSubmissions" class="text-xl font-black text-slate-800">0</h4>
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-book"></i>
                         </div>
                         <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase">Modul Materi</p>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Modul Materi</p>
                             <h4 id="statTotalMateri" class="text-xl font-black text-slate-800">0</h4>
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-tasks"></i>
                         </div>
                         <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase">Tugas Aktif</p>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tugas Aktif</p>
                             <h4 id="statTotalTugas" class="text-xl font-black text-slate-800">0</h4>
                         </div>
                     </div>
@@ -595,23 +617,93 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                         <h4 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-file-excel text-emerald-600 mr-2"></i> Rekap Manual Data (CSV)</h4>
-                        <p class="text-xs text-slate-500 mb-4">Unduh seluruh riwayat login presensi dan pengumpulan tugas siswa dalam format Excel/CSV.</p>
+                        <p class="text-xs text-slate-500 mb-4 font-medium leading-relaxed">Unduh seluruh riwayat login presensi dan pengumpulan tugas siswa dalam format Excel/CSV untuk keperluan rekap nilai.</p>
                         <div class="flex gap-3">
-                            <button onclick="exportDataCSV('presensi')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
-                                Rekap Kehadiran
+                            <button onclick="exportDataCSV('presensi')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm">
+                                <i class="fa-solid fa-download mr-1.5"></i> Rekap Kehadiran
                             </button>
-                            <button onclick="exportDataCSV('tugas')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
-                                Rekap Tugas
+                            <button onclick="exportDataCSV('tugas')" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm">
+                                <i class="fa-solid fa-download mr-1.5"></i> Rekap Tugas
                             </button>
                         </div>
                     </div>
 
                     <div class="bg-white p-6 rounded-2xl border border-rose-200 shadow-sm">
                         <h4 class="font-bold text-rose-700 mb-2"><i class="fa-solid fa-broom text-rose-600 mr-2"></i> Pembersihan / Reset Tahun Ajaran Baru</h4>
-                        <p class="text-xs text-slate-500 mb-4">Lakukan pembersihan otomatis setiap 12 bulan (Semester Ganjil & Genap selesai) untuk menyambut siswa/kelas baru.</p>
-                        <button onclick="confirmAcademicReset()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
-                            Reset Database Tahun Ajaran
+                        <p class="text-xs text-slate-500 mb-4 font-medium leading-relaxed">Lakukan pembersihan otomatis setiap 12 bulan (Semester Ganjil & Genap selesai) untuk menyambut siswa/kelas baru.</p>
+                        <button onclick="confirmAcademicReset()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm">
+                            <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Reset Database Tahun Ajaran
                         </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SEKSI 5: PUSAT BANTUAN / FAQ ==================== -->
+            <section id="page-bantuan" class="space-y-6 hidden">
+                <div class="bg-gradient-to-br from-brand-600 via-indigo-600 to-indigo-800 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+                    <div class="relative z-10">
+                        <span class="bg-white/20 text-xs uppercase font-bold tracking-wider px-3 py-1 rounded-full backdrop-blur-md mb-3 inline-block">Dukungan Siswa</span>
+                        <h3 class="text-2xl md:text-3xl font-extrabold mb-2 tracking-tight">Pusat Bantuan & FAQ</h3>
+                        <p class="text-indigo-100 text-sm max-w-2xl leading-relaxed">Temukan jawaban untuk pertanyaan umum seputar penggunaan portal pembelajaran, pengumpulan tugas, dan masalah teknis lainnya.</p>
+                    </div>
+                    <i class="fa-solid fa-headset absolute right-8 -bottom-4 text-white/10 text-9xl pointer-events-none"></i>
+                </div>
+                
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-6">
+                    <h4 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-brand-600"></i> Pertanyaan yang Sering Diajukan
+                    </h4>
+                    
+                    <div class="space-y-3">
+                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                            <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
+                                Bagaimana jika saya salah memilih kelas saat login?
+                                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="p-4 pt-0 text-xs text-slate-600 mt-2 font-medium leading-relaxed">
+                                Anda dapat mengklik tombol "Keluar" (Power Icon) di pojok kanan atas, lalu login kembali dengan kelas yang benar. Hubungi Admin (Guru Informatika) melalui tombol WhatsApp agar data login Anda yang salah sebelumnya dihapus dari sistem.
+                            </div>
+                        </details>
+                        
+                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                            <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
+                                Kenapa tugas saya terkunci dan tidak bisa dikumpulkan?
+                                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="p-4 pt-0 text-xs text-slate-600 mt-2 font-medium leading-relaxed">
+                                Tugas hanya akan terbuka jika tingkat kelas saat Anda login cocok dengan target kelas yang dibuat oleh Guru. Selain itu, jika batas waktu (countdown) sudah habis, tugas akan otomatis terkunci dan Anda tidak dapat mengirim link jawaban lagi.
+                            </div>
+                        </details>
+                        
+                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                            <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
+                                Apakah tautan Google Drive saya aman?
+                                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="p-4 pt-0 text-xs text-slate-600 mt-2 font-medium leading-relaxed">
+                                Ya. Pastikan akses Google Drive diubah ke "Siapa saja yang memiliki link" (Anyone with the link) khusus untuk file tugas yang akan dinilai. Anda tidak perlu membagikan seluruh isi Drive, melainkan hanya file tugas yang spesifik tersebut.
+                            </div>
+                        </details>
+
+                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                            <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
+                                Bagaimana cara mendapatkan XP atau Level?
+                                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="p-4 pt-0 text-xs text-slate-600 mt-2 font-medium leading-relaxed">
+                                Poin XP Anda bertambah setiap kali Anda mengirimkan tugas dengan sukses ke dalam sistem. Fitur lencana (badges) dan leaderboard siswa saat ini sedang dalam tahap pengembangan untuk memotivasi keaktifan kelas.
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="mt-8 p-5 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h5 class="font-bold text-emerald-800 text-sm">Masih butuh bantuan?</h5>
+                            <p class="text-xs text-emerald-700 mt-1 font-medium">Tim pengajar dan admin siap membantu Anda mengatasi kendala teknis LMS.</p>
+                        </div>
+                        <a href="https://wa.me/6281234567890" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition flex items-center shrink-0">
+                            <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Chat Admin Sekarang
+                        </a>
                     </div>
                 </div>
             </section>
@@ -619,16 +711,27 @@
         </main>
     </div>
 
-    <!-- ==================== FOOTER ==================== -->
-    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-6 px-4 md:px-8">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+    <!-- ==================== FOOTER DENGAN LINK LEGAL ==================== -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-8 px-4 md:px-8 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 text-center md:text-left">
             <div>
-                <p class="font-bold text-slate-200">SMAN 4 MANADO — Mata Pelajaran Informatika & Perpustakaan Digital</p>
-                <p class="text-slate-500 mt-1">Alamat: Jl. Manguni 11, Perkamil, Paal Dua, Kota Manado, Sulawesi Utara</p>
+                <p class="font-bold text-slate-200 text-sm">SMAN 4 MANADO</p>
+                <p class="text-slate-500 mt-1 font-medium">Platform Pembelajaran Informatika & Perpustakaan Digital</p>
+                <p class="text-slate-500 mt-1 font-medium">Jl. Manguni 11, Perkamil, Paal Dua, Kota Manado, Sulawesi Utara</p>
             </div>
-            <div class="text-slate-400">
-                <p>Pengampu & Kepala Perpustakaan: <span class="text-white font-semibold">Glendy A. Taawoeda, S.Pd</span> (NIP. 199308212022211005)</p>
-                <p class="text-slate-500 text-[11px] mt-0.5">& Tim Guru Informatika & Perpustakaan SMAN 4 Manado</p>
+            
+            <div class="flex flex-wrap justify-center gap-4 text-slate-400 font-medium">
+                <a href="#" onclick="customAlert('Syarat dan Ketentuan sedang dalam pembaharuan.', 'Info Legal')" class="hover:text-brand-400 transition">Syarat & Ketentuan</a>
+                <span>&bull;</span>
+                <a href="#" onclick="customAlert('Kebijakan Privasi data siswa tunduk pada aturan sekolah.', 'Kebijakan Privasi')" class="hover:text-brand-400 transition">Kebijakan Privasi</a>
+                <span>&bull;</span>
+                <a href="#" onclick="navigateTo('bantuan')" class="hover:text-brand-400 transition">FAQ</a>
+            </div>
+
+            <div class="text-slate-400 md:text-right">
+                <p class="font-medium">Pengampu: <span class="text-white font-bold">Glendy A. Taawoeda, S.Pd</span></p>
+                <p class="text-slate-500 text-[10px] mt-1 tracking-wider uppercase">NIP. 199308212022211005</p>
+                <p class="text-slate-600 text-[10px] mt-2 font-bold">&copy; 2026 Tim IT SMAN 4 Manado</p>
             </div>
         </div>
     </footer>
@@ -681,8 +784,8 @@
                     <p class="text-[10px] text-slate-400 mt-1">Biarkan kosong jika materi dapat langsung diakses.</p>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeAddMateriModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow">Simpan & Terbitkan</button>
+                    <button type="button" onclick="closeAddMateriModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition">Simpan & Terbitkan</button>
                 </div>
             </form>
         </div>
@@ -731,8 +834,8 @@
                     <textarea id="newTugasDesc" required rows="3" placeholder="Jelaskan detail pengerjaan tugas..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeAddTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow">Terbitkan Tugas</button>
+                    <button type="button" onclick="closeAddTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition">Terbitkan Tugas</button>
                 </div>
             </form>
         </div>
@@ -742,7 +845,7 @@
     <div id="submitTugasModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <h3 class="text-lg font-bold text-slate-800 mb-2">Form Pengumpulan Tugas</h3>
-            <p id="modalJudulTugas" class="text-xs text-brand-600 font-semibold mb-4"></p>
+            <p id="modalJudulTugas" class="text-xs text-brand-600 font-bold mb-4"></p>
             
             <form onsubmit="handlePengumpulanTugas(event)">
                 <input type="hidden" id="modalTugasId">
@@ -759,8 +862,8 @@
                     <input type="url" id="modalLinkTugas" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeSubmitTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Batal</button>
-                    <button type="submit" id="btnSubmitTugas" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-lg shadow flex items-center">
+                    <button type="button" onclick="closeSubmitTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">Batal</button>
+                    <button type="submit" id="btnSubmitTugas" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-lg shadow flex items-center transition">
                         <span id="btnTugasText">Kumpulkan Sekarang</span>
                         <span id="btnTugasSpinner" class="hidden flex items-center"><i class="fa-solid fa-spinner animate-spin mr-1.5"></i> Mengirim...</span>
                     </button>
@@ -820,6 +923,7 @@
         let tugasCurrentPage = 1;
         const tugasRowsPerPage = 5;
         let tugasSortAsc = true;
+        let countdownInterval;
 
         const quotes = [
             "Teknologi bukan sekadar alat, melainkan jembatan untuk menciptakan masa depan.",
@@ -1016,6 +1120,24 @@
             if (statSubmissions) statSubmissions.innerText = tugasSubmissions.length;
             if (statMateri) statMateri.innerText = materiData.length;
             if (statTugas) statTugas.innerText = tugasData.length;
+            
+            updateGamificationBadge();
+        }
+
+        function updateGamificationBadge() {
+            const badge = document.getElementById('userGamificationBadge');
+            const xpText = document.getElementById('xpText');
+            if (currentUser && currentUser.role === 'siswa') {
+                // Menghitung poin fiktif sederhana berdasarkan pengumpulan tugas
+                const mySubmissions = tugasSubmissions.filter(s => s.name === currentUser.name).length;
+                const xp = mySubmissions * 150; // 150 XP per tugas
+                let level = Math.floor(xp / 500) + 1;
+                
+                xpText.innerText = `${xp} XP (Level ${level})`;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
         }
 
         function startRealtimeClock() {
@@ -1143,7 +1265,7 @@
 
                 if (currentUser.role === 'admin') {
                     userRoleBadge.innerHTML = `<i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Mode Admin / Guru`;
-                    userRoleBadge.className = "text-xs font-semibold text-amber-700 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200";
+                    userRoleBadge.className = "text-xs font-bold text-amber-700 inline-flex items-center px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200";
                     
                     if (adminMenuSection) adminMenuSection.classList.remove('hidden');
                     if (btnAddMateri) {
@@ -1155,8 +1277,8 @@
                         btnAddTugas.classList.add('flex');
                     }
                 } else {
-                    userRoleBadge.innerHTML = `<i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Kelas ${currentUser.kelas}`;
-                    userRoleBadge.className = "text-xs font-semibold text-brand-600 mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-brand-50 border border-brand-200";
+                    userRoleBadge.innerHTML = `<i class="fa-solid fa-circle-dot text-[8px] mr-1.5 animate-pulse text-emerald-500"></i> Siswa Aktif`;
+                    userRoleBadge.className = "text-xs font-bold text-brand-700 inline-flex items-center px-2.5 py-1 rounded-lg bg-brand-50 border border-brand-200";
                     
                     if (adminMenuSection) adminMenuSection.classList.add('hidden');
                     if (btnAddMateri) {
@@ -1183,7 +1305,7 @@
         }
 
         function navigateTo(page) {
-            const pages = ['beranda', 'materi', 'tugas', 'admin'];
+            const pages = ['beranda', 'materi', 'tugas', 'admin', 'bantuan'];
             pages.forEach(p => {
                 const el = document.getElementById(`page-${p}`);
                 const nav = document.getElementById(`nav-${p}`);
@@ -1191,7 +1313,9 @@
                 if (nav) nav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium hover:bg-slate-800 text-slate-400 hover:text-white transition";
             });
 
-            document.getElementById(`page-${page}`).classList.remove('hidden');
+            const activeEl = document.getElementById(`page-${page}`);
+            if (activeEl) activeEl.classList.remove('hidden');
+            
             const activeNav = document.getElementById(`nav-${page}`);
             if (activeNav) activeNav.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium bg-brand-600 text-white transition";
         }
@@ -1297,9 +1421,15 @@
 
             filteredMateri.forEach(item => {
                 const isAccessible = checkGradeAccess(item.kelas);
+                
+                // LOGIKA NOTIFIKASI BARU (2 Hari = 172.800.000 milidetik)
+                const createdAt = parseInt(item.id.split('_')[1]); // Ekstrak timestamp dari ID
+                const isBaru = (Date.now() - createdAt) <= (2 * 24 * 60 * 60 * 1000);
+                const badgeBaruHTML = isBaru ? `<span class="absolute -top-3 -right-3 bg-rose-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg animate-bounce border-2 border-white z-10">BARU</span>` : '';
 
                 grid.innerHTML += `
-                    <div class="bg-slate-50 hover:bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition flex flex-col justify-between relative ${!isAccessible ? 'opacity-75' : ''}">
+                    <div class="bg-white hover:bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between relative ${!isAccessible ? 'opacity-75' : ''}">
+                        ${badgeBaruHTML} <!-- Sisipkan badge di sini -->
                         <div>
                             <div class="flex justify-between items-start mb-3">
                                 <span class="text-[10px] font-bold px-2.5 py-1 rounded-md ${isAccessible ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
@@ -1315,7 +1445,7 @@
                                 </div>
                             </div>
                             <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
+                            <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium">${item.desc}</p>
                         </div>
                         <div>
                             ${isAccessible ? `
@@ -1404,6 +1534,45 @@
             renderTugasList();
         }
 
+        function startRealtimeCountdown() {
+            // Bersihkan interval lama agar tidak menumpuk saat render ulang
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                const countdownElements = document.querySelectorAll('.live-countdown');
+                const now = Date.now();
+
+                countdownElements.forEach(el => {
+                    const deadline = parseInt(el.getAttribute('data-deadline'));
+                    const distance = deadline - now;
+
+                    if (distance <= 0) {
+                        el.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Waktu Habis';
+                        el.classList.replace('text-rose-600', 'text-slate-500');
+                        el.classList.replace('bg-rose-50', 'bg-slate-100');
+                        el.classList.replace('border-rose-200', 'border-slate-200');
+                        el.classList.remove('live-countdown'); // Hapus class agar tidak di-loop lagi
+                    } else {
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        let timeString = '<i class="fa-solid fa-stopwatch animate-pulse mr-1.5"></i>Sisa: ';
+                        if (days > 0) timeString += `${days} Hari, `;
+                        
+                        // Tambahkan angka 0 di depan jika di bawah 10 (misal: 09:05:02)
+                        const h = String(hours).padStart(2, '0');
+                        const m = String(minutes).padStart(2, '0');
+                        const s = String(seconds).padStart(2, '0');
+                        
+                        timeString += `${h}:${m}:${s}`;
+                        el.innerHTML = timeString;
+                    }
+                });
+            }, 1000); // Berjalan setiap 1 detik
+        }
+
         function renderTugasList() {
             const list = document.getElementById('tugasList');
             const isAdmin = currentUser && currentUser.role === 'admin';
@@ -1435,9 +1604,28 @@
                 const targetKelas = t.kelas || "Semua Kelas";
                 const isGradeAccessible = checkGradeAccess(targetKelas);
                 const isExpired = now > t.deadlineTimestamp;
+                
+                // LOGIKA COUNTDOWN & NOTIFIKASI TUGAS
+                const createdAt = parseInt(t.id.split('_')[1]);
+                const isBaru = (now - createdAt) <= (2 * 24 * 60 * 60 * 1000);
+                const timeRemaining = t.deadlineTimestamp - now;
+                const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
+                
+                let badgeHTML = '';
+                if (!isExpired) {
+                    if (daysRemaining <= 2 && daysRemaining > 0) {
+                        // Peringatan H-2 ke bawah (Warna Merah Pulse)
+                        const textHari = daysRemaining === 1 ? 'HARI INI!' : `SISA ${daysRemaining} HARI`;
+                        badgeHTML = `<span class="absolute -top-3 -right-3 bg-rose-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg animate-pulse border-2 border-white z-10">${textHari}</span>`;
+                    } else if (isBaru) {
+                        // Tugas baru ditambah (Warna Hijau/Emerald)
+                        badgeHTML = `<span class="absolute -top-3 -right-3 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg animate-bounce border-2 border-white z-10">TUGAS BARU</span>`;
+                    }
+                }
 
                 list.innerHTML += `
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${(!isGradeAccessible || isExpired) ? 'bg-slate-50/80' : ''}">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative hover:shadow-md transition ${(!isGradeAccessible || isExpired) ? 'bg-slate-50/80' : ''}">
+                        ${badgeHTML} <!-- Sisipkan badge di sini -->
                         <div class="flex-1">
                             <div class="flex flex-wrap items-center gap-2 mb-2">
                                 <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-md ${isExpired ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
@@ -1448,7 +1636,14 @@
                                 </span>
                             </div>
                             <h4 class="font-bold text-slate-800 text-base mb-1">${t.title}</h4>
-                            <p class="text-xs text-slate-500 leading-relaxed">${t.desc}</p>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed mb-3">${t.desc}</p>
+                            
+                            <!-- ELEMEN LIVE COUNTDOWN -->
+                            ${!isExpired ? `
+                                <div class="inline-block px-3 py-1.5 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-[11px] font-bold live-countdown shadow-sm" data-deadline="${t.deadlineTimestamp}">
+                                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Menghitung sisa waktu...
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0">
                             ${isAdmin ? `
@@ -1459,21 +1654,24 @@
 
                             ${!isGradeAccessible ? `
                                 <button disabled class="bg-slate-200 text-slate-400 font-bold text-xs px-5 py-2.5 rounded-xl cursor-not-allowed flex items-center">
-                                    <i class="fa-solid fa-lock mr-1.5"></i> Terkunci (Beda Kelas)
+                                    <i class="fa-solid fa-lock mr-1.5"></i> Terkunci
                                 </button>
                             ` : isExpired ? `
                                 <button disabled class="bg-rose-100 text-rose-500 font-bold text-xs px-5 py-2.5 rounded-xl cursor-not-allowed flex items-center border border-rose-200">
-                                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> Batas Waktu Telah Lewat
+                                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> Waktu Lewat
                                 </button>
                             ` : `
-                                <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center shadow">
-                                    <i class="fa-solid fa-paper-plane mr-1.5"></i> Kumpulkan Tugas
+                                <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center shadow-md">
+                                    <i class="fa-solid fa-paper-plane mr-1.5"></i> Kumpulkan
                                 </button>
                             `}
                         </div>
                     </div>
                 `;
             });
+            
+            // Panggil fungsi countdown setiap kali daftar tugas selesai dirender
+            startRealtimeCountdown(); 
         }
 
         async function deleteTugas(id) {
@@ -1580,10 +1778,10 @@
                         <tr class="hover:bg-slate-50 transition">
                             <td class="p-3 font-semibold text-slate-400 text-xs">${start + index + 1}</td>
                             <td class="p-3 font-bold text-slate-800">${item.name}</td>
-                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">${item.kelas}</span></td>
-                            <td class="p-3 text-slate-500 text-xs">${item.date}</td>
-                            <td class="p-3 font-mono text-xs text-brand-600 font-semibold">${item.time}</td>
-                            <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">${item.kelas}</span></td>
+                            <td class="p-3 text-slate-500 text-xs font-medium">${item.date}</td>
+                            <td class="p-3 font-mono text-xs text-brand-600 font-bold">${item.time}</td>
+                            <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
                             ${isAdmin ? `
                                 <td class="p-3 text-center">
                                     <button onclick="deleteLogin('${item.key}')" title="Hapus Presensi Permanen" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
@@ -1645,14 +1843,14 @@
 
             tbody.innerHTML = '';
             if (paginated.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" class="text-center p-4 text-slate-400">Belum ada pengumpulan tugas.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" class="text-center p-4 text-slate-400 font-medium">Belum ada pengumpulan tugas.</td></tr>`;
             } else {
                 paginated.forEach(item => {
                     tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50">
+                        <tr class="hover:bg-slate-50 transition">
                             <td class="p-3 font-bold text-slate-800">${item.name}</td>
-                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border text-[11px] font-semibold">${item.kelas}</span></td>
-                            <td class="p-3 text-slate-600">${item.tugasTitle}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border text-[11px] font-bold text-slate-700">${item.kelas}</span></td>
+                            <td class="p-3 text-slate-600 font-medium">${item.tugasTitle}</td>
                             <td class="p-3 font-mono text-slate-500">${item.time}</td>
                             <td class="p-3"><a href="${item.url}" target="_blank" class="text-brand-600 font-bold hover:underline"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Link</a></td>
                             ${isAdmin ? `
@@ -1740,7 +1938,6 @@
         }
 
         function openAbsensiModal() {
-            // Membuka tautan absensi di jendela/tab baru
             window.open("https://absensi-sekolah-v2.vercel.app/index.html", "_blank", "noopener,noreferrer");
         }
 

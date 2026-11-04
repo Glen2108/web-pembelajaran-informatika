@@ -56,7 +56,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col relative">
+<body class="bg-gradient-to-br from-slate-200 via-indigo-100/60 to-emerald-100/60 bg-fixed font-sans text-slate-800 min-h-screen flex flex-col relative">
 
     <!-- ELEMEN TOAST NOTIFICATION POJOK -->
     <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
@@ -68,7 +68,7 @@
 
     <!-- ==================== SYSTEM FLOATING DIALOG MODAL TERPUSAT ==================== -->
     <div id="customDialogModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[200] flex items-center justify-center p-4 hidden transition-all duration-300 opacity-0 pointer-events-none">
-        <div id="customDialogBox" class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-all duration-300 border border-slate-100">
+        <div id="customDialogBox" class="bg-white/85 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/60 max-w-sm w-full p-6 text-center transform scale-95 transition-all duration-300 border border-slate-100">
             <div id="customDialogIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner"></div>
             <h3 id="customDialogTitle" class="text-lg font-extrabold text-slate-800 mb-2"></h3>
             <p id="customDialogMessage" class="text-xs text-slate-500 mb-5 leading-relaxed"></p>
@@ -78,7 +78,7 @@
             </div>
 
             <div class="flex gap-2 justify-center" id="customDialogButtons">
-                <button id="customDialogBtnCancel" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition hidden">Batal</button>
+                <button id="customDialogBtnCancel" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-white/60 transition hidden">Batal</button>
                 <button id="customDialogBtnConfirm" class="flex-1 py-2.5 px-4 rounded-xl bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 shadow-md transition">Ya, Lanjutkan</button>
             </div>
         </div>
@@ -86,7 +86,7 @@
 
     <!-- ==================== POPUP MODAL LOGIN ==================== -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transition-all transform scale-100">
+        <div class="bg-white/85 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/60 max-w-md w-full overflow-hidden transition-all transform scale-100">
             <!-- Modal Header -->
             <div class="bg-gradient-to-r from-brand-600 to-indigo-800 p-6 text-white text-center relative">
                 <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-sm border border-white/30">
@@ -177,7 +177,7 @@
                     </button>
                 </form>
             </div>
-            <div class="bg-slate-50 p-4 border-t border-slate-200 text-center text-xs text-slate-500">
+            <div class="bg-white/40 backdrop-blur-md p-4 border-t border-slate-200 text-center text-xs text-slate-500">
                 Sistem Pengingat Perangkat Otomatis Aktif <i class="fa-solid fa-shield-check text-emerald-500"></i>
             </div>
         </div>
@@ -187,7 +187,7 @@
     <div class="flex-1 flex flex-col md:flex-row">
 
         <!-- SIDEBAR LEFT -->
-        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 shadow-xl">
+        <aside class="w-full md:w-64 bg-slate-900/85 backdrop-blur-2xl border-r border-slate-700/50 text-slate-300 flex flex-col justify-between shrink-0 shadow-xl">
             <div>
                 <!-- School Logo Header -->
                 <div class="p-5 border-b border-slate-800 flex items-center space-x-3">
@@ -237,7 +237,7 @@
                 </nav>
             </div>
 
-            <div class="p-4 bg-slate-950/60 border-t border-slate-800 text-xs text-slate-400">
+            <div class="p-4 bg-slate-950/40 backdrop-blur-md border-t border-slate-800 text-xs text-slate-400">
                 <p class="font-bold text-slate-200">Pengampu Informatika & Kepala Perpustakaan:</p>
                 <p class="text-indigo-300 mt-0.5">Glendy A. Taawoeda, S.Pd</p>
                 <p class="text-[10px] text-slate-500">NIP. 199308212022211005</p>
@@ -248,7 +248,7 @@
         <main class="flex-1 p-4 md:p-8 overflow-y-auto custom-scrollbar">
 
             <!-- TOPBAR HEADER -->
-            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white/60 backdrop-blur-xl p-5 rounded-2xl shadow-lg border border-white/60 relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 text-slate-50 opacity-50 pointer-events-none">
                     <i class="fa-solid fa-graduation-cap text-9xl"></i>
                 </div>
@@ -346,7 +346,7 @@
                 </div>
 
                 <!-- Logged In Students Table -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg border border-white/60 p-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                         <div>
                             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -356,7 +356,7 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                            <select id="filterKelasPresensi" onchange="renderStudentTable()" class="px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white font-semibold">
+                            <select id="filterKelasPresensi" onchange="renderStudentTable()" class="px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white/50 backdrop-blur-sm border border-slate-300/60 font-semibold">
                                 <option value="ALL">Semua Tingkat Kelas</option>
                                 <option value="X">Kelas X</option>
                                 <option value="XI">Kelas XI</option>
@@ -369,7 +369,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wider">
+                                <tr class="bg-white/40 backdrop-blur-md border-b border-white/50 text-slate-600 text-xs uppercase tracking-wider">
                                     <th class="p-3">No</th>
                                     <th class="p-3 cursor-pointer hover:bg-slate-100" onclick="toggleSortName()">Nama Siswa <i class="fa-solid fa-sort text-slate-400 ml-1"></i></th>
                                     <th class="p-3">Kelas</th>
@@ -388,8 +388,8 @@
                     <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium">
                         <span id="paginationInfo">Menampilkan 0-0 data</span>
                         <div class="flex gap-2">
-                            <button id="btnPrevPage" onclick="changePage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SBLM</button>
-                            <button id="btnNextPage" onclick="changePage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SELANJUTNYA</button>
+                            <button id="btnPrevPage" onclick="changePage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-white/60 disabled:opacity-50 font-bold">SBLM</button>
+                            <button id="btnNextPage" onclick="changePage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-white/60 disabled:opacity-50 font-bold">SELANJUTNYA</button>
                         </div>
                     </div>
                 </div>
@@ -409,7 +409,7 @@
                 </div>
 
                 <!-- WADAH UTAMA: TAB SYSTEM ANTARE KELAS -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-6">
+                <div class="bg-white/60 backdrop-blur-xl rounded-2xl border border-white/60 shadow-lg p-4 md:p-6">
                     <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4 mb-6">
                         <button onclick="switchMateriTab('ALL')" id="tab-materi-ALL" class="tab-materi-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm">
                             <i class="fa-solid fa-layer-group mr-1.5"></i> Semua Kelas
@@ -446,7 +446,7 @@
                 </div>
 
                 <!-- TAB FILTER KELAS TUGAS -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-6">
+                <div class="bg-white/60 backdrop-blur-xl rounded-2xl border border-white/60 shadow-lg p-4 md:p-6">
                     <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4 mb-6">
                         <button onclick="switchTugasTab('ALL')" id="tab-tugas-ALL" class="tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm">
                             <i class="fa-solid fa-layer-group mr-1.5"></i> Semua Tugas
@@ -469,10 +469,10 @@
                 </div>
 
                 <!-- Tabel Rekap Pengumpulan Tugas Siswa -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-8">
+                <div class="bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg border border-white/60 p-6 mt-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                         <h4 class="font-bold text-slate-800">Status Pengumpulan Tugas Siswa</h4>
-                        <select id="filterKelasTugas" onchange="renderTugasSubmissionsTable()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <select id="filterKelasTugas" onchange="renderTugasSubmissionsTable()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white/50 backdrop-blur-sm border border-slate-300/60 font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none">
                             <option value="ALL">Semua Kelas</option>
                             <option value="X">Seluruh Kelas X</option>
                             <option value="XI">Seluruh Kelas XI</option>
@@ -482,7 +482,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wider">
+                                <tr class="bg-white/40 backdrop-blur-md border-b border-white/50 text-slate-600 text-xs uppercase tracking-wider">
                                     <th class="p-3 cursor-pointer hover:bg-slate-100" onclick="toggleSortTugasName()">
                                         Nama Siswa <i class="fa-solid fa-sort text-slate-400 ml-1"></i>
                                     </th>
@@ -502,8 +502,8 @@
                     <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium">
                         <span id="tugasPaginationInfo">Menampilkan 0-0 data</span>
                         <div class="flex gap-2">
-                            <button id="btnPrevTugasPage" onclick="changeTugasPage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SBLM</button>
-                            <button id="btnNextTugasPage" onclick="changeTugasPage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 font-bold">SELANJUTNYA</button>
+                            <button id="btnPrevTugasPage" onclick="changeTugasPage(-1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-white/60 disabled:opacity-50 font-bold">SBLM</button>
+                            <button id="btnNextTugasPage" onclick="changeTugasPage(1)" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-white/60 disabled:opacity-50 font-bold">SELANJUTNYA</button>
                         </div>
                     </div>
                 </div>
@@ -521,7 +521,7 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                        <div class="bg-white/60 backdrop-blur-xl p-4 rounded-xl border border-indigo-100/60 shadow-lg flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">1</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Upload File ke Drive</h5>
@@ -530,7 +530,7 @@
                             <i class="fa-solid fa-cloud-arrow-up text-indigo-300 text-2xl text-right mt-3"></i>
                         </div>
 
-                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                        <div class="bg-white/60 backdrop-blur-xl p-4 rounded-xl border border-indigo-100/60 shadow-lg flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">2</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Ubah Akses Link</h5>
@@ -539,7 +539,7 @@
                             <i class="fa-solid fa-lock-open text-emerald-400 text-2xl text-right mt-3"></i>
                         </div>
 
-                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                        <div class="bg-white/60 backdrop-blur-xl p-4 rounded-xl border border-indigo-100/60 shadow-lg flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">3</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Salin Tautan (Copy Link)</h5>
@@ -548,7 +548,7 @@
                             <i class="fa-solid fa-link text-amber-400 text-2xl text-right mt-3"></i>
                         </div>
 
-                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between">
+                        <div class="bg-white/60 backdrop-blur-xl p-4 rounded-xl border border-indigo-100/60 shadow-lg flex flex-col justify-between">
                             <div>
                                 <span class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-lg text-xs flex items-center justify-center mb-2">4</span>
                                 <h5 class="font-bold text-xs text-slate-800 mb-1">Kumpulkan di Web Ini</h5>
@@ -573,7 +573,7 @@
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
+                    <div class="bg-white/60 backdrop-blur-xl p-5 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:bg-white/70 flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-indigo-50 text-brand-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-users"></i>
                         </div>
@@ -583,7 +583,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
+                    <div class="bg-white/60 backdrop-blur-xl p-5 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:bg-white/70 flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-file-arrow-up"></i>
                         </div>
@@ -593,7 +593,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
+                    <div class="bg-white/60 backdrop-blur-xl p-5 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:bg-white/70 flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-book"></i>
                         </div>
@@ -603,7 +603,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
+                    <div class="bg-white/60 backdrop-blur-xl p-5 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:bg-white/70 flex items-center gap-4 hover:shadow-md transition">
                         <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-xl shrink-0">
                             <i class="fa-solid fa-tasks"></i>
                         </div>
@@ -615,7 +615,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="bg-white/60 backdrop-blur-xl p-6 rounded-2xl border border-white/60 shadow-lg">
                         <h4 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-file-excel text-emerald-600 mr-2"></i> Rekap Manual Data (CSV)</h4>
                         <p class="text-xs text-slate-500 mb-4 font-medium leading-relaxed">Unduh seluruh riwayat login presensi dan pengumpulan tugas siswa dalam format Excel/CSV untuk keperluan rekap nilai.</p>
                         <div class="flex gap-3">
@@ -628,12 +628,17 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl border border-rose-200 shadow-sm">
-                        <h4 class="font-bold text-rose-700 mb-2"><i class="fa-solid fa-broom text-rose-600 mr-2"></i> Pembersihan / Reset Tahun Ajaran Baru</h4>
-                        <p class="text-xs text-slate-500 mb-4 font-medium leading-relaxed">Lakukan pembersihan otomatis setiap 12 bulan (Semester Ganjil & Genap selesai) untuk menyambut siswa/kelas baru.</p>
-                        <button onclick="confirmAcademicReset()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm">
-                            <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Reset Database Tahun Ajaran
-                        </button>
+                    <div class="bg-rose-50/60 backdrop-blur-xl p-6 rounded-2xl border border-rose-200/60 shadow-lg">
+                        <h4 class="font-bold text-rose-700 mb-2"><i class="fa-solid fa-broom text-rose-600 mr-2"></i> Manajemen Reset Database</h4>
+                        <p class="text-xs text-slate-500 mb-4 font-medium leading-relaxed">Fitur untuk mengosongkan daftar hadir hari ini (mengulang dari awal pencegahan nama ganda), atau menghapus seluruh data secara permanen.</p>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="confirmResetPresensi()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm w-full text-left flex items-center justify-center sm:justify-start">
+                                <i class="fa-solid fa-user-clock mr-2"></i> Kosongkan Presensi Hari Ini
+                            </button>
+                            <button onclick="confirmAcademicReset()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm w-full text-left flex items-center justify-center sm:justify-start">
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Reset Semua Data (Total)
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -649,13 +654,13 @@
                     <i class="fa-solid fa-headset absolute right-8 -bottom-4 text-white/10 text-9xl pointer-events-none"></i>
                 </div>
                 
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-6">
+                <div class="bg-white/60 backdrop-blur-xl rounded-2xl border border-white/60 shadow-lg p-4 md:p-6">
                     <h4 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-clipboard-list text-brand-600"></i> Pertanyaan yang Sering Diajukan
                     </h4>
                     
                     <div class="space-y-3">
-                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                        <details class="bg-white/50 backdrop-blur-md rounded-xl border border-white/60 group cursor-pointer">
                             <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
                                 Bagaimana jika saya salah memilih kelas saat login?
                                 <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
@@ -665,7 +670,7 @@
                             </div>
                         </details>
                         
-                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                        <details class="bg-white/50 backdrop-blur-md rounded-xl border border-white/60 group cursor-pointer">
                             <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
                                 Kenapa tugas saya terkunci dan tidak bisa dikumpulkan?
                                 <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
@@ -675,7 +680,7 @@
                             </div>
                         </details>
                         
-                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                        <details class="bg-white/50 backdrop-blur-md rounded-xl border border-white/60 group cursor-pointer">
                             <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
                                 Apakah tautan Google Drive saya aman?
                                 <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
@@ -685,7 +690,7 @@
                             </div>
                         </details>
 
-                        <details class="bg-slate-50 rounded-xl border border-slate-200 group cursor-pointer">
+                        <details class="bg-white/50 backdrop-blur-md rounded-xl border border-white/60 group cursor-pointer">
                             <summary class="font-bold text-slate-800 p-4 flex justify-between items-center text-sm">
                                 Bagaimana cara mendapatkan XP atau Level?
                                 <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
@@ -701,7 +706,7 @@
                             <h5 class="font-bold text-emerald-800 text-sm">Masih butuh bantuan?</h5>
                             <p class="text-xs text-emerald-700 mt-1 font-medium">Tim pengajar dan admin siap membantu Anda mengatasi kendala teknis LMS.</p>
                         </div>
-                        <a href="https://wa.me/6281234567890" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition flex items-center shrink-0">
+                        <a href="https://wa.me/6285242917488" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition flex items-center shrink-0">
                             <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Chat Admin Sekarang
                         </a>
                     </div>
@@ -738,16 +743,16 @@
 
     <!-- ==================== MODAL TAMBAH MATERI ==================== -->
     <div id="addMateriModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+        <div class="bg-white/85 backdrop-blur-2xl rounded-2xl max-w-md border border-white/60 shadow-2xl w-full p-6 shadow-2xl">
             <h3 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-folder-plus text-emerald-600 mr-2"></i>Tambah Materi Pelajaran Baru</h3>
             <form onsubmit="handleTambahMateri(event)">
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Judul Materi</label>
-                    <input type="text" id="newMateriTitle" required placeholder="Contoh: Algoritma Pemrograman Python" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <input type="text" id="newMateriTitle" required placeholder="Contoh: Algoritma Pemrograman Python" class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Target Kelas</label>
-                    <select id="newMateriKelas" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                    <select id="newMateriKelas" required class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                         <option value="Semua Kelas">Semua Kelas</option>
                         <optgroup label="Tingkat Umum">
                             <option value="Kelas X">Seluruh Kelas X</option>
@@ -772,19 +777,19 @@
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Deskripsi Singkat</label>
-                    <textarea id="newMateriDesc" required rows="2" placeholder="Penjelasan modul atau materi..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    <textarea id="newMateriDesc" required rows="2" placeholder="Penjelasan modul atau materi..." class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Link Google Drive / Materi</label>
-                    <input type="url" id="newMateriUrl" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <input type="url" id="newMateriUrl" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Terbuka Materi (Opsional)</label>
-                    <input type="datetime-local" id="newMateriUnlockTime" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                    <input type="datetime-local" id="newMateriUnlockTime" class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                     <p class="text-[10px] text-slate-400 mt-1">Biarkan kosong jika materi dapat langsung diakses.</p>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeAddMateriModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">Batal</button>
+                    <button type="button" onclick="closeAddMateriModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-white/60 transition">Batal</button>
                     <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition">Simpan & Terbitkan</button>
                 </div>
             </form>
@@ -793,16 +798,16 @@
 
     <!-- ==================== MODAL BUAT TUGAS BARU ==================== -->
     <div id="addTugasModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+        <div class="bg-white/85 backdrop-blur-2xl rounded-2xl max-w-md border border-white/60 shadow-2xl w-full p-6 shadow-2xl">
             <h3 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-pen-to-square text-emerald-600 mr-2"></i>Buat Tugas Baru</h3>
             <form onsubmit="handleTambahTugas(event)">
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Judul Tugas</label>
-                    <input type="text" id="newTugasTitle" required placeholder="Contoh: Tugas 1: Pemrograman Scratch" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <input type="text" id="newTugasTitle" required placeholder="Contoh: Tugas 1: Pemrograman Scratch" class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Target Kelas</label>
-                    <select id="newTugasKelas" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                    <select id="newTugasKelas" required class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                         <option value="Semua Kelas">Semua Kelas</option>
                         <optgroup label="Tingkat Umum">
                             <option value="Kelas X">Seluruh Kelas X</option>
@@ -827,14 +832,14 @@
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Batas Waktu Pengumpulan (Deadline)</label>
-                    <input type="datetime-local" id="newTugasDeadline" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                    <input type="datetime-local" id="newTugasDeadline" required class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Instruksi / Penjelasan Tugas</label>
-                    <textarea id="newTugasDesc" required rows="3" placeholder="Jelaskan detail pengerjaan tugas..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    <textarea id="newTugasDesc" required rows="3" placeholder="Jelaskan detail pengerjaan tugas..." class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeAddTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">Batal</button>
+                    <button type="button" onclick="closeAddTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-white/60 transition">Batal</button>
                     <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition">Terbitkan Tugas</button>
                 </div>
             </form>
@@ -843,7 +848,7 @@
 
     <!-- ==================== MODAL SUBMIT TUGAS SISWA ==================== -->
     <div id="submitTugasModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+        <div class="bg-white/85 backdrop-blur-2xl rounded-2xl max-w-md border border-white/60 shadow-2xl w-full p-6 shadow-2xl">
             <h3 class="text-lg font-bold text-slate-800 mb-2">Form Pengumpulan Tugas</h3>
             <p id="modalJudulTugas" class="text-xs text-brand-600 font-bold mb-4"></p>
             
@@ -851,18 +856,18 @@
                 <input type="hidden" id="modalTugasId">
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Nama Siswa</label>
-                    <input type="text" id="modalSiswaNama" placeholder="Nama Anda" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold">
+                    <input type="text" id="modalSiswaNama" placeholder="Nama Anda" required class="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-slate-300/50 rounded-lg text-xs font-semibold">
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Kelas</label>
-                    <input type="text" id="modalSiswaKelas" placeholder="Contoh: X-1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold">
+                    <input type="text" id="modalSiswaKelas" placeholder="Contoh: X-1" required class="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-slate-300/50 rounded-lg text-xs font-semibold">
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-slate-600 mb-1">Tautan / Link Google Drive Tugas</label>
-                    <input type="url" id="modalLinkTugas" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <input type="url" id="modalLinkTugas" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300/50 bg-white/50 backdrop-blur-sm rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeSubmitTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">Batal</button>
+                    <button type="button" onclick="closeSubmitTugasModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-white/60 transition">Batal</button>
                     <button type="submit" id="btnSubmitTugas" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-lg shadow flex items-center transition">
                         <span id="btnTugasText">Kumpulkan Sekarang</span>
                         <span id="btnTugasSpinner" class="hidden flex items-center"><i class="fa-solid fa-spinner animate-spin mr-1.5"></i> Mengirim...</span>
@@ -1439,7 +1444,7 @@
                 const badgeBaruHTML = isBaru ? `<span class="absolute -top-3 -right-3 bg-rose-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg animate-bounce border-2 border-white z-10">BARU</span>` : '';
 
                 grid.innerHTML += `
-                    <div class="bg-white hover:bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between relative ${!isAccessible ? 'opacity-75' : ''}">
+                    <div class="bg-white hover:bg-white/60 p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between relative ${!isAccessible ? 'opacity-75' : ''}">
                         ${badgeBaruHTML} <!-- Sisipkan badge di sini -->
                         <div>
                             <div class="flex justify-between items-start mb-3">
@@ -1635,7 +1640,7 @@
                 }
 
                 list.innerHTML += `
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative hover:shadow-md transition ${(!isGradeAccessible || isExpired) ? 'bg-slate-50/80' : ''}">
+                    <div class="bg-white/60 backdrop-blur-xl p-5 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:bg-white/70 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative hover:shadow-md transition ${(!isGradeAccessible || isExpired) ? 'bg-slate-50/80' : ''}">
                         ${badgeHTML} <!-- Sisipkan badge di sini -->
                         <div class="flex-1">
                             <div class="flex flex-wrap items-center gap-2 mb-2">
@@ -1786,10 +1791,10 @@
             } else {
                 paginated.forEach((item, index) => {
                     tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition">
+                        <tr class="hover:bg-white/60 transition">
                             <td class="p-3 font-semibold text-slate-400 text-xs">${start + index + 1}</td>
                             <td class="p-3 font-bold text-slate-800">${item.name}</td>
-                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">${item.kelas}</span></td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-white/50 border border-white/60 text-xs font-bold text-slate-700">${item.kelas}</span></td>
                             <td class="p-3 text-slate-500 text-xs font-medium">${item.date}</td>
                             <td class="p-3 font-mono text-xs text-brand-600 font-bold">${item.time}</td>
                             <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
@@ -1858,7 +1863,7 @@
             } else {
                 paginated.forEach(item => {
                     tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition">
+                        <tr class="hover:bg-white/60 transition">
                             <td class="p-3 font-bold text-slate-800">${item.name}</td>
                             <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border text-[11px] font-bold text-slate-700">${item.kelas}</span></td>
                             <td class="p-3 text-slate-600 font-medium">${item.tugasTitle}</td>
@@ -1923,30 +1928,53 @@
             showToast(`File Rekap ${type.toUpperCase()} telah diunduh`, 'success');
         }
 
+        async function confirmResetPresensi() {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const confirmAction = await customConfirm("Kosongkan daftar kehadiran hari ini? Ini akan mereset sistem pengecekan nama ganda, sehingga siswa (termasuk yang salah ketik/huruf besar-kecil) dapat login kembali dari awal.", "Reset Presensi Hari Ini", "warning");
+            if (!confirmAction) return;
+
+            studentLogins = [];
+            localStorage.removeItem('sman4_cache_logins');
+            if (db) db.ref('logins').remove().catch(e => console.warn(e));
+            
+            renderStudentTable();
+            updateAdminStats();
+            showToast("Data presensi hari ini berhasil dikosongkan.", "success");
+        }
+
         async function confirmAcademicReset() {
             if (!currentUser || currentUser.role !== 'admin') return;
             
-            const confirmAction = await customConfirm("Proses ini akan mengosongkan seluruh database presensi dan tugas untuk menyambut Tahun Ajaran Baru.", "Reset Tahun Ajaran", "danger");
+            const confirmAction = await customConfirm("Proses ini akan mengosongkan SELURUH database (Presensi, Tugas, Pengumpulan, dan Materi) secara permanen.", "Reset Semua Data", "danger");
             if (!confirmAction) return;
 
             const inputKey = await customPrompt("Ketik kata 'HAPUS' di bawah ini untuk mengonfirmasi pembersihan total:", "Konfirmasi Teks", "HAPUS");
             if (inputKey === 'HAPUS') {
                 studentLogins = [];
                 tugasSubmissions = [];
+                materiData = [];
+                tugasData = [];
                 localStorage.removeItem('sman4_cache_logins');
                 localStorage.removeItem('sman4_cache_submissions');
+                localStorage.removeItem('sman4_cache_materi');
+                localStorage.removeItem('sman4_cache_tugas');
                 if (db) {
                     db.ref('logins').remove();
                     db.ref('submissions').remove();
+                    db.ref('materi').remove();
+                    db.ref('tugas').remove();
                 }
                 renderStudentTable();
                 renderTugasSubmissionsTable();
+                renderMateriCards();
+                renderTugasList();
                 updateAdminStats();
-                customAlert("Database berhasil dibersihkan untuk Tahun Ajaran Baru!", "Reset Selesai", "success");
+                customAlert("Seluruh database berhasil dibersihkan dari awal!", "Reset Total Selesai", "success");
             } else if (inputKey !== null) {
                 customAlert("Kata kunci konfirmasi tidak sesuai. Pembersihan dibatalkan.", "Gagal Reset", "error");
             }
         }
+
 
         function openAbsensiModal() {
             window.open("https://absensi-sekolah-v2.vercel.app/index.html", "_blank", "noopener,noreferrer");

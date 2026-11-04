@@ -1196,6 +1196,17 @@
 
             if (!nama || !kelas) return;
 
+            // --- PENCEGAHAN NAMA DUPLIKAT ---
+            // Mengabaikan case sensitivity dan kelebihan spasi
+            const namaLower = nama.toLowerCase().replace(/\s+/g, ' ');
+            const isDuplicate = studentLogins.some(s => s.name.toLowerCase().replace(/\s+/g, ' ') === namaLower);
+            
+            if (isDuplicate) {
+                customAlert(`Siswa dengan nama "${nama}" sudah tercatat hadir/login di sistem hari ini. Harap gunakan nama lengkap, tambahkan nama tengah/akhir agar spesifik, atau hubungi Guru jika terjadi kendala.`, 'Nama Duplikat Terdeteksi', 'warning');
+                return; // Batalkan proses login
+            }
+            // --------------------------------
+
             if (rememberMe) {
                 localStorage.setItem('sman4_remember_nama', nama);
                 localStorage.setItem('sman4_remember_kelas', kelas);

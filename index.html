@@ -228,8 +228,6 @@
         <aside id="mainSidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 md:w-64 bg-slate-900/95 md:bg-slate-900/85 backdrop-blur-2xl border-r border-slate-700/50 text-slate-300 flex flex-col justify-between shrink-0 shadow-2xl md:shadow-xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out h-full">
             <div>
                 <!-- School Logo Header -->
-                
-                <!-- School Logo Header -->
                 <div class="p-5 border-b border-slate-800 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-md border border-indigo-400/30">
@@ -244,7 +242,6 @@
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
-
 
                 <!-- Navigation Menu -->
                 <nav class="p-4 space-y-2">
@@ -1551,3 +1548,641 @@
 
         function renderMateriCards() {
             const grid = document.getElementById('materiGrid');
+            const searchInput = document.getElementById('searchMateri');
+            const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            grid.innerHTML = '';
+
+            let filteredMateri = materiData.filter(item => {
+                const matchSearch = item.title.toLowerCase().includes(searchText) || item.desc.toLowerCase().includes(searchText);
+                let matchClass = true;
+                if (activeMateriTab === 'X') matchClass = item.kelas.includes("Kelas X") || item.kelas.includes("X-");
+                else if (activeMateriTab === 'XI') matchClass = item.kelas.includes("Kelas XI") || item.kelas.includes("XI-");
+                else if (activeMateriTab === 'XII') matchClass = item.kelas.includes("Kelas XII") || item.kelas.includes("XII-");
+                
+                return matchSearch && (activeMateriTab === 'ALL' || item.kelas === "Semua Kelas" || matchClass);
+            });
+
+            // Urutkan materi terbaru di atas
+            filteredMateri.sort((a, b) => {
+                const timeA = parseInt(a.id.split('_')[1]) || 0;
+                const timeB = parseInt(b.id.split('_')[1]) || 0;
+                return timeB - timeA;
+            });
+
+            const total = filteredMateri.length;
+            const start = (materiCurrentPage - 1) * materiPerPage;
+            const paginated = filteredMateri.slice(start, start + materiPerPage);
+
+            const pagContainer = document.getElementById('materiPaginationContainer');
+            if (pagContainer) {
+                if (total > materiPerPage) {
+                    pagContainer.classList.remove('hidden');
+                    document.getElementById('materiPaginationInfo').innerText = `Menampilkan ${start + 1}-${Math.min(start + materiPerPage, total)} dari ${total} materi`;
+                    document.getElementById('btnPrevMateri').disabled = materiCurrentPage === 1;
+                    document.getElementById('btnNextMateri').disabled = start + materiPerPage >= total;
+                } else {
+                    pagContainer.classList.add('hidden');
+                }
+            }
+
+            if (paginated.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-xs font-medium">
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
+                    Tidak ditemukan materi yang sesuai.
+                </div>`;
+                return;
+            }
+
+            paginated.forEach(item => {
+                const isAccessible = checkGradeAccess(item.kelas);
+                
+                // LOGIKA NOTIFIKASI BARU (2 Hari = 172.800.000 milidetik)
+                const createdAt = parseInt(item.id.split('_')[1]); // Ekstrak timestamp dari ID
+                const isBaru = (Date.now() - createdAt) <= (2 * 24 * 60 * 60 * 1000);
+                const badgeBaruHTML = isBaru ? `<span class="absolute -top-3 -right-3 bg-rose-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg animate-bounce border-2 border-white z-10">BARU</span>` : '';
+
+                grid.innerHTML += `
+                    <div class="bg-white hover:bg-white/60 p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between relative ${!isAccessible ? 'opacity-75' : ''}">
+                        ${badgeBaruHTML} <!-- Sisipkan badge di sini -->
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-md ${isAccessible ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
+                                    ${!isAccessible ? '<i class="fa-solid fa-lock mr-1"></i> Khusus ' : ''}${item.kelas}
+                                </span>
+                                <div class="flex items-center gap-2">
+                                    ${isAdmin ? `
+                                        <button onclick="deleteMateri('${item.id}')" title="Hapus Materi Permanen" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    ` : ''}
+                                    <i class="fa-solid ${isAccessible ? 'fa-file-pdf text-rose-500' : 'fa-lock text-slate-400'} text-xl"></i>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-base mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium">${item.desc}</p>
+                        </div>
+                        <div>
+                            ${isAccessible ? `
+                                <button onclick="window.open('${item.driveUrl}', '_blank')" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white shadow-md transition">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Buka / Unduh Materi</span>
+                                </button>
+                            ` : `
+                                <button disabled class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-slate-200 text-slate-400 cursor-not-allowed">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <span>Terkunci (Beda Kelas)</span>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function deleteMateri(id) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus modul materi ini secara permanen?", "Hapus Materi Permanen", "danger");
+            if (!confirmDel) return;
+
+            materiData = materiData.filter(m => m.id !== id);
+            localStorage.setItem('sman4_cache_materi', JSON.stringify(materiData));
+            if (db) db.ref('materi/' + id).remove().catch(e => console.warn(e));
+            renderMateriCards();
+            updateAdminStats();
+            showToast('Materi berhasil dihapus permanen', 'info');
+        }
+
+        // TUGAS SISWA FUNCTIONS
+        function openAddTugasModal() { 
+            if (!currentUser || currentUser.role !== 'admin') {
+                customAlert('Hanya Admin/Guru yang dapat membuat tugas!', 'Akses Ditolak', 'error');
+                return;
+            }
+            document.getElementById('addTugasModal').classList.remove('hidden'); 
+        }
+        function closeAddTugasModal() { document.getElementById('addTugasModal').classList.add('hidden'); }
+
+        function handleTambahTugas(e) {
+            e.preventDefault();
+            if (!currentUser || currentUser.role !== 'admin') {
+                customAlert('Akses ditolak! Hanya Guru yang bisa membuat tugas.', 'Gagal Memuat Tugas', 'error');
+                return;
+            }
+
+            const title = document.getElementById('newTugasTitle').value.trim();
+            const kelas = document.getElementById('newTugasKelas').value;
+            const deadlineInput = document.getElementById('newTugasDeadline').value;
+            const desc = document.getElementById('newTugasDesc').value.trim();
+
+            if (!title || !deadlineInput) return;
+
+            const deadlineTimestamp = new Date(deadlineInput).getTime();
+            const tugasId = 'tugas_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const newTugas = { id: tugasId, title, kelas, deadlineTimestamp, desc };
+
+            tugasData.unshift(newTugas);
+            localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
+
+            if (db) {
+                db.ref('tugas/' + tugasId).set(newTugas).catch(err => console.warn(err));
+            }
+
+            e.target.reset();
+            closeAddTugasModal();
+            renderTugasList();
+            updateAdminStats();
+            customAlert('Tugas siswa baru berhasil diterbitkan!', 'Tugas Diterbitkan', 'success');
+        }
+
+        function switchTugasTab(kelas) {
+            activeTugasTab = kelas;
+            tugasListCurrentPage = 1;
+            const tabs = ['ALL', 'X', 'XI', 'XII'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-tugas-${t}`);
+                if (btn) {
+                    btn.className = (t === kelas) 
+                        ? "tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white transition shadow-sm"
+                        : "tab-tugas-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+                }
+            });
+            renderTugasList();
+        }
+
+        function startRealtimeCountdown() {
+            // Bersihkan interval lama agar tidak menumpuk saat render ulang
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                const countdownElements = document.querySelectorAll('.live-countdown');
+                const now = Date.now();
+
+                countdownElements.forEach(el => {
+                    const deadline = parseInt(el.getAttribute('data-deadline'));
+                    const distance = deadline - now;
+
+                    if (distance <= 0) {
+                        el.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Waktu Habis';
+                        el.classList.replace('text-rose-600', 'text-slate-500');
+                        el.classList.replace('bg-rose-50', 'bg-slate-100');
+                        el.classList.replace('border-rose-200', 'border-slate-200');
+                        el.classList.remove('live-countdown'); // Hapus class agar tidak di-loop lagi
+                    } else {
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        let timeString = '<i class="fa-solid fa-stopwatch animate-pulse mr-1.5"></i>Sisa: ';
+                        if (days > 0) timeString += `${days} Hari, `;
+                        
+                        // Tambahkan angka 0 di depan jika di bawah 10 (misal: 09:05:02)
+                        const h = String(hours).padStart(2, '0');
+                        const m = String(minutes).padStart(2, '0');
+                        const s = String(seconds).padStart(2, '0');
+                        
+                        timeString += `${h}:${m}:${s}`;
+                        el.innerHTML = timeString;
+                    }
+                });
+            }, 1000); // Berjalan setiap 1 detik
+        }
+
+        function renderTugasList() {
+            const list = document.getElementById('tugasList');
+            const searchInput = document.getElementById('searchTugas');
+            const statusSelect = document.getElementById('filterStatusTugas');
+            
+            const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+            const statusFilter = statusSelect ? statusSelect.value : 'ALL';
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const now = Date.now();
+            list.innerHTML = '';
+
+            let filteredTugas = tugasData.filter(item => {
+                const itemKelas = item.kelas || "Semua Kelas";
+                const isExpired = now > item.deadlineTimestamp;
+                
+                // Filter Pencarian
+                const matchSearch = item.title.toLowerCase().includes(searchText) || item.desc.toLowerCase().includes(searchText);
+                
+                // Filter Status
+                let matchStatus = true;
+                if (statusFilter === 'ACTIVE') matchStatus = !isExpired;
+                if (statusFilter === 'EXPIRED') matchStatus = isExpired;
+
+                // Filter Kelas
+                let matchClass = true;
+                if (activeTugasTab === 'X') matchClass = itemKelas.includes("Kelas X") || itemKelas.includes("X-");
+                else if (activeTugasTab === 'XI') matchClass = itemKelas.includes("Kelas XI") || itemKelas.includes("XI-");
+                else if (activeTugasTab === 'XII') matchClass = itemKelas.includes("Kelas XII") || itemKelas.includes("XII-");
+
+                return matchSearch && matchStatus && (activeTugasTab === 'ALL' || itemKelas === "Semua Kelas" || matchClass);
+            });
+
+            // Urutkan tugas terbaru di atas
+            filteredTugas.sort((a, b) => {
+                const timeA = parseInt(a.id.split('_')[1]) || 0;
+                const timeB = parseInt(b.id.split('_')[1]) || 0;
+                return timeB - timeA;
+            });
+
+            const total = filteredTugas.length;
+            const start = (tugasListCurrentPage - 1) * tugasListPerPage;
+            const paginated = filteredTugas.slice(start, start + tugasListPerPage);
+
+            const pagContainer = document.getElementById('tugasListPaginationContainer');
+            if (pagContainer) {
+                if (total > tugasListPerPage) {
+                    pagContainer.classList.remove('hidden');
+                    document.getElementById('tugasListPaginationInfo').innerText = `Menampilkan ${start + 1}-${Math.min(start + tugasListPerPage, total)} dari ${total} tugas`;
+                    document.getElementById('btnPrevTugasList').disabled = tugasListCurrentPage === 1;
+                    document.getElementById('btnNextTugasList').disabled = start + tugasListPerPage >= total;
+                } else {
+                    pagContainer.classList.add('hidden');
+                }
+            }
+
+            if (paginated.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-medium">
+                    <i class="fa-solid fa-list-check text-3xl mb-2 block text-slate-300"></i>
+                    Tidak ditemukan tugas yang sesuai.
+                </div>`;
+                return;
+            }
+
+            paginated.forEach(t => {
+                const deadlineDate = new Date(t.deadlineTimestamp);
+                const deadlineStr = deadlineDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ', Jam ' + deadlineDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WITA';
+                
+                const targetKelas = t.kelas || "Semua Kelas";
+                const isGradeAccessible = checkGradeAccess(targetKelas);
+                const isExpired = now > t.deadlineTimestamp;
+                
+                // LOGIKA COUNTDOWN & NOTIFIKASI TUGAS
+                const createdAt = parseInt(t.id.split('_')[1]);
+                const isBaru = (now - createdAt) <= (2 * 24 * 60 * 60 * 1000);
+                const timeRemaining = t.deadlineTimestamp - now;
+                const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
+                
+                let badgeHTML = '';
+                if (!isExpired) {
+                    if (daysRemaining <= 2 && daysRemaining > 0) {
+                        // Peringatan H-2 ke bawah (Warna Merah Pulse)
+                        const textHari = daysRemaining === 1 ? 'HARI INI!' : `SISA ${daysRemaining} HARI`;
+                        badgeHTML = `<span class="absolute -top-3 -right-3 bg-rose-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg animate-pulse border-2 border-white z-10">${textHari}</span>`;
+                    } else if (isBaru) {
+                        // Tugas baru ditambah (Warna Hijau/Emerald)
+                        badgeHTML = `<span class="absolute -top-3 -right-3 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg animate-bounce border-2 border-white z-10">TUGAS BARU</span>`;
+                    }
+                }
+
+                list.innerHTML += `
+                    <div class="bg-white/60 backdrop-blur-xl p-5 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:bg-white/70 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative hover:shadow-md transition ${(!isGradeAccessible || isExpired) ? 'bg-slate-50/80' : ''}">
+                        ${badgeHTML} <!-- Sisipkan badge di sini -->
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-md ${isExpired ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+                                    <i class="fa-solid ${isExpired ? 'fa-clock-rotate-left' : 'fa-clock'} mr-1"></i> Batas Waktu: ${deadlineStr}
+                                </span>
+                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-md ${isGradeAccessible ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
+                                    ${!isGradeAccessible ? '<i class="fa-solid fa-lock mr-1"></i> Khusus ' : ''}${targetKelas}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-base mb-1">${t.title}</h4>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed mb-3">${t.desc}</p>
+                            
+                            <!-- ELEMEN LIVE COUNTDOWN -->
+                            ${!isExpired ? `
+                                <div class="inline-block px-3 py-1.5 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-[11px] font-bold live-countdown shadow-sm" data-deadline="${t.deadlineTimestamp}">
+                                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Menghitung sisa waktu...
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0">
+                            ${isAdmin ? `
+                                <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas Permanen" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
+                                    <i class="fa-solid fa-trash-can mr-1"></i> Hapus
+                                </button>
+                            ` : ''}
+
+                            ${!isGradeAccessible ? `
+                                <button disabled class="bg-slate-200 text-slate-400 font-bold text-xs px-5 py-2.5 rounded-xl cursor-not-allowed flex items-center">
+                                    <i class="fa-solid fa-lock mr-1.5"></i> Terkunci
+                                </button>
+                            ` : isExpired ? `
+                                <button disabled class="bg-rose-100 text-rose-500 font-bold text-xs px-5 py-2.5 rounded-xl cursor-not-allowed flex items-center border border-rose-200">
+                                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> Waktu Lewat
+                                </button>
+                            ` : `
+                                <button onclick="openSubmitTugasModal('${t.id}', '${t.title}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center shadow-md">
+                                    <i class="fa-solid fa-paper-plane mr-1.5"></i> Kumpulkan
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Panggil fungsi countdown setiap kali daftar tugas selesai dirender
+            startRealtimeCountdown(); 
+        }
+
+        async function deleteTugas(id) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus tugas ini secara permanen?", "Hapus Tugas Permanen", "danger");
+            if (!confirmDel) return;
+
+            tugasData = tugasData.filter(t => t.id !== id);
+            localStorage.setItem('sman4_cache_tugas', JSON.stringify(tugasData));
+            if (db) db.ref('tugas/' + id).remove().catch(e => console.warn(e));
+            renderTugasList();
+            updateAdminStats();
+            showToast('Tugas berhasil dihapus permanen', 'info');
+        }
+
+        function openSubmitTugasModal(tugasId, title) {
+            const targetTugas = tugasData.find(t => t.id === tugasId);
+            if (targetTugas) {
+                const targetKelas = targetTugas.kelas || "Semua Kelas";
+                if (!checkGradeAccess(targetKelas)) {
+                    customAlert('Tugas ini bukan ditujukan untuk tingkat kelas Anda!', 'Akses Terkunci', 'warning');
+                    return;
+                }
+                if (Date.now() > targetTugas.deadlineTimestamp && currentUser.role !== 'admin') {
+                    customAlert('Batas waktu pengumpulan tugas ini telah berakhir!', 'Waktu Habis', 'error');
+                    return;
+                }
+            }
+
+            document.getElementById('modalTugasId').value = tugasId;
+            document.getElementById('modalJudulTugas').innerText = title;
+            if (currentUser) {
+                document.getElementById('modalSiswaNama').value = currentUser.name;
+                document.getElementById('modalSiswaKelas').value = currentUser.kelas;
+            }
+            document.getElementById('submitTugasModal').classList.remove('hidden');
+        }
+
+        function closeSubmitTugasModal() { document.getElementById('submitTugasModal').classList.add('hidden'); }
+
+        function handlePengumpulanTugas(e) {
+            e.preventDefault();
+            const title = document.getElementById('modalJudulTugas').innerText;
+            const name = document.getElementById('modalSiswaNama').value.trim();
+            const kelas = document.getElementById('modalSiswaKelas').value.trim();
+            const url = document.getElementById('modalLinkTugas').value.trim();
+            const time = new Date().toLocaleString('id-ID') + ' WITA';
+
+            if (!url || !name || !kelas) return;
+
+            const subId = 'sub_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const newSub = { key: subId, name, kelas, tugasTitle: title, time, url };
+            tugasSubmissions.unshift(newSub);
+            localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
+
+            if (db) {
+                db.ref('submissions/' + subId).set(newSub).catch(err => console.warn(err));
+            }
+
+            document.getElementById('modalLinkTugas').value = '';
+            closeSubmitTugasModal();
+            renderTugasSubmissionsTable();
+            updateAdminStats();
+            customAlert('Tugas Anda berhasil dikirim dan tersimpan di database.', 'Pengumpulan Berhasil', 'success');
+        }
+
+        function renderStudentTable() {
+            const tbody = document.getElementById('studentTableBody');
+            const searchInput = document.getElementById('searchStudent');
+            const filterKelasSelect = document.getElementById('filterKelasPresensi');
+            const thAction = document.getElementById('thActionPresensi');
+            
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
+            const selectedKelasGroup = filterKelasSelect ? filterKelasSelect.value : 'ALL';
+            const isAdmin = currentUser && currentUser.role === 'admin';
+
+            if (thAction) {
+                if (isAdmin) thAction.classList.remove('hidden');
+                else thAction.classList.add('hidden');
+            }
+
+            let filtered = studentLogins.filter(s => {
+                const matchSearch = s.name.toLowerCase().includes(search) || s.kelas.toLowerCase().includes(search);
+                let matchKelas = true;
+                if (selectedKelasGroup !== 'ALL') {
+                    const regex = new RegExp(`^${selectedKelasGroup}(-[0-9]+)?$`, 'i');
+                    matchKelas = regex.test(s.kelas.trim());
+                }
+                return matchSearch && matchKelas;
+            });
+
+            filtered.sort((a, b) => sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+
+            const total = filtered.length;
+            const start = (currentPage - 1) * rowsPerPage;
+            const paginated = filtered.slice(start, start + rowsPerPage);
+
+            tbody.innerHTML = '';
+            if (paginated.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" class="text-center p-4 text-xs text-slate-400">Belum ada data kehadiran siswa.</td></tr>`;
+            } else {
+                paginated.forEach((item, index) => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/60 transition">
+                            <td class="p-3 font-semibold text-slate-400 text-xs">${start + index + 1}</td>
+                            <td class="p-3 font-bold text-slate-800">${item.name}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-white/50 border border-white/60 text-xs font-bold text-slate-700">${item.kelas}</span></td>
+                            <td class="p-3 text-slate-500 text-xs font-medium">${item.date}</td>
+                            <td class="p-3 font-mono text-xs text-brand-600 font-bold">${item.time}</td>
+                            <td class="p-3"><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">Hadir Online</span></td>
+                            ${isAdmin ? `
+                                <td class="p-3 text-center">
+                                    <button onclick="deleteLogin('${item.key}')" title="Hapus Presensi Permanen" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            ` : ''}
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('paginationInfo').innerText = `Menampilkan ${total === 0 ? 0 : Math.min(start + 1, total)}-${Math.min(start + rowsPerPage, total)} dari ${total} data`;
+            document.getElementById('btnPrevPage').disabled = currentPage === 1;
+            document.getElementById('btnNextPage').disabled = start + rowsPerPage >= total;
+        }
+
+        // FUNGSI HAPUS PRESENSI SISWA SECARA PERMANEN
+        async function deleteLogin(key) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus data presensi siswa ini secara PERMANEN?", "Hapus Presensi Permanen", "danger");
+            if (!confirmDel) return;
+
+            studentLogins = studentLogins.filter(s => s.key !== key);
+            localStorage.setItem('sman4_cache_logins', JSON.stringify(studentLogins));
+            
+            if (db) {
+                db.ref('logins/' + key).remove().catch(e => console.warn(e));
+            }
+
+            renderStudentTable();
+            updateAdminStats();
+            showToast('Data presensi siswa berhasil dihapus permanen', 'info');
+        }
+
+        function toggleSortName() { sortAsc = !sortAsc; renderStudentTable(); }
+        function changePage(delta) { currentPage += delta; renderStudentTable(); }
+
+        function renderTugasSubmissionsTable() {
+            const tbody = document.getElementById('tugasSubmissionsTableBody');
+            const filterEl = document.getElementById('filterKelasTugas');
+            const thAction = document.getElementById('thActionTugas');
+            const filter = filterEl ? filterEl.value : 'ALL';
+            const isAdmin = currentUser && currentUser.role === 'admin';
+
+            if (thAction) {
+                if (isAdmin) thAction.classList.remove('hidden');
+                else thAction.classList.add('hidden');
+            }
+
+            let filtered = tugasSubmissions;
+            if (filter !== 'ALL') filtered = tugasSubmissions.filter(s => s.kelas.startsWith(filter));
+
+            filtered.sort((a, b) => tugasSortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+
+            const total = filtered.length;
+            const start = (tugasCurrentPage - 1) * tugasRowsPerPage;
+            const paginated = filtered.slice(start, start + tugasRowsPerPage);
+
+            tbody.innerHTML = '';
+            if (paginated.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" class="text-center p-4 text-slate-400 font-medium">Belum ada pengumpulan tugas.</td></tr>`;
+            } else {
+                paginated.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/60 transition">
+                            <td class="p-3 font-bold text-slate-800">${item.name}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 border text-[11px] font-bold text-slate-700">${item.kelas}</span></td>
+                            <td class="p-3 text-slate-600 font-medium">${item.tugasTitle}</td>
+                            <td class="p-3 font-mono text-slate-500">${item.time}</td>
+                            <td class="p-3"><a href="${item.url}" target="_blank" class="text-brand-600 font-bold hover:underline"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Link</a></td>
+                            ${isAdmin ? `
+                                <td class="p-3 text-center">
+                                    <button onclick="deleteSubmission('${item.key}')" title="Hapus Pengumpulan Permanen" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            ` : ''}
+                        </tr>
+                    `;
+                });
+            }
+
+            const infoEl = document.getElementById('tugasPaginationInfo');
+            if (infoEl) infoEl.innerText = `Menampilkan ${total === 0 ? 0 : Math.min(start + 1, total)}-${Math.min(start + tugasRowsPerPage, total)} dari ${total} data`;
+            document.getElementById('btnPrevTugasPage').disabled = tugasCurrentPage === 1;
+            document.getElementById('btnNextTugasPage').disabled = start + tugasRowsPerPage >= total;
+        }
+
+        // FUNGSI HAPUS PENGUMPULAN TUGAS SECARA PERMANEN
+        async function deleteSubmission(key) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const confirmDel = await customConfirm("Apakah Anda yakin ingin menghapus riwayat pengumpulan tugas siswa ini secara PERMANEN?", "Hapus Pengumpulan Permanen", "danger");
+            if (!confirmDel) return;
+
+            tugasSubmissions = tugasSubmissions.filter(s => s.key !== key);
+            localStorage.setItem('sman4_cache_submissions', JSON.stringify(tugasSubmissions));
+            
+            if (db) {
+                db.ref('submissions/' + key).remove().catch(e => console.warn(e));
+            }
+
+            renderTugasSubmissionsTable();
+            updateAdminStats();
+            showToast('Riwayat pengumpulan tugas berhasil dihapus permanen', 'info');
+        }
+
+        function toggleSortTugasName() { tugasSortAsc = !tugasSortAsc; renderTugasSubmissionsTable(); }
+        function changeTugasPage(delta) { tugasCurrentPage += delta; renderTugasSubmissionsTable(); }
+
+        function exportDataCSV(type) {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            if (type === 'presensi') {
+                csvContent += "Nama Siswa,Kelas,Tanggal,Jam Login\n";
+                studentLogins.forEach(s => csvContent += `"${s.name}","${s.kelas}","${s.date}","${s.time}"\n`);
+            } else {
+                csvContent += "Nama Siswa,Kelas,Judul Tugas,Waktu Kumpul,Link Tugas\n";
+                tugasSubmissions.forEach(t => csvContent += `"${t.name}","${t.kelas}","${t.tugasTitle}","${t.time}","${t.url}"\n`);
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_${type}_SMAN4Manado_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`File Rekap ${type.toUpperCase()} telah diunduh`, 'success');
+        }
+
+        async function confirmResetPresensi() {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            const confirmAction = await customConfirm("Kosongkan daftar kehadiran hari ini? Ini akan mereset sistem pengecekan nama ganda, sehingga siswa (termasuk yang salah ketik/huruf besar-kecil) dapat login kembali dari awal.", "Reset Presensi Hari Ini", "warning");
+            if (!confirmAction) return;
+
+            studentLogins = [];
+            localStorage.removeItem('sman4_cache_logins');
+            if (db) db.ref('logins').remove().catch(e => console.warn(e));
+            
+            renderStudentTable();
+            updateAdminStats();
+            showToast("Data presensi hari ini berhasil dikosongkan.", "success");
+        }
+
+        async function confirmAcademicReset() {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            
+            const confirmAction = await customConfirm("Proses ini akan mengosongkan SELURUH database (Presensi, Tugas, Pengumpulan, dan Materi) secara permanen.", "Reset Semua Data", "danger");
+            if (!confirmAction) return;
+
+            const inputKey = await customPrompt("Ketik kata 'HAPUS' di bawah ini untuk mengonfirmasi pembersihan total:", "Konfirmasi Teks", "HAPUS");
+            if (inputKey === 'HAPUS') {
+                studentLogins = [];
+                tugasSubmissions = [];
+                materiData = [];
+                tugasData = [];
+                localStorage.removeItem('sman4_cache_logins');
+                localStorage.removeItem('sman4_cache_submissions');
+                localStorage.removeItem('sman4_cache_materi');
+                localStorage.removeItem('sman4_cache_tugas');
+                if (db) {
+                    db.ref('logins').remove();
+                    db.ref('submissions').remove();
+                    db.ref('materi').remove();
+                    db.ref('tugas').remove();
+                }
+                renderStudentTable();
+                renderTugasSubmissionsTable();
+                renderMateriCards();
+                renderTugasList();
+                updateAdminStats();
+                customAlert("Seluruh database berhasil dibersihkan dari awal!", "Reset Total Selesai", "success");
+            } else if (inputKey !== null) {
+                customAlert("Kata kunci konfirmasi tidak sesuai. Pembersihan dibatalkan.", "Gagal Reset", "error");
+            }
+        }
+
+
+        function openAbsensiModal() {
+            window.open("https://absensi-sekolah-v2.vercel.app/index.html", "_blank", "noopener,noreferrer");
+        }
+
+        function closeAbsensiModal() {
+            document.getElementById('absensiFrame').src = ""; 
+            document.getElementById('absensiIframeModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

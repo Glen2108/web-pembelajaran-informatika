@@ -1065,8 +1065,10 @@
                     icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
                     btnConfirm.className = "flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 shadow-md transition";
                 } else {
-                    icon.className = "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-brand-100 text-brand-600 border border-brand-200";
-                    icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+                    icon.className = "w-16 h-16 flex items-center justify-center border border-brand-200 bg-brand-50 text-brand-600 rounded-full mx-auto mb-4 shadow-sm";
+                    icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>`;
                     btnConfirm.className = "flex-1 py-2.5 px-4 rounded-xl bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 shadow-md transition";
                 }
 
@@ -1497,7 +1499,11 @@
             closeAddMateriModal();
             renderMateriCards();
             updateAdminStats();
-            customAlert('Materi pelajaran baru berhasil diterbitkan!', 'Berhasil Diterbitkan', 'success');
+            customAlert('Materi pelajaran baru berhasil diterbitkan!', 'Berhasil Diterbitkan', 'success').then(() => {
+                customConfirm('Apakah Anda ingin membagikan pemberitahuan materi ini ke Grup WhatsApp sekarang?', 'Bagikan Info ke WA', 'info').then((isShare) => {
+                    if (isShare) shareToWhatsApp('materi', title, driveUrl, kelas);
+                });
+            });
         }
 
         function switchMateriTab(kelas) {
@@ -1612,6 +1618,9 @@
                                 </span>
                                 <div class="flex items-center gap-2">
                                     ${isAdmin ? `
+                                        <button onclick="shareToWhatsApp('materi', '${item.title}', '${item.driveUrl}', '${item.kelas}')" title="Bagikan ke Grup WA" class="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-lg text-xs font-bold transition border border-emerald-200 mr-1">
+                                            <i class="fa-brands fa-whatsapp text-base"></i>
+                                        </button>
                                         <button onclick="deleteMateri('${item.id}')" title="Hapus Materi Permanen" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200">
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
@@ -1692,7 +1701,12 @@
             closeAddTugasModal();
             renderTugasList();
             updateAdminStats();
-            customAlert('Tugas siswa baru berhasil diterbitkan!', 'Tugas Diterbitkan', 'success');
+            customAlert('Tugas siswa baru berhasil diterbitkan!', 'Tugas Diterbitkan', 'success').then(() => {
+                const formatBatasWaktu = new Date(deadlineTimestamp).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' });
+                customConfirm('Apakah Anda ingin membagikan pemberitahuan tugas ini ke Grup WhatsApp sekarang?', 'Bagikan Info ke WA', 'info').then((isShare) => {
+                    if (isShare) shareToWhatsApp('tugas', title, formatBatasWaktu, kelas);
+                });
+            });
         }
 
         function switchTugasTab(kelas) {
@@ -1862,9 +1876,14 @@
                         </div>
                         <div class="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0">
                             ${isAdmin ? `
-                                <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas Permanen" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition border border-rose-200">
-                                    <i class="fa-solid fa-trash-can mr-1"></i> Hapus
-                                </button>
+                                <div class="flex items-center mt-3 pt-3 border-t border-slate-100">
+                                    <button onclick="shareToWhatsApp('tugas', '${t.title}', '${deadlineStr}', '${t.kelas}')" title="Bagikan ke Grup WA" class="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-lg text-xs font-bold transition border border-emerald-200 mr-2 flex-1 flex items-center justify-center gap-1">
+                                        <i class="fa-brands fa-whatsapp text-base"></i> Share WA
+                                    </button>
+                                    <button onclick="deleteTugas('${t.id}')" title="Hapus Tugas Permanen" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition border border-rose-200 w-9 h-9 flex items-center justify-center">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
                             ` : ''}
 
                             ${!isGradeAccessible ? `
@@ -2139,6 +2158,19 @@
             renderStudentTable();
             updateAdminStats();
             showToast("Data presensi hari ini berhasil dikosongkan.", "success");
+        }
+
+        function shareToWhatsApp(type, title, detail, targetKelas) {
+            let message = "";
+            if (type === 'materi') {
+                message = `*PEMBERITAHUAN MATERI BARU*\n\nHalo siswa/i ${targetKelas},\nMateri baru telah diunggah di Portal Informatika SMAN 4 Manado.\n\n*Judul Materi:* ${title}\n*Link/Akses:* ${detail}\n\nSilakan login ke website pembelajaran untuk melihat detailnya. Terima kasih.`;
+            } else if (type === 'tugas') {
+                message = `*PEMBERITAHUAN TUGAS BARU*\n\nHalo siswa/i ${targetKelas},\nTugas baru telah diberikan di Portal Informatika SMAN 4 Manado.\n\n*Judul Tugas:* ${title}\n*Batas Waktu:* ${detail}\n\nSegera login ke website dan kumpulkan tugas sebelum batas waktu berakhir. Semangat!`;
+            }
+            
+            // Buka WhatsApp Web/App dengan pesan yang sudah terisi otomatis
+            const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
         }
 
         async function confirmAcademicReset() {
